@@ -41,7 +41,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { cn, formatTelefoneBR } from "@/lib/utils";
 
 export default function GestaoEquipe() {
   const queryClient = useQueryClient();
@@ -95,6 +95,15 @@ export default function GestaoEquipe() {
   const daCasa = funcionarios.filter(f => f.vinculo === 'da_casa' && f.ativo);
   const terceirizados = funcionarios.filter(f => f.vinculo === 'terceirizado' && f.ativo);
 
+  const cargoOptions = React.useMemo(() => {
+    const unique = new Set();
+    for (const f of funcionarios) {
+      const cargo = String(f.cargo || '').trim();
+      if (cargo) unique.add(cargo);
+    }
+    return Array.from(unique).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [funcionarios]);
+
   const handleSave = (formData) => {
     const payload = { ...formData, user_id: formData.user_id || null };
     if (editingFuncionario) {
@@ -113,9 +122,16 @@ export default function GestaoEquipe() {
   };
 
   const nivelColors = {
+    colaborador: 'bg-emerald-500/20 text-emerald-400',
     operador: 'bg-slate-500/20 text-slate-400',
     lider: 'bg-blue-500/20 text-blue-400',
     admin: 'bg-purple-500/20 text-purple-400',
+  };
+  const nivelLabels = {
+    colaborador: 'Colaborador',
+    operador: 'Operador',
+    lider: 'Líder',
+    admin: 'Admin',
   };
 
   return (
@@ -293,8 +309,8 @@ export default function GestaoEquipe() {
               <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-slate-500" />
-                <span className={cn("text-xs px-2 py-1 rounded-full", nivelColors[funcionario.nivel_acesso])}>
-                  {funcionario.nivel_acesso}
+                <span className={cn("text-xs px-2 py-1 rounded-full", nivelColors[funcionario.nivel_acesso] || nivelColors.colaborador)}>
+                  {nivelLabels[funcionario.nivel_acesso] || 'Colaborador'}
                 </span>
               </div>
               {funcionario.user_id && (
@@ -345,6 +361,7 @@ export default function GestaoEquipe() {
         onOpenChange={setDialogOpen}
         funcionario={editingFuncionario}
         frentes={frentes}
+        cargoOptions={cargoOptions}
         onSave={handleSave}
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
@@ -352,13 +369,13 @@ export default function GestaoEquipe() {
   );
 }
 
-function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, onSave, isLoading }) {
+function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOptions, onSave, isLoading }) {
   const [formData, setFormData] = useState({
     user_id: '',
     nome: '',
     vinculo: 'da_casa',
     cargo: '',
-    nivel_acesso: 'operador',
+    nivel_acesso: 'colaborador',
     frentes_trabalho: [],
     status: 'disponivel',
     capacidade_tarefas: 1,
@@ -373,7 +390,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, onSave, i
         nome: funcionario.nome || '',
         vinculo: funcionario.vinculo || 'da_casa',
         cargo: funcionario.cargo || '',
-        nivel_acesso: funcionario.nivel_acesso || 'operador',
+        nivel_acesso: funcionario.nivel_acesso || 'colaborador',
         frentes_trabalho: funcionario.frentes_trabalho || [],
         status: funcionario.status || 'disponivel',
         capacidade_tarefas: funcionario.capacidade_tarefas || 1,
@@ -386,7 +403,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, onSave, i
         nome: '',
         vinculo: 'da_casa',
         cargo: '',
-        nivel_acesso: 'operador',
+        nivel_acesso: 'colaborador',
         frentes_trabalho: [],
         status: 'disponivel',
         capacidade_tarefas: 1,
@@ -455,6 +472,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, onSave, i
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="colaborador">Colaborador</SelectItem>
                   <SelectItem value="operador">Operador</SelectItem>
                   <SelectItem value="lider">Líder</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
@@ -466,11 +484,17 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, onSave, i
           <div>
             <Label>Cargo/Função *</Label>
             <Input
+              list="cargo-funcionario-options"
               value={formData.cargo}
               onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
               className="bg-slate-800 border-slate-700 mt-1"
               placeholder="Ex: Operador de Perfiladeira"
             />
+            <datalist id="cargo-funcionario-options">
+              {(cargoOptions || []).map((cargo) => (
+                <option key={cargo} value={cargo} />
+              ))}
+            </datalist>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -506,9 +530,11 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, onSave, i
             <Label>Telefone</Label>
             <Input
               value={formData.telefone}
-              onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, telefone: formatTelefoneBR(e.target.value) })}
               className="bg-slate-800 border-slate-700 mt-1"
               placeholder="(00) 00000-0000"
+              inputMode="numeric"
+              autoComplete="tel"
             />
           </div>
 

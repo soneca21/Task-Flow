@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { formatTelefoneBR } from '@/lib/utils';
 
 export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user }) {
   const queryClient = useQueryClient();
@@ -41,7 +42,7 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
         telefone: data.telefone || null,
         cargo: data.cargo || null,
         vinculo: data.vinculo || 'da_casa',
-        nivel_acesso: 'operador',
+        nivel_acesso: 'colaborador',
         status: 'disponivel',
         capacidade_tarefas: 1,
         frentes_trabalho: [],
@@ -107,9 +108,11 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
               <Label>Telefone</Label>
               <Input
                 value={formData.telefone}
-                onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, telefone: formatTelefoneBR(e.target.value) })}
                 className="bg-slate-800 border-slate-700 mt-1"
                 placeholder="(00) 00000-0000"
+                inputMode="numeric"
+                autoComplete="tel"
               />
             </div>
           </div>
