@@ -200,7 +200,7 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full w-72 bg-slate-900 border-r-2 border-slate-800 shadow-[2px_0_12px_rgba(2,6,23,0.6)] z-50 transform transition-transform duration-300",
+        "fixed top-0 left-0 h-full w-64 bg-slate-900 border-r-2 border-slate-800 shadow-[2px_0_12px_rgba(2,6,23,0.6)] z-50 transform transition-transform duration-300",
         "lg:translate-x-0",
         sidebarOpen ? "translate-x-0" : "-translate-x-full"
       )}>
