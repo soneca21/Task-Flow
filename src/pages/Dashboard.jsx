@@ -1,0 +1,472 @@
+﻿import React, { useState } from 'react';
+import { api } from '@/api/dataClient';
+import { useAuth } from '@/lib/AuthContext';
+import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import AutomacaoTarefas from '../components/tarefas/AutomacaoTarefas';
+import SistemaNotificacoes from '../components/notificacoes/SistemaNotificacoes';
+import { 
+  Factory, 
+  Truck, 
+  Package, 
+  AlertTriangle, 
+  Users,
+  ClipboardCheck,
+} from 'lucide-react';
+import StatCard from '../components/dashboard/StatCard';
+import PageHeader from '../components/ui/PageHeader';
+import { LayoutDashboard } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Link } from 'react-router-dom';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { selecionarMelhoresFuncionarios } from '../components/tarefas/AlocacaoInteligente';
+import { AUTOMATION_CONFIG } from '@/automation/config';
+
+export default function Dashboard() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { data: funcionarioAtual } = useFuncionarioAtual();
+  const [quickTaskOpen, setQuickTaskOpen] = useState(false);
+  const [taskForm, setTaskForm] = useState({
+    titulo: '',
+    descricao: '',
+    tipo: 'producao',
+    prioridade: 'media',
+    frente_trabalho_id: '',
+    frente_trabalho_nome: '',
+  });
+
+  const { data: tarefas = [] } = useQuery({
+    queryKey: ['tarefas-dashboard'],
+    queryFn: () => api.entities.Tarefa.filter({ status: { $nin: ['concluida', 'cancelada'] } }),
+  });
+
+  const { data: notas = [] } = useQuery({
+    queryKey: ['notas-dashboard'],
+    queryFn: () => api.entities.Nota.filter({ status: { $nin: ['entregue', 'retirada', 'cancelada'] } }),
+  });
+
+  const { data: pendencias = [] } = useQuery({
+    queryKey: ['pendencias-dashboard'],
+    queryFn: () => api.entities.Pendencia.filter({ status: { $in: ['aberta', 'em_analise'] } }),
+  });
+
+  const { data: funcionarios = [] } = useQuery({
+    queryKey: ['funcionarios-dashboard'],
+    queryFn: () => api.entities.Funcionario.filter({ ativo: true }),
+  });
+
+  const { data: veiculos = [] } = useQuery({
+    queryKey: ['veiculos-dashboard'],
+    queryFn: () => api.entities.Veiculo.filter({ ativo: true }),
+  });
+
+  const { data: frentes = [] } = useQuery({
+    queryKey: ['frentes-dashboard'],
+    queryFn: () => api.entities.FrenteTrabalho.filter({ ativo: true }),
+  });
+
+  const tarefasProducao = tarefas.filter(t => t.tipo === 'producao');
+  const veiculosPatio = veiculos.filter(v => v.status === 'no_patio' || v.status === 'carregando');
+  const notasPendentes = notas.filter(n =>
+    n.status === 'em_expedicao' || n.status === 'em_producao' || n.status === 'pendente'
+  );
+  const pendenciasCriticas = pendencias.filter(p => p.prioridade === 'critica' || p.prioridade === 'alta');
+  const funcionariosAtivos = funcionarios.filter(f => f.status === 'disponivel' || f.status === 'ocupado');
+
+  const isAdmin = user?.user_metadata?.role === 'admin';
+
+  const createTarefaMutation = useMutation({
+    mutationFn: async (payload) => {
+      const tarefa = await api.entities.Tarefa.create(payload);
+      if (payload.funcionarios_designados?.length > 0) {
+        for (const funcId of payload.funcionarios_designados) {
+          if (!isAdmin && funcionarioAtual?.id !== funcId) continue;
+          const func = funcionarios.find(f => f.id === funcId);
+          if (func) {
+            await api.entities.Funcionario.update(funcId, {
+              status: 'ocupado',
+              tarefas_ativas: (func.tarefas_ativas || 0) + 1,
+            });
+          }
+        }
+      }
+      return tarefa;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tarefas-dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['tarefas'] });
+      queryClient.invalidateQueries({ queryKey: ['tarefas-producao'] });
+      setQuickTaskOpen(false);
+      setTaskForm({
+        titulo: '',
+        descricao: '',
+        tipo: 'producao',
+        prioridade: 'media',
+        frente_trabalho_id: '',
+        frente_trabalho_nome: '',
+      });
+      toast.success('Tarefa criada!');
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error('Erro ao criar tarefa');
+    },
+  });
+
+  const openQuickTask = () => {
+    setQuickTaskOpen(true);
+  };
+
+  const handleQuickCreate = () => {
+    if (!taskForm.titulo || !taskForm.frente_trabalho_id) {
+      toast.error('Preencha t?tulo e frente de trabalho');
+      return;
+    }
+    const frente = frentes.find(f => f.id === taskForm.frente_trabalho_id);
+    const candidatosDisponiveis = funcionarios.filter(f =>
+      f.ativo !== false &&
+      f.status === 'disponivel' &&
+      f.frentes_trabalho?.includes(taskForm.frente_trabalho_id)
+    );
+    const candidatos = candidatosDisponiveis.length > 0
+      ? candidatosDisponiveis
+      : (AUTOMATION_CONFIG.autoDistribuicaoScoreSemDisponiveis
+        ? funcionarios.filter(f =>
+            f.ativo !== false &&
+            f.frentes_trabalho?.includes(taskForm.frente_trabalho_id)
+          )
+        : []);
+    let funcionariosSelecionados = [];
+    if (candidatos.length > 0) {
+      const minScore = candidatosDisponiveis.length === 0 && AUTOMATION_CONFIG.autoDistribuicaoScoreSemDisponiveis
+        ? 0
+        : 20;
+      funcionariosSelecionados = selecionarMelhoresFuncionarios(
+        candidatos,
+        { frente_trabalho_id: taskForm.frente_trabalho_id, prioridade: taskForm.prioridade, tipo: taskForm.tipo },
+        frente,
+        1,
+        minScore
+      );
+    }
+
+    const autoAssigned = funcionariosSelecionados.length > 0;
+    createTarefaMutation.mutate({
+      titulo: taskForm.titulo,
+      descricao: taskForm.descricao,
+      tipo: taskForm.tipo,
+      prioridade: taskForm.prioridade,
+      frente_trabalho_id: taskForm.frente_trabalho_id,
+      frente_trabalho_nome: taskForm.frente_trabalho_nome,
+      funcionarios_designados: funcionariosSelecionados.map(f => f.id),
+      funcionarios_nomes: funcionariosSelecionados.map(f => f.nome),
+      quantidade_profissionais: autoAssigned ? funcionariosSelecionados.length : 1,
+      status: autoAssigned ? 'em_execucao' : 'aguardando_alocacao',
+      data_inicio: autoAssigned ? new Date().toISOString() : null,
+    });
+  };
+
+  return (
+    <>
+      <AutomacaoTarefas />
+      <SistemaNotificacoes />
+      <div className="space-y-6">
+        <PageHeader 
+          title="Dashboard Operacional"
+          subtitle={`${format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}`}
+          icon={LayoutDashboard}
+        />
+
+      {/* Status Rápido */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <StatCard
+          title="Nova Tarefa"
+          value="Criar"
+          subtitle="Criação rápida"
+          icon={ClipboardCheck}
+          color="blue"
+          onClick={openQuickTask}
+        />
+        <StatCard
+          title="Produção"
+          value={tarefasProducao.length}
+          subtitle="Ordens ativas"
+          icon={Factory}
+          color="amber"
+          linkTo="Produção"
+        />
+        <StatCard
+          title="Veículos no Pátio"
+          value={veiculosPatio.length}
+          subtitle="Aguardando atendimento"
+          icon={Truck}
+          color="green"
+          linkTo="Logistica"
+        />
+        <StatCard
+          title="Expedição"
+          value={notasPendentes.length}
+          subtitle="Notas em expedição"
+          icon={Package}
+          color="purple"
+          linkTo="Expedição"
+        />
+        <StatCard
+          title="Pendências"
+          value={pendenciasCriticas.length}
+          subtitle="Alertas críticos"
+          icon={AlertTriangle}
+          color="red"
+          linkTo="Pendências"
+        />
+        <StatCard
+          title="Equipe"
+          value={funcionariosAtivos.length}
+          subtitle="Funcionários ativos"
+          icon={Users}
+          color="orange"
+          linkTo="GestaoEquipe"
+        />
+      </div>
+
+      {/* Detalhes Rápidos */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        {/* Tarefas Recentes */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-white flex items-center gap-2">
+              <ClipboardCheck className="w-5 h-5 text-blue-400" />
+              Tarefas em Execução
+            </h3>
+            <span className="text-xs text-slate-500">{tarefas.filter(t => t.status === 'em_execucao').length} ativas</span>
+          </div>
+          <div className="space-y-3">
+            {tarefas.filter(t => t.status === 'em_execucao').slice(0, 4).map(tarefa => (
+              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+                <div>
+                  <p className="text-sm font-medium text-white">{tarefa.titulo}</p>
+                  <p className="text-xs text-slate-500">{tarefa.frente_trabalho_nome}</p>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  tarefa.prioridade === 'urgente' ? 'bg-red-500/20 text-red-400' :
+                  tarefa.prioridade === 'alta' ? 'bg-amber-500/20 text-amber-400' :
+                  'bg-blue-500/20 text-blue-400'
+                }`}>
+                  {tarefa.prioridade}
+                </span>
+              </div>
+            ))}
+            {tarefas.filter(t => t.status === 'em_execucao').length === 0 && (
+              <p className="text-sm text-slate-500 text-center py-4">Nenhuma tarefa em execução</p>
+            )}
+          </div>
+        </div>
+
+        {/* Veículos */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-white flex items-center gap-2">
+              <Truck className="w-5 h-5 text-green-400" />
+              Veículos no Pátio
+            </h3>
+            <span className="text-xs text-slate-500">{veiculosPatio.length} veículos</span>
+          </div>
+          <div className="space-y-3">
+            {veiculosPatio.slice(0, 4).map(veiculo => (
+              <div key={veiculo.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+                <div>
+                  <p className="text-sm font-medium text-white">{veiculo.placa}</p>
+                  <p className="text-xs text-slate-500">{veiculo.modelo}</p>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  veiculo.status === 'carregando' ? 'bg-amber-500/20 text-amber-400' :
+                  'bg-green-500/20 text-green-400'
+                }`}>
+                  {veiculo.status === 'carregando' ? 'Carregando' : 'No Pátio'}
+                </span>
+              </div>
+            ))}
+            {veiculosPatio.length === 0 && (
+              <p className="text-sm text-slate-500 text-center py-4">Nenhum veículo no pátio</p>
+            )}
+          </div>
+        </div>
+
+        {/* Pendências Críticas */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-white flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-400" />
+              Alertas Críticos
+            </h3>
+            <span className="text-xs text-slate-500">{pendenciasCriticas.length} alertas</span>
+          </div>
+          <div className="space-y-3">
+            {pendenciasCriticas.slice(0, 4).map(pendencia => (
+              <div key={pendencia.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+                <div>
+                  <p className="text-sm font-medium text-white">{pendencia.titulo}</p>
+                  <p className="text-xs text-slate-500">{pendencia.origem}</p>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  pendencia.prioridade === 'critica' ? 'bg-red-500/20 text-red-400' :
+                  'bg-amber-500/20 text-amber-400'
+                }`}>
+                  {pendencia.prioridade}
+                </span>
+              </div>
+            ))}
+            {pendenciasCriticas.length === 0 && (
+              <p className="text-sm text-slate-500 text-center py-4">Nenhum alerta crítico</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <Dialog open={quickTaskOpen} onOpenChange={setQuickTaskOpen}>
+        <DialogContent className="bg-slate-900 border-slate-800 text-white">
+          <DialogHeader>
+            <DialogTitle>Criar Tarefa Rápida</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Título</label>
+              <Input
+                value={taskForm.titulo}
+                onChange={(e) => setTaskForm((p) => ({ ...p, titulo: e.target.value }))}
+                placeholder="Ex: Perfiladeira - Nota 123"
+                className="bg-slate-950 border-slate-800"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Frente de Trabalho</label>
+              <Select
+                value={taskForm.frente_trabalho_id}
+                onValueChange={(v) => {
+                  const frente = frentes.find((f) => f.id === v);
+                  setTaskForm((p) => ({
+                    ...p,
+                    frente_trabalho_id: v,
+                    frente_trabalho_nome: frente?.nome || '',
+                  }));
+                }}
+              >
+                <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {frentes.map((f) => (
+                    <SelectItem key={f.id} value={f.id}>
+                      {f.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-sm text-slate-300">Tipo</label>
+                <Select
+                  value={taskForm.tipo}
+                  onValueChange={(v) => setTaskForm((p) => ({ ...p, tipo: v }))}
+                >
+                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="producao">Produção</SelectItem>
+                    <SelectItem value="entrega">Entrega</SelectItem>
+                    <SelectItem value="retirada">Retirada</SelectItem>
+                    <SelectItem value="carregamento">Carregamento</SelectItem>
+                    <SelectItem value="movimentacao">Movimentação</SelectItem>
+                    <SelectItem value="conferencia">Conferência</SelectItem>
+                    <SelectItem value="manutencao">Manutenção</SelectItem>
+                    <SelectItem value="outros">Outros</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-slate-300">Prioridade</label>
+                <Select
+                  value={taskForm.prioridade}
+                  onValueChange={(v) => setTaskForm((p) => ({ ...p, prioridade: v }))}
+                >
+                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="baixa">Baixa</SelectItem>
+                    <SelectItem value="media">Média</SelectItem>
+                    <SelectItem value="alta">Alta</SelectItem>
+                    <SelectItem value="urgente">Urgente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm text-slate-300">Descrição (opcional)</label>
+              <Textarea
+                value={taskForm.descricao}
+                onChange={(e) => setTaskForm((p) => ({ ...p, descricao: e.target.value }))}
+                placeholder="Detalhes rápidos..."
+                className="bg-slate-950 border-slate-800"
+                rows={3}
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-3 pt-2">
+              <Link to="/Tarefas" className="text-sm text-slate-400 hover:text-white">
+                Abrir Tarefas
+              </Link>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-slate-800"
+                  onClick={() => setQuickTaskOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="button"
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+                  onClick={handleQuickCreate}
+                  disabled={createTarefaMutation.isPending || !taskForm.titulo || !taskForm.frente_trabalho_id}
+                >
+                  {createTarefaMutation.isPending ? 'Criando...' : 'Criar'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      </div>
+    </>
+  );
+}
+
+
+
