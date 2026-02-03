@@ -3,6 +3,7 @@ import { api } from '@/api/dataClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import ExecutarChecklist from '../components/tarefas/ExecutarChecklist';
 import { 
   Factory, 
   Plus, 
@@ -13,7 +14,8 @@ import {
   Pause,
   CheckCircle,
   AlertTriangle,
-  User
+  User,
+  FileCheck
 } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import { Button } from "@/components/ui/button";
@@ -37,6 +39,9 @@ export default function Producao() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('todos');
   const [filterFrente, setFilterFrente] = useState('todas');
+  const [executandoChecklist, setExecutandoChecklist] = useState(null);
+  const [checklistExecucao, setChecklistExecucao] = useState(null);
+  const [checklistReadOnly, setChecklistReadOnly] = useState(false);
 
   const { data: tarefas = [] } = useQuery({
     queryKey: ['tarefas-producao'],
@@ -78,6 +83,11 @@ export default function Producao() {
   };
 
   const finalizarTarefa = async (tarefa) => {
+    if (tarefa.checklist_id && (!tarefa.checklist_preenchido || tarefa.checklist_preenchido.length === 0)) {
+      toast.info('Preencha o checklist antes de concluir a tarefa.');
+      await handleExecutarChecklist(tarefa);
+      return;
+    }
     try {
       await api.entities.Tarefa.update(tarefa.id, {
         status: 'concluida',
@@ -113,6 +123,10 @@ export default function Producao() {
       return;
     }
     if (newStatus === 'concluida') {
+      if (tarefa.checklist_id) {
+        handleExecutarChecklist(tarefa);
+        return;
+      }
       finalizarTarefa(tarefa);
       return;
     }
@@ -133,6 +147,22 @@ export default function Producao() {
   const isAdmin = user?.user_metadata?.role === 'admin';
   const canEditTarefa = (tarefa) =>
     isAdmin || (funcionarioAtual && tarefa.funcionarios_designados?.includes(funcionarioAtual.id));
+
+  const handleExecutarChecklist = async (tarefa) => {
+    if (!tarefa.checklist_id) {
+      toast.error('Esta tarefa não possui checklist configurado');
+      return;
+    }
+    try {
+      const checklist = await api.entities.Checklist.get(tarefa.checklist_id);
+      setExecutandoChecklist(tarefa);
+      setChecklistExecucao(checklist);
+      setChecklistReadOnly(!canEditTarefa(tarefa));
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao carregar checklist');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -246,7 +276,17 @@ export default function Producao() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                {tarefa.checklist_id && tarefa.status === 'em_execucao' && (
+                  <Button
+                    size="sm"
+                    className="bg-purple-500 hover:bg-purple-600 touch-btn"
+                    onClick={() => handleExecutarChecklist(tarefa)}
+                  >
+                    <FileCheck className="w-4 h-4 mr-1" />
+                    {canEdit ? 'Checklist' : 'Ver Checklist'}
+                  </Button>
+                )}
                 {(tarefa.status === 'criada' || tarefa.status === 'aguardando_alocacao') && (
                   <Button 
                     size="sm"
@@ -272,16 +312,18 @@ export default function Producao() {
                       <Pause className="w-4 h-4 mr-1" />
                       Pausar
                     </Button>
-                    <Button 
-                      size="sm"
-                      className="bg-green-500 hover:bg-green-600 touch-btn"
-                      onClick={() => handleUpdateStatus(tarefa, 'concluida')}
-                      disabled={!canEdit}
-                      title={!canEdit ? 'Somente o responsável pode editar' : undefined}
-                    >
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Concluir
-                    </Button>
+                    {!tarefa.checklist_id && (
+                      <Button 
+                        size="sm"
+                        className="bg-green-500 hover:bg-green-600 touch-btn"
+                        onClick={() => handleUpdateStatus(tarefa, 'concluida')}
+                        disabled={!canEdit}
+                        title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Concluir
+                      </Button>
+                    )}
                   </>
                 )}
                 {tarefa.status === 'pausada' && (
@@ -308,6 +350,29 @@ export default function Producao() {
           </div>
         )}
       </div>
+
+      {/* Executar Checklist */}
+      {executandoChecklist && checklistExecucao && (
+        <ExecutarChecklist
+          tarefa={executandoChecklist}
+          checklist={checklistExecucao}
+          readOnly={checklistReadOnly}
+          funcionarioAtual={funcionarioAtual}
+          isAdmin={isAdmin}
+          onConcluir={() => {
+            setExecutandoChecklist(null);
+            setChecklistExecucao(null);
+            setChecklistReadOnly(false);
+            queryClient.invalidateQueries({ queryKey: ['tarefas-producao'] });
+            queryClient.invalidateQueries({ queryKey: ['tarefas'] });
+          }}
+          onFechar={() => {
+            setExecutandoChecklist(null);
+            setChecklistExecucao(null);
+            setChecklistReadOnly(false);
+          }}
+        />
+      )}
     </div>
   );
 }

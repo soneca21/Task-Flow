@@ -208,6 +208,11 @@ export default function Tarefas() {
     isAdmin || (funcionarioAtual && tarefa.funcionarios_designados?.includes(funcionarioAtual.id));
 
   const finalizarTarefa = async (tarefa, extraData = {}) => {
+    if (tarefa.checklist_id && (!tarefa.checklist_preenchido || tarefa.checklist_preenchido.length === 0)) {
+      toast.info('Preencha o checklist antes de concluir a tarefa.');
+      await handleExecutarChecklist(tarefa);
+      return;
+    }
     try {
       await api.entities.Tarefa.update(tarefa.id, {
         ...extraData,
@@ -243,6 +248,11 @@ export default function Tarefas() {
   const handleSave = (formData) => {
     if (editingTarefa) {
       if (editingTarefa.status !== 'concluida' && formData.status === 'concluida') {
+        if (editingTarefa.checklist_id) {
+          toast.info('Esta tarefa exige checklist. Preencha o checklist para concluir.');
+          handleExecutarChecklist(editingTarefa);
+          return;
+        }
         finalizarTarefa(editingTarefa, formData);
         return;
       }
@@ -258,6 +268,10 @@ export default function Tarefas() {
       return;
     }
     if (newStatus === 'concluida') {
+      if (tarefa.checklist_id) {
+        handleExecutarChecklist(tarefa);
+        return;
+      }
       finalizarTarefa(tarefa);
       return;
     }
