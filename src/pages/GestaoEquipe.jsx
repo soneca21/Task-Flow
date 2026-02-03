@@ -380,6 +380,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
     status: 'disponivel',
     capacidade_tarefas: 1,
     telefone: '',
+    data_nascimento: '',
     ativo: true,
   });
 
@@ -395,6 +396,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
         status: funcionario.status || 'disponivel',
         capacidade_tarefas: funcionario.capacidade_tarefas || 1,
         telefone: funcionario.telefone || '',
+        data_nascimento: funcionario.data_nascimento || '',
         ativo: funcionario.ativo !== false,
       });
     } else {
@@ -408,6 +410,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
         status: 'disponivel',
         capacidade_tarefas: 1,
         telefone: '',
+        data_nascimento: '',
         ativo: true,
       });
     }
@@ -535,6 +538,16 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
               placeholder="(00) 00000-0000"
               inputMode="numeric"
               autoComplete="tel"
+            />
+          </div>
+
+          <div>
+            <Label>Data de Nascimento</Label>
+            <Input
+              type="date"
+              value={formData.data_nascimento || ''}
+              onChange={(e) => setFormData({ ...formData, data_nascimento: e.target.value })}
+              className="bg-slate-800 border-slate-700 mt-1"
             />
           </div>
 

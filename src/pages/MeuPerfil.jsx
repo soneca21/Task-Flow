@@ -3,20 +3,47 @@ import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from "@/components/ui/button";
-import { Copy, Shield, UserCircle, ClipboardList, Trophy, Activity, Phone } from 'lucide-react';
+import { Copy, Shield, UserCircle, ClipboardList, Trophy, Activity, Phone, Pencil, CalendarDays } from 'lucide-react';
 import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/dataClient';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { formatTelefoneBR } from '@/lib/utils';
 
 export default function MeuPerfil() {
+  const queryClient = useQueryClient();
   const { user, promoteToAdmin } = useAuth();
   const { data: funcionarioAtual } = useFuncionarioAtual();
   const [isCopying, setIsCopying] = useState(false);
   const [isPromoting, setIsPromoting] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ telefone: '', data_nascimento: '' });
 
   const isDev = import.meta.env.DEV;
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  const role = user?.user_metadata?.role || '';
+  const isAdmin = role === 'admin';
+  const isManager = role === 'admin' || role === 'lider';
+  const roleLabel = ['admin', 'lider', 'operador', 'colaborador'].includes(role) ? role : 'colaborador';
   const funcionarioId = funcionarioAtual?.id;
+
+  const updateFuncionarioMutation = useMutation({
+    mutationFn: async (payload) => {
+      if (!funcionarioId) throw new Error('Funcionário não vinculado');
+      return api.entities.Funcionario.update(funcionarioId, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['funcionario-atual'] });
+      queryClient.invalidateQueries({ queryKey: ['funcionarios'] });
+      toast.success('Perfil atualizado.');
+      setEditOpen(false);
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error('Não foi possível atualizar o perfil.');
+    },
+  });
 
   const { data: tarefas = [] } = useQuery({
     queryKey: ['tarefas-perfil', funcionarioId],
@@ -114,6 +141,39 @@ export default function MeuPerfil() {
     ? Math.round((avaliacoes.reduce((acc, a) => acc + (a.nota_geral || 0), 0) / avaliacoes.length) * 10) / 10
     : 0;
 
+  const statusLabel = {
+    disponivel: 'Disponível',
+    ocupado: 'Ocupado',
+    indisponivel: 'Indisponível',
+    ferias: 'Férias',
+    afastado: 'Afastado',
+  };
+
+  const statusPillClass = (status) => {
+    switch (status) {
+      case 'disponivel':
+        return 'bg-green-500/20 text-green-300 border-green-500/30';
+      case 'ocupado':
+        return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+      case 'ferias':
+        return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+      case 'afastado':
+        return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+      default:
+        return 'bg-slate-800 text-slate-300 border-slate-700';
+    }
+  };
+
+  const currentStatus = funcionarioAtual?.status || 'disponivel';
+
+  const openEdit = () => {
+    setEditForm({
+      telefone: funcionarioAtual?.telefone || '',
+      data_nascimento: funcionarioAtual?.data_nascimento || '',
+    });
+    setEditOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -121,18 +181,30 @@ export default function MeuPerfil() {
         subtitle="Dados da conta e permissões"
         icon={UserCircle}
         actions={
-          isDev && !isAdmin ? (
+          <div className="flex items-center gap-2">
             <Button
               type="button"
               variant="outline"
-              className="border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
-              onClick={handlePromoteToAdmin}
-              disabled={isPromoting}
+              className="border-slate-700 text-slate-200 hover:bg-slate-800"
+              onClick={openEdit}
+              disabled={!funcionarioAtual}
             >
-              <Shield className="w-4 h-4 mr-2" />
-              {isPromoting ? 'Promovendo...' : 'Tornar-me admin'}
+              <Pencil className="w-4 h-4 mr-2" />
+              Editar perfil
             </Button>
-          ) : null
+            {isDev && !isAdmin ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="border-amber-500/40 text-amber-300 hover:bg-amber-500/10"
+                onClick={handlePromoteToAdmin}
+                disabled={isPromoting}
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                {isPromoting ? 'Promovendo...' : 'Tornar-me admin'}
+              </Button>
+            ) : null}
+          </div>
         }
       />
 
@@ -175,7 +247,13 @@ export default function MeuPerfil() {
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wider">Perfil</p>
               <p className="text-sm text-slate-300 mt-1">
-                {isAdmin ? 'Administrador' : 'Operacional'}
+                {roleLabel === 'admin'
+                  ? 'Administrador'
+                  : roleLabel === 'lider'
+                    ? 'Líder'
+                    : roleLabel === 'operador'
+                      ? 'Operador'
+                      : 'Colaborador'}
               </p>
             </div>
           </div>
@@ -225,7 +303,61 @@ export default function MeuPerfil() {
                 <Phone className="w-4 h-4 text-slate-500" />
                 <span>{funcionarioAtual.telefone || '-'}</span>
               </p>
-              <p><span className="text-slate-500">Status:</span> {funcionarioAtual.status || '-'}</p>
+              <p className="flex items-center justify-between gap-3">
+                <span className="text-slate-500">Status:</span>
+                <span className={`text-xs px-2 py-1 rounded-full border ${statusPillClass(currentStatus)}`}>
+                  {statusLabel[currentStatus] || currentStatus}
+                </span>
+              </p>
+              <p className="flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 text-slate-500" />
+                <span>
+                  {funcionarioAtual.data_nascimento
+                    ? new Date(funcionarioAtual.data_nascimento).toLocaleDateString('pt-BR')
+                    : '-'}
+                </span>
+              </p>
+
+              <div className="pt-2">
+                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Ações rápidas</p>
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-slate-700 text-slate-200 hover:bg-slate-800"
+                    onClick={() => updateFuncionarioMutation.mutate({ status: 'disponivel' })}
+                    disabled={updateFuncionarioMutation.isPending}
+                  >
+                    Disponível
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-blue-500/40 text-blue-200 hover:bg-blue-500/10"
+                    onClick={() => updateFuncionarioMutation.mutate({ status: 'ferias' })}
+                    disabled={updateFuncionarioMutation.isPending}
+                  >
+                    Férias
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="border-slate-500/40 text-slate-200 hover:bg-slate-800"
+                    onClick={() => updateFuncionarioMutation.mutate({ status: 'afastado' })}
+                    disabled={updateFuncionarioMutation.isPending}
+                  >
+                    Afastado
+                  </Button>
+                </div>
+                {!isManager && (
+                  <p className="text-xs text-slate-500 mt-2">
+                    Você pode marcar férias/afastamento. Líder/Admin também pode ajustar pela Gestão de Equipe.
+                  </p>
+                )}
+              </div>
               <p><span className="text-slate-500">Capacidade:</span> {funcionarioAtual.capacidade_tarefas || 1} tarefa(s)</p>
             </div>
           ) : (
@@ -337,6 +469,58 @@ export default function MeuPerfil() {
           )}
         </div>
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Editar Perfil</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>Telefone</Label>
+              <Input
+                value={editForm.telefone}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, telefone: formatTelefoneBR(e.target.value) }))}
+                className="bg-slate-800 border-slate-700 mt-1"
+                placeholder="(00) 00000-0000"
+                inputMode="numeric"
+                autoComplete="tel"
+              />
+            </div>
+
+            <div>
+              <Label>Data de Nascimento</Label>
+              <div className="relative mt-1">
+                <CalendarDays className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Input
+                  type="date"
+                  value={editForm.data_nascimento || ''}
+                  onChange={(e) => setEditForm((prev) => ({ ...prev, data_nascimento: e.target.value }))}
+                  className="pl-10 bg-slate-800 border-slate-700"
+                />
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Usamos apenas para identificação interna (aniversário).</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4 border-t border-slate-800">
+            <Button variant="outline" className="flex-1" onClick={() => setEditOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
+              onClick={() => updateFuncionarioMutation.mutate({
+                telefone: editForm.telefone || null,
+                data_nascimento: editForm.data_nascimento || null,
+              })}
+              disabled={updateFuncionarioMutation.isPending}
+            >
+              {updateFuncionarioMutation.isPending ? 'Salvando...' : 'Salvar'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
