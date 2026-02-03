@@ -12,9 +12,15 @@ const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
 const MainPage = mainPageKey ? Pages[mainPageKey] : <></>;
 
-const LayoutWrapper = ({ children, currentPageName }) => Layout ?
-  <Layout currentPageName={currentPageName}>{children}</Layout>
-  : <>{children}</>;
+const LayoutWrapper = ({ children, currentPageName }) => {
+  if (!Layout) {
+    return <>{children}</>;
+  }
+  if (String(currentPageName).toLowerCase() === 'login') {
+    return <>{children}</>;
+  }
+  return <Layout currentPageName={currentPageName}>{children}</Layout>;
+};
 
 const AuthenticatedApp = () => {
   const location = useLocation();
