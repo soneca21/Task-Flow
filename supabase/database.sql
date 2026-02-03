@@ -1,4 +1,4 @@
--- Banco de dados completo (schema + RLS + indexes + seed)
+﻿-- Banco de dados completo (schema + RLS + indexes + seed)
 
 create extension if not exists "pgcrypto";
 
@@ -47,7 +47,7 @@ create table if not exists funcionario (
   nome text,
   vinculo text,
   cargo text,
-  nivel_acesso text,
+  nivel_acesso text default 'colaborador',
   frentes_trabalho text[],
   status text,
   capacidade_tarefas integer,
@@ -235,12 +235,20 @@ alter table configuracao_sistema enable row level security;
 alter table log_auditoria enable row level security;
 alter table app_logs enable row level security;
 
+create or replace function public.current_role()
+returns text
+language sql
+stable
+as $$
+  select coalesce(auth.jwt()->'user_metadata'->>'role', 'colaborador')
+$$;
+
 create or replace function public.is_admin()
 returns boolean
 language sql
 stable
 as $$
-  select coalesce(auth.jwt()->'user_metadata'->>'role', '') = 'admin'
+  select public.current_role() = 'admin'
 $$;
 
 create or replace function public.is_manager()
@@ -248,15 +256,23 @@ returns boolean
 language sql
 stable
 as $$
-  select coalesce(auth.jwt()->'user_metadata'->>'role', '') in ('admin', 'lider', 'supervisor')
+  select public.current_role() in ('admin', 'lider', 'supervisor')
+$$;
+
+create or replace function public.is_colaborador()
+returns boolean
+language sql
+stable
+as $$
+  select public.current_role() = 'colaborador'
 $$;
 
 -- Policies
-create policy tarefa_select on tarefa for select using (auth.role() = 'authenticated');
-create policy tarefa_insert on tarefa for insert with check (auth.role() = 'authenticated');
+create policy tarefa_select on tarefa for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy tarefa_insert on tarefa for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy tarefa_update on tarefa
   for update using (
-    auth.role() = 'authenticated'
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
     and (
       is_admin()
       or exists (
@@ -269,26 +285,26 @@ create policy tarefa_update on tarefa
   );
 create policy tarefa_delete on tarefa for delete using (is_admin());
 
-create policy funcionario_select on funcionario for select using (auth.role() = 'authenticated');
+create policy funcionario_select on funcionario for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy funcionario_insert on funcionario
   for insert with check (
-    auth.role() = 'authenticated'
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
     and (is_admin() or user_id = auth.uid())
   );
 create policy funcionario_update on funcionario
   for update using (
-    auth.role() = 'authenticated'
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
     and (is_admin() or user_id = auth.uid())
   )
   with check (
-    auth.role() = 'authenticated'
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
     and (is_admin() or user_id = auth.uid())
   );
 create policy funcionario_delete on funcionario for delete using (is_admin());
 
 create policy avaliacao_funcionario_select on avaliacao_funcionario
   for select using (
-    auth.role() = 'authenticated'
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
     and (
       is_manager()
       or exists (
@@ -306,55 +322,55 @@ create policy avaliacao_funcionario_update on avaliacao_funcionario
 create policy avaliacao_funcionario_delete on avaliacao_funcionario
   for delete using (is_manager());
 
-create policy frente_trabalho_select on frente_trabalho for select using (auth.role() = 'authenticated');
-create policy frente_trabalho_insert on frente_trabalho for insert with check (auth.role() = 'authenticated');
-create policy frente_trabalho_update on frente_trabalho for update using (auth.role() = 'authenticated');
-create policy frente_trabalho_delete on frente_trabalho for delete using (auth.role() = 'authenticated');
+create policy frente_trabalho_select on frente_trabalho for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy frente_trabalho_insert on frente_trabalho for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy frente_trabalho_update on frente_trabalho for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy frente_trabalho_delete on frente_trabalho for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy checklist_select on checklist for select using (auth.role() = 'authenticated');
-create policy checklist_insert on checklist for insert with check (auth.role() = 'authenticated');
-create policy checklist_update on checklist for update using (auth.role() = 'authenticated');
-create policy checklist_delete on checklist for delete using (auth.role() = 'authenticated');
+create policy checklist_select on checklist for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy checklist_insert on checklist for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy checklist_update on checklist for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy checklist_delete on checklist for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy nota_select on nota for select using (auth.role() = 'authenticated');
-create policy nota_insert on nota for insert with check (auth.role() = 'authenticated');
-create policy nota_update on nota for update using (auth.role() = 'authenticated');
-create policy nota_delete on nota for delete using (auth.role() = 'authenticated');
+create policy nota_select on nota for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy nota_insert on nota for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy nota_update on nota for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy nota_delete on nota for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy rota_select on rota for select using (auth.role() = 'authenticated');
-create policy rota_insert on rota for insert with check (auth.role() = 'authenticated');
-create policy rota_update on rota for update using (auth.role() = 'authenticated');
-create policy rota_delete on rota for delete using (auth.role() = 'authenticated');
+create policy rota_select on rota for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy rota_insert on rota for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy rota_update on rota for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy rota_delete on rota for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy veiculo_select on veiculo for select using (auth.role() = 'authenticated');
-create policy veiculo_insert on veiculo for insert with check (auth.role() = 'authenticated');
-create policy veiculo_update on veiculo for update using (auth.role() = 'authenticated');
-create policy veiculo_delete on veiculo for delete using (auth.role() = 'authenticated');
+create policy veiculo_select on veiculo for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy veiculo_insert on veiculo for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy veiculo_update on veiculo for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy veiculo_delete on veiculo for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy agendamento_veiculo_select on agendamento_veiculo for select using (auth.role() = 'authenticated');
-create policy agendamento_veiculo_insert on agendamento_veiculo for insert with check (auth.role() = 'authenticated');
-create policy agendamento_veiculo_update on agendamento_veiculo for update using (auth.role() = 'authenticated');
-create policy agendamento_veiculo_delete on agendamento_veiculo for delete using (auth.role() = 'authenticated');
+create policy agendamento_veiculo_select on agendamento_veiculo for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy agendamento_veiculo_insert on agendamento_veiculo for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy agendamento_veiculo_update on agendamento_veiculo for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy agendamento_veiculo_delete on agendamento_veiculo for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy pendencia_select on pendencia for select using (auth.role() = 'authenticated');
-create policy pendencia_insert on pendencia for insert with check (auth.role() = 'authenticated');
-create policy pendencia_update on pendencia for update using (auth.role() = 'authenticated');
-create policy pendencia_delete on pendencia for delete using (auth.role() = 'authenticated');
+create policy pendencia_select on pendencia for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy pendencia_insert on pendencia for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy pendencia_update on pendencia for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy pendencia_delete on pendencia for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy configuracao_sistema_select on configuracao_sistema for select using (auth.role() = 'authenticated');
-create policy configuracao_sistema_insert on configuracao_sistema for insert with check (auth.role() = 'authenticated');
-create policy configuracao_sistema_update on configuracao_sistema for update using (auth.role() = 'authenticated');
-create policy configuracao_sistema_delete on configuracao_sistema for delete using (auth.role() = 'authenticated');
+create policy configuracao_sistema_select on configuracao_sistema for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy configuracao_sistema_insert on configuracao_sistema for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy configuracao_sistema_update on configuracao_sistema for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy configuracao_sistema_delete on configuracao_sistema for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy log_auditoria_select on log_auditoria for select using (auth.role() = 'authenticated');
-create policy log_auditoria_insert on log_auditoria for insert with check (auth.role() = 'authenticated');
-create policy log_auditoria_update on log_auditoria for update using (auth.role() = 'authenticated');
-create policy log_auditoria_delete on log_auditoria for delete using (auth.role() = 'authenticated');
+create policy log_auditoria_select on log_auditoria for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy log_auditoria_insert on log_auditoria for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy log_auditoria_update on log_auditoria for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy log_auditoria_delete on log_auditoria for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
-create policy app_logs_select on app_logs for select using (auth.role() = 'authenticated');
-create policy app_logs_insert on app_logs for insert with check (auth.role() = 'authenticated');
-create policy app_logs_update on app_logs for update using (auth.role() = 'authenticated');
-create policy app_logs_delete on app_logs for delete using (auth.role() = 'authenticated');
+create policy app_logs_select on app_logs for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy app_logs_insert on app_logs for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy app_logs_update on app_logs for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy app_logs_delete on app_logs for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 
 -- Seed (frentes confirmadas + exemplos)
 insert into frente_trabalho (id, nome, categoria, descricao, cor, ativo, ordem) values
@@ -383,8 +399,8 @@ on conflict (id) do update set
 
 insert into funcionario (nome, vinculo, cargo, nivel_acesso, frentes_trabalho, status, capacidade_tarefas, telefone, tarefas_ativas, tarefas_concluidas, ativo) values
 ('Joao Silva', 'da_casa', 'Operador de Perfiladeira Telha Galvalume Trapezoidal', 'operador', array['prod_perfiladeira_telha_galvalume_trapezoidal'], 'disponivel', 2, '11999990001', 0, 3, true),
-('Maria Souza', 'da_casa', 'Operador de Perfiladeira Calha Colonial', 'operador', array['prod_perfiladeira_calha_colonial'], 'disponivel', 2, '11999990002', 0, 5, true),
-('Carlos Lima', 'terceirizado', 'Motorista', 'operador', array['logistica_motorista'], 'disponivel', 1, '11999990003', 0, 2, true),
+('Maria Souza', 'da_casa', 'Operador de Perfiladeira Calha Colonial', 'colaborador', array['prod_perfiladeira_calha_colonial'], 'disponivel', 2, '11999990002', 0, 5, true),
+('Carlos Lima', 'terceirizado', 'Motorista', 'colaborador', array['logistica_motorista'], 'disponivel', 1, '11999990003', 0, 2, true),
 ('Ana Oliveira', 'da_casa', 'Supervisora', 'admin', array['logistica_expedicao_retirar','prod_perfiladeira_telha_galvalume_trapezoidal','mov_ponte_rolante'], 'disponivel', 3, '11999990004', 0, 8, true);
 
 with f as (
@@ -409,114 +425,114 @@ insert into veiculo (placa, modelo, tipo, status, capacidade_kg, km_atual, ativo
 
 insert into checklist (nome, tipo, itens, ativo, bloqueio_saida) values
 (
-  'Checklist de Produção - Início de Lote',
+  'Checklist de ProduÃ§Ã£o - InÃ­cio de Lote',
   'producao',
   '[
-    { "pergunta": "Ordem de produção conferida?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Desenho técnico disponível no posto?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Matéria-prima correta e identificada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Dimensão inicial (mm)", "tipo_resposta": "numero", "obrigatorio": true },
-    { "pergunta": "Máquina limpa e lubrificada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Parâmetros ajustados (velocidade/pressão)?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Primeira peça aprovada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Foto da primeira peça", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
-    { "pergunta": "EPI completo e em boas condições?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Observações do líder", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "Ordem de produÃ§Ã£o conferida?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Desenho tÃ©cnico disponÃ­vel no posto?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "MatÃ©ria-prima correta e identificada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "DimensÃ£o inicial (mm)", "tipo_resposta": "numero", "obrigatorio": true },
+    { "pergunta": "MÃ¡quina limpa e lubrificada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "ParÃ¢metros ajustados (velocidade/pressÃ£o)?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Primeira peÃ§a aprovada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Foto da primeira peÃ§a", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
+    { "pergunta": "EPI completo e em boas condiÃ§Ãµes?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "ObservaÃ§Ãµes do lÃ­der", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   false
 ),
 (
-  'Checklist de Carregamento - Expedição',
+  'Checklist de Carregamento - ExpediÃ§Ã£o',
   'carregamento',
   '[
     { "pergunta": "Nota/romaneio conferidos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Quantidade de volumes conferida?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Etiquetas/identificação dos volumes ok?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Etiquetas/identificaÃ§Ã£o dos volumes ok?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Integridade dos itens (sem avarias)?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Amarração e fixação corretas?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "AmarraÃ§Ã£o e fixaÃ§Ã£o corretas?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Foto do carregamento finalizado", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
     { "pergunta": "Documentos entregues ao motorista?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Horário de saída", "tipo_resposta": "texto", "obrigatorio": false },
-    { "pergunta": "Responsável pela conferência", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "HorÃ¡rio de saÃ­da", "tipo_resposta": "texto", "obrigatorio": false },
+    { "pergunta": "ResponsÃ¡vel pela conferÃªncia", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   false
 ),
 (
-  'Checklist de Conferência - Saída',
+  'Checklist de ConferÃªncia - SaÃ­da',
   'conferencia',
   '[
     { "pergunta": "Nota fiscal conferida?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Cliente e endereço confirmados?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Cliente e endereÃ§o confirmados?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Produtos conferidos por item?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Foto da carga no veículo", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
-    { "pergunta": "Assinatura/Confirmação do responsável?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Número do lacre", "tipo_resposta": "texto", "obrigatorio": true },
+    { "pergunta": "Foto da carga no veÃ­culo", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
+    { "pergunta": "Assinatura/ConfirmaÃ§Ã£o do responsÃ¡vel?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "NÃºmero do lacre", "tipo_resposta": "texto", "obrigatorio": true },
     { "pergunta": "EPI do motorista ok?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Checklist de segurança aprovado?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Observações", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "Checklist de seguranÃ§a aprovado?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "ObservaÃ§Ãµes", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   true
 ),
 (
-  'Checklist de Retirada - Balcão/Cliente',
+  'Checklist de Retirada - BalcÃ£o/Cliente',
   'retirada',
   '[
     { "pergunta": "Documento do cliente conferido?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Autorização de retirada validada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "AutorizaÃ§Ã£o de retirada validada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Quantidades separadas e conferidas?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Integridade dos itens verificada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Assinatura do cliente registrada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Foto da retirada", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
-    { "pergunta": "Observações", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "ObservaÃ§Ãµes", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   false
 ),
 (
-  'Checklist de Movimentação de Carga',
+  'Checklist de MovimentaÃ§Ã£o de Carga',
   'movimentacao',
   '[
-    { "pergunta": "Área isolada e sinalizada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Ãrea isolada e sinalizada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Equipamento inspecionado (empilhadeira/ponte)?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Freios, buzina e luzes funcionando?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Carga dentro da capacidade do equipamento?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "EPI do operador em dia?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Amarração/estabilidade da carga ok?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Rotas livres de obstáculos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "AmarraÃ§Ã£o/estabilidade da carga ok?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Rotas livres de obstÃ¡culos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Foto da carga movimentada", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
-    { "pergunta": "Observações", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "ObservaÃ§Ãµes", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   false
 ),
 (
-  'Checklist de Entrada de Veículo',
+  'Checklist de Entrada de VeÃ­culo',
   'entrada_veiculo',
   '[
-    { "pergunta": "Placa e veículo registrados?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Placa e veÃ­culo registrados?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Motorista identificado?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Documentos do veículo conferidos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "EPI/sinalização conferidos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Foto do veículo na chegada", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
-    { "pergunta": "Horário de chegada", "tipo_resposta": "texto", "obrigatorio": false },
-    { "pergunta": "Observações", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "Documentos do veÃ­culo conferidos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "EPI/sinalizaÃ§Ã£o conferidos?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "Foto do veÃ­culo na chegada", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
+    { "pergunta": "HorÃ¡rio de chegada", "tipo_resposta": "texto", "obrigatorio": false },
+    { "pergunta": "ObservaÃ§Ãµes", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   false
 ),
 (
-  'Checklist de Saída de Veículo',
+  'Checklist de SaÃ­da de VeÃ­culo',
   'saida_veiculo',
   '[
     { "pergunta": "Carga liberada?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Documentação entregue?", "tipo_resposta": "sim_nao", "obrigatorio": true },
+    { "pergunta": "DocumentaÃ§Ã£o entregue?", "tipo_resposta": "sim_nao", "obrigatorio": true },
     { "pergunta": "Lacre conferido?", "tipo_resposta": "sim_nao", "obrigatorio": true },
-    { "pergunta": "Foto do veículo na saída", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
-    { "pergunta": "Horário de saída", "tipo_resposta": "texto", "obrigatorio": false },
-    { "pergunta": "Ocorrências", "tipo_resposta": "texto", "obrigatorio": false }
+    { "pergunta": "Foto do veÃ­culo na saÃ­da", "tipo_resposta": "foto_obrigatoria", "obrigatorio": true },
+    { "pergunta": "HorÃ¡rio de saÃ­da", "tipo_resposta": "texto", "obrigatorio": false },
+    { "pergunta": "OcorrÃªncias", "tipo_resposta": "texto", "obrigatorio": false }
   ]'::jsonb,
   true,
   false
@@ -579,3 +595,4 @@ select
   null,
   'Prioridade normal'
 from f;
+
