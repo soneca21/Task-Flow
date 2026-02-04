@@ -16,6 +16,11 @@ create index if not exists idx_checklist_execucao_created on checklist_execucao 
 
 alter table checklist_execucao enable row level security;
 
+drop policy if exists checklist_execucao_select on checklist_execucao;
+drop policy if exists checklist_execucao_insert on checklist_execucao;
+drop policy if exists checklist_execucao_update on checklist_execucao;
+drop policy if exists checklist_execucao_delete on checklist_execucao;
+
 create policy checklist_execucao_select on checklist_execucao
   for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy checklist_execucao_insert on checklist_execucao
