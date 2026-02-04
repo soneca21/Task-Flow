@@ -101,17 +101,24 @@ const tableClient = (tableName) => ({
     return data;
   },
   async create(payload) {
-    const { data, error } = await supabase.from(tableName).insert(payload).select('*').single();
+    const isArrayPayload = Array.isArray(payload);
+    const query = supabase.from(tableName).insert(payload).select('*');
+    if (isArrayPayload) {
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    }
+    const { data, error } = await query.maybeSingle();
     if (error) throw error;
     return data;
   },
   async update(id, payload) {
-    const { data, error } = await supabase.from(tableName).update(payload).eq('id', id).select('*').single();
+    const { data, error } = await supabase.from(tableName).update(payload).eq('id', id).select('*').maybeSingle();
     if (error) throw error;
     return data;
   },
   async delete(id) {
-    const { data, error } = await supabase.from(tableName).delete().eq('id', id).select('*').single();
+    const { data, error } = await supabase.from(tableName).delete().eq('id', id).select('*').maybeSingle();
     if (error) throw error;
     return data;
   },
