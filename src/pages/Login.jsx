@@ -1,16 +1,26 @@
-ï»¿import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '@/api/dataClient';
+import { useAuth } from '@/lib/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast, Toaster } from 'sonner';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoadingAuth } = useAuth();
   const [mode, setMode] = useState('login'); // login | register
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isLoadingAuth && isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, isLoadingAuth, navigate]);
 
   const submitLabel = useMemo(() => (mode === 'register' ? 'Criar conta' : 'Entrar'), [mode]);
 
@@ -19,7 +29,7 @@ export default function Login() {
     setIsLoading(true);
     try {
       await api.auth.loginViaEmailPassword(email, password);
-      window.location.href = '/';
+      navigate('/', { replace: true });
     } catch (error) {
       toast.error(error?.message || 'Falha ao entrar');
     } finally {
@@ -40,17 +50,17 @@ export default function Login() {
         return;
       }
       if (password !== confirmPassword) {
-        toast.error('As senhas nÃ£o coincidem.');
+        toast.error('As senhas não coincidem.');
         return;
       }
 
       const data = await api.auth.register({ email, password });
       // If email confirmation is OFF, Supabase can return a session and user is already logged in.
       if (data?.session) {
-        window.location.href = '/';
+        navigate('/', { replace: true });
         return;
       }
-      toast.success('Conta criada. Se sua conta exigir confirmaÃ§Ã£o, verifique seu e-mail.');
+      toast.success('Conta criada. Se sua conta exigir confirmação, verifique seu e-mail.');
       setMode('login');
       setConfirmPassword('');
     } catch (error) {
@@ -154,7 +164,7 @@ export default function Login() {
               onClick={() => setMode((m) => (m === 'login' ? 'register' : 'login'))}
               disabled={isLoading}
             >
-              {mode === 'login' ? 'Criar conta' : 'JÃ¡ tenho conta'}
+              {mode === 'login' ? 'Criar conta' : 'Já tenho conta'}
             </Button>
           </div>
         </div>
@@ -162,3 +172,5 @@ export default function Login() {
     </>
   );
 }
+
+

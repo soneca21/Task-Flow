@@ -1,4 +1,4 @@
-﻿import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { api } from '@/api/dataClient';
 import { supabase } from '@/api/supabaseClient';
 
@@ -14,6 +14,27 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAppState();
+  }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      setIsAuthenticated(!!currentUser);
+      setIsLoadingAuth(false);
+      if (!currentUser) {
+        setAuthError({
+          type: 'auth_required',
+          message: 'Authentication required'
+        });
+      } else {
+        setAuthError(null);
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const checkAppState = async () => {
@@ -32,7 +53,9 @@ export const AuthProvider = ({ children }) => {
   const checkUserAuth = async () => {
     try {
       setIsLoadingAuth(true);
-      const currentUser = await api.auth.me();
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      const currentUser = data?.session?.user ?? null;
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
       setIsLoadingAuth(false);
@@ -111,3 +134,4 @@ export const useAuth = () => {
   }
   return context;
 };
+
