@@ -40,7 +40,7 @@ export default function Layout({ children, currentPageName }) {
   const scrollTickingRef = useRef(false);
   const role = user?.user_metadata?.role || '';
   const isAdmin = role === 'admin';
-  const isManager = ['admin', 'lider', 'supervisor'].includes(role);
+  const isManager = ['admin', 'lider'].includes(role);
 
   useEffect(() => {
     if (user && !isLoadingFuncionario && !funcionarioAtual) {
