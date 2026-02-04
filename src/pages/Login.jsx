@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { api } from '@/api/dataClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -69,8 +69,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-start sm:items-center justify-center bg-slate-950 text-white p-4 sm:p-6 pt-10 sm:pt-6">
-      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+    <div className="min-h-[100dvh] flex items-center justify-center bg-slate-950 text-white px-4 py-10 sm:px-6 sm:py-6 overflow-auto">
+      <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-8 space-y-5">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-amber-400">Casa do Serralheiro</h1>
           <p className="text-sm text-slate-400">{mode === 'register' ? 'Crie sua conta' : 'Acesse sua conta'}</p>
@@ -147,8 +147,8 @@ export default function Login() {
         <div className="text-center">
           <Button
             type="button"
-            variant="ghost"
-            className="text-slate-400 hover:text-white"
+            variant="outline"
+            className="border-slate-800 text-slate-200 hover:text-white hover:bg-slate-800/40"
             onClick={() => setMode((m) => (m === 'login' ? 'register' : 'login'))}
             disabled={isLoading}
           >
@@ -159,4 +159,3 @@ export default function Login() {
     </div>
   );
 }
-

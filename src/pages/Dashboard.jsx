@@ -1,9 +1,8 @@
-ï»¿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import AutomacaoTarefas from '../components/tarefas/AutomacaoTarefas';
 import SistemaNotificacoes from '../components/notificacoes/SistemaNotificacoes';
 import { 
   Factory, 
@@ -211,7 +210,6 @@ export default function Dashboard() {
 
   return (
     <>
-      <AutomacaoTarefas />
       <SistemaNotificacoes />
       <div className="space-y-6">
         <PageHeader 
@@ -220,18 +218,18 @@ export default function Dashboard() {
           icon={LayoutDashboard}
         />
 
-      {/* Status RÃ¡pido */}
+      {/* Status Rápido */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard
           title="Nova Tarefa"
           value="Criar"
-          subtitle="CriaÃ§Ã£o rÃ¡pida"
+          subtitle="Criação rápida"
           icon={ClipboardCheck}
           color="blue"
           onClick={openQuickTask}
         />
         <StatCard
-          title="ProduÃ§Ã£o"
+          title="Produção"
           value={tarefasProducao.length}
           subtitle="Ordens ativas"
           icon={Factory}
@@ -239,7 +237,7 @@ export default function Dashboard() {
           linkTo="Producao"
         />
         <StatCard
-          title="VeÃ­culos no PÃ¡tio"
+          title="Veículos no Pátio"
           value={veiculosPatio.length}
           subtitle="Aguardando atendimento"
           icon={Truck}
@@ -247,17 +245,17 @@ export default function Dashboard() {
           linkTo="Logistica"
         />
         <StatCard
-          title="ExpediÃ§Ã£o"
+          title="Expedição"
           value={notasPendentes.length}
-          subtitle="Notas em expediÃ§Ã£o"
+          subtitle="Notas em expedição"
           icon={Package}
           color="purple"
           linkTo="Expedicao"
         />
         <StatCard
-          title="PendÃªncias"
+          title="Pendências"
           value={pendenciasCriticas.length}
-          subtitle="Alertas crÃ­ticos"
+          subtitle="Alertas críticos"
           icon={AlertTriangle}
           color="red"
           linkTo="Pendencias"
@@ -265,21 +263,21 @@ export default function Dashboard() {
         <StatCard
           title="Equipe"
           value={funcionariosAtivos.length}
-          subtitle="FuncionÃ¡rios ativos"
+          subtitle="Funcionários ativos"
           icon={Users}
           color="orange"
           linkTo="GestaoEquipe"
         />
       </div>
 
-      {/* Detalhes RÃ¡pidos */}
+      {/* Detalhes Rápidos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Tarefas Recentes */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white flex items-center gap-2">
               <ClipboardCheck className="w-5 h-5 text-blue-400" />
-              Tarefas em ExecuÃ§Ã£o
+              Tarefas em Execução
             </h3>
             <span className="text-xs text-slate-500">{tarefas.filter(t => t.status === 'em_execucao').length} ativas</span>
           </div>
@@ -300,19 +298,19 @@ export default function Dashboard() {
               </div>
             ))}
             {tarefas.filter(t => t.status === 'em_execucao').length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-4">Nenhuma tarefa em execuÃ§Ã£o</p>
+              <p className="text-sm text-slate-500 text-center py-4">Nenhuma tarefa em execução</p>
             )}
           </div>
         </div>
 
-        {/* VeÃ­culos */}
+        {/* Veículos */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white flex items-center gap-2">
               <Truck className="w-5 h-5 text-green-400" />
-              VeÃ­culos no PÃ¡tio
+              Veículos no Pátio
             </h3>
-            <span className="text-xs text-slate-500">{veiculosPatio.length} veÃ­culos</span>
+            <span className="text-xs text-slate-500">{veiculosPatio.length} veículos</span>
           </div>
           <div className="space-y-3">
             {veiculosPatio.slice(0, 4).map(veiculo => (
@@ -325,22 +323,22 @@ export default function Dashboard() {
                   veiculo.status === 'carregando' ? 'bg-amber-500/20 text-amber-400' :
                   'bg-green-500/20 text-green-400'
                 }`}>
-                  {veiculo.status === 'carregando' ? 'Carregando' : 'No PÃ¡tio'}
+                  {veiculo.status === 'carregando' ? 'Carregando' : 'No Pátio'}
                 </span>
               </div>
             ))}
             {veiculosPatio.length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-4">Nenhum veÃ­culo no pÃ¡tio</p>
+              <p className="text-sm text-slate-500 text-center py-4">Nenhum veículo no pátio</p>
             )}
           </div>
         </div>
 
-        {/* PendÃªncias CrÃ­ticas */}
+        {/* Pendências Críticas */}
         <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-white flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
-              Alertas CrÃ­ticos
+              Alertas Críticos
             </h3>
             <span className="text-xs text-slate-500">{pendenciasCriticas.length} alertas</span>
           </div>
@@ -360,7 +358,7 @@ export default function Dashboard() {
               </div>
             ))}
             {pendenciasCriticas.length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-4">Nenhum alerta crÃ­tico</p>
+              <p className="text-sm text-slate-500 text-center py-4">Nenhum alerta crítico</p>
             )}
           </div>
         </div>
@@ -368,29 +366,25 @@ export default function Dashboard() {
 
       <Dialog open={quickTaskOpen} onOpenChange={setQuickTaskOpen}>
         <DialogContent className="bg-slate-900 border-slate-800 text-white">
-          <DialogHeader>
-            <DialogTitle>Criar Tarefa RÃ¡pida</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            {(templates?.length || 0) > 0 && (
-              <div className="flex items-center justify-between gap-3 p-3 bg-slate-950/40 border border-slate-800 rounded-xl">
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-white">Usar template</p>
-                  <p className="text-xs text-slate-500 truncate">Preencha automaticamente os campos principais</p>
-                </div>
+          <DialogHeader className="pr-12">
+            <div className="flex items-center gap-3">
+              <DialogTitle>Criar Tarefa Rápida</DialogTitle>
+              {(templates?.length || 0) > 0 && (
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-slate-800"
+                  className="ml-auto h-7 px-3 text-xs border-slate-800"
                   onClick={() => setTemplatePickerOpen(true)}
                 >
-                  Selecionar
+                  Usar Template
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">TÃ­tulo</label>
+              <label className="text-sm text-slate-300">Título</label>
               <Input
                 value={taskForm.titulo}
                 onChange={(e) => setTaskForm((p) => ({ ...p, titulo: e.target.value }))}
@@ -436,16 +430,16 @@ export default function Dashboard() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="producao">ProduÃ§Ã£o</SelectItem>
+                    <SelectItem value="producao">Produção</SelectItem>
                     <SelectItem value="entrega">Entrega</SelectItem>
                     <SelectItem value="retirada">Retirada</SelectItem>
                     <SelectItem value="carregamento">Carregamento</SelectItem>
                     <SelectItem value="descarga">Descarga</SelectItem>
-                    <SelectItem value="movimentacao">MovimentaÃ§Ã£o</SelectItem>
-                    <SelectItem value="conferencia">ConferÃªncia</SelectItem>
+                    <SelectItem value="movimentacao">Movimentação</SelectItem>
+                    <SelectItem value="conferencia">Conferência</SelectItem>
                     <SelectItem value="troca">Troca</SelectItem>
-                    <SelectItem value="devolucao">DevoluÃ§Ã£o</SelectItem>
-                    <SelectItem value="manutencao">ManutenÃ§Ã£o</SelectItem>
+                    <SelectItem value="devolucao">Devolução</SelectItem>
+                    <SelectItem value="manutencao">Manutenção</SelectItem>
                     <SelectItem value="outros">Outros</SelectItem>
                   </SelectContent>
                 </Select>
@@ -461,7 +455,7 @@ export default function Dashboard() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="baixa">Baixa</SelectItem>
-                    <SelectItem value="media">MÃ©dia</SelectItem>
+                    <SelectItem value="media">Média</SelectItem>
                     <SelectItem value="alta">Alta</SelectItem>
                     <SelectItem value="urgente">Urgente</SelectItem>
                   </SelectContent>
@@ -470,11 +464,11 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">DescriÃ§Ã£o (opcional)</label>
+              <label className="text-sm text-slate-300">Descrição (opcional)</label>
               <Textarea
                 value={taskForm.descricao}
                 onChange={(e) => setTaskForm((p) => ({ ...p, descricao: e.target.value }))}
-                placeholder="Detalhes rÃ¡pidos..."
+                placeholder="Detalhes rápidos..."
                 className="bg-slate-950 border-slate-800"
                 rows={3}
               />
@@ -520,6 +514,7 @@ export default function Dashboard() {
     </>
   );
 }
+
 
 
 

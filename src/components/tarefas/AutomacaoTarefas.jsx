@@ -1,4 +1,4 @@
-ï»¿import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -6,13 +6,15 @@ import { useAuth } from '@/lib/AuthContext';
 import { criarTarefaAutomatica, shouldProcessNota, getAutomationConfig } from '@/automation/automacaoService';
 
 /**
- * Componente de AutomaÃ§Ã£o e OrquestraÃ§Ã£o de Tarefas
- * Monitora criaÃ§Ã£o/atualizaÃ§Ã£o de notas e dispara tarefas automaticamente
+ * Componente de Automação e Orquestração de Tarefas
+ * Monitora criação/atualização de notas e dispara tarefas automaticamente
  */
 export default function AutomacaoTarefas() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  const { user, isAuthenticated } = useAuth();
+  const role = user?.user_metadata?.role || '';
+  const isManager = role === 'admin' || role === 'lider';
+  const runningRef = useRef(false);
 
   const { data: configuracoes = [] } = useQuery({
     queryKey: ['configuracoes-automacoes'],
@@ -20,56 +22,90 @@ export default function AutomacaoTarefas() {
   });
 
   useEffect(() => {
-    // Subscrever a mudanÃ§as em Notas
-    const unsubscribeNotas = api.entities.Nota.subscribe(async (event) => {
-      if (event.type === 'create' || event.type === 'update') {
-        const nota = event.data;
-        
-        // Verificar se precisa criar tarefa automaticamente
+    if (!isAuthenticated) return undefined;
+
+    let cancelled = false;
+
+    const processNotas = async () => {
+      if (!isManager || runningRef.current || cancelled) return;
+      runningRef.current = true;
+
+      try {
         const config = getAutomationConfig(configuracoes);
-        if (shouldProcessNota(nota, isAdmin, config)) {
+        const statuses = [config.notaTriggerStatus, config.notaLegacyStatus].filter(Boolean);
+        const notas = statuses.length > 0
+          ? await api.entities.Nota.filter({ status: { $in: statuses } }, '-created_date', 200)
+          : [];
+
+        for (const nota of notas) {
+          if (!shouldProcessNota(nota, isManager, config)) continue;
           await criarTarefaAutomatica({ nota, api, queryClient, config });
         }
+      } catch {
+        // Best-effort
+      } finally {
+        runningRef.current = false;
       }
-    });
+    };
 
-    // Subscrever a mudanÃ§as em Tarefas para sincronizaÃ§Ã£o
+    // Subscrever a mudanças em Notas (tempo real)
+    const unsubscribeNotas = isManager
+      ? api.entities.Nota.subscribe(async (event) => {
+          if (event.type === 'create' || event.type === 'update') {
+            const nota = event.data;
+
+            const config = getAutomationConfig(configuracoes);
+            if (shouldProcessNota(nota, isManager, config)) {
+              await criarTarefaAutomatica({ nota, api, queryClient, config });
+            }
+          }
+        })
+      : () => {};
+
+    // Subscrever a mudanças em Tarefas para sincronização
     const unsubscribeTarefas = api.entities.Tarefa.subscribe((event) => {
       queryClient.invalidateQueries({ queryKey: ['tarefas'] });
       queryClient.invalidateQueries({ queryKey: ['tarefas-dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['tarefas-producao'] });
-      
+
       if (event.type === 'update' && event.data.status === 'concluida') {
-        toast.success(`Tarefa "${event.data.titulo}" concluÃ­da!`);
+        toast.success(`Tarefa "${event.data.titulo}" concluída!`);
       }
     });
 
-    // Subscrever a FuncionÃ¡rios para atualizaÃ§Ã£o em tempo real
+    // Subscrever a Funcionários para atualização em tempo real
     const unsubscribeFuncionarios = api.entities.Funcionario.subscribe((event) => {
       queryClient.invalidateQueries({ queryKey: ['funcionarios'] });
       queryClient.invalidateQueries({ queryKey: ['funcionarios-dashboard'] });
     });
 
+    processNotas();
+    const interval = isManager ? setInterval(processNotas, 30000) : null;
+
     return () => {
+      cancelled = true;
       unsubscribeNotas();
       unsubscribeTarefas();
       unsubscribeFuncionarios();
+      if (interval) clearInterval(interval);
     };
-  }, [queryClient, isAdmin, configuracoes]);
-  // Componente nÃ£o renderiza nada, apenas executa lÃ³gica
+  }, [queryClient, configuracoes, isManager, isAuthenticated]);
+  // Componente não renderiza nada, apenas executa lógica
   return null;
 }
 
 /**
- * Hook para sincronizaÃ§Ã£o manual
+ * Hook para sincronização manual
  */
 export function useSincronizacaoTarefas() {
   const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  const { user, isAuthenticated } = useAuth();
+  const role = user?.user_metadata?.role || '';
+  const isManager = role === 'admin' || role === 'lider';
+  const runningRef = useRef(false);
 
   const sincronizar = async () => {
-    // Verificar se hÃ¡ tarefas pendentes no localStorage
+    // Verificar se há tarefas pendentes no localStorage
     const keys = Object.keys(localStorage);
     const pendingKeys = keys.filter(k => k.startsWith('checklist_pending_'));
 
@@ -121,4 +157,8 @@ export function useSincronizacaoTarefas() {
 
   return { sincronizar };
 }
+
+
+
+
 

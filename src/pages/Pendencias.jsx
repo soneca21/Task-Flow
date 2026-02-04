@@ -112,13 +112,13 @@ export default function Pendencias() {
   };
 
   const tipoLabels = {
-    falta_material: '📦 Falta Material',
-    problema_producao: '🏭 Problema Produção',
-    atraso_entrega: '🚚 Atraso Entrega',
-    conferencia_pendente: '✅ Conferência Pendente',
-    manutencao: '🔧 Manutenção',
-    documentacao: '📄 Documentação',
-    outro: '📋 Outro',
+    falta_material: 'Falta de Material',
+    problema_producao: 'Problema na Produção',
+    atraso_entrega: 'Atraso na Entrega',
+    conferencia_pendente: 'Conferência Pendente',
+    manutencao: 'Manutenção',
+    documentacao: 'Documentação',
+    outro: 'Outro',
   };
 
   const stats = {
@@ -356,7 +356,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{pendencia ? 'Editar Pendência' : 'Nova Pendência'}</DialogTitle>
         </DialogHeader>
@@ -493,4 +493,5 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
     </Dialog>
   );
 }
+
 

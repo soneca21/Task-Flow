@@ -174,32 +174,47 @@ export default function Relatorios() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-slate-900/50 border border-slate-800 p-1 flex-wrap h-auto gap-1">
-          <TabsTrigger value="equipe" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+        <TabsList className="bg-slate-900/50 border border-slate-800 p-2 grid grid-cols-2 gap-2 rounded-xl w-full h-auto">
+          <TabsTrigger
+            value="equipe"
+            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+          >
             <Users className="w-4 h-4 mr-2" />
             Performance Equipe
           </TabsTrigger>
-          <TabsTrigger value="eficiencia" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+          <TabsTrigger
+            value="checklists"
+            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Fotos de Checklists
+          </TabsTrigger>
+          <TabsTrigger
+            value="eficiencia"
+            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+          >
             <Clock className="w-4 h-4 mr-2" />
             Eficiência
           </TabsTrigger>
-          <TabsTrigger value="veiculos" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+          <TabsTrigger
+            value="veiculos"
+            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+          >
             <Truck className="w-4 h-4 mr-2" />
             Veículos
           </TabsTrigger>
-          <TabsTrigger value="pendencias" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+          <TabsTrigger
+            value="pendencias"
+            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+          >
             <AlertTriangle className="w-4 h-4 mr-2" />
             Pendências
-          </TabsTrigger>
-          <TabsTrigger value="checklists" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-            <Camera className="w-4 h-4 mr-2" />
-            Fotos de Checklists
           </TabsTrigger>
         </TabsList>
 
         {/* Performance da Equipe */}
-        <TabsContent value="equipe" className="mt-6 space-y-6">
-          <div className="flex items-center justify-between">
+        <TabsContent value="equipe" className="mt-2 space-y-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">Performance da Equipe</h2>
               <p className="text-sm text-slate-400">Tarefas concluídas por funcionário</p>
@@ -266,8 +281,8 @@ export default function Relatorios() {
         </TabsContent>
 
         {/* Eficiência Operacional */}
-        <TabsContent value="eficiencia" className="mt-6 space-y-6">
-          <div className="flex items-center justify-between">
+        <TabsContent value="eficiencia" className="mt-2 space-y-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">Eficiência Operacional</h2>
               <p className="text-sm text-slate-400">Tarefas criadas vs concluídas nos últimos 7 dias</p>
@@ -324,8 +339,8 @@ export default function Relatorios() {
         </TabsContent>
 
         {/* Utilização de Veículos */}
-        <TabsContent value="veiculos" className="mt-6 space-y-6">
-          <div className="flex items-center justify-between">
+        <TabsContent value="veiculos" className="mt-2 space-y-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">Utilização de Veículos</h2>
               <p className="text-sm text-slate-400">Viagens realizadas por veículo</p>
@@ -378,8 +393,8 @@ export default function Relatorios() {
         </TabsContent>
 
         {/* Análise de Pendências */}
-        <TabsContent value="pendencias" className="mt-6 space-y-6">
-          <div className="flex items-center justify-between">
+        <TabsContent value="pendencias" className="mt-2 space-y-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-xl font-semibold text-white">Análise de Pendências</h2>
               <p className="text-sm text-slate-400">Tipos de pendência mais recorrentes</p>
@@ -465,7 +480,7 @@ export default function Relatorios() {
         </TabsContent>
 
         {/* Fotos de Checklists */}
-        <TabsContent value="checklists" className="mt-6 space-y-6">
+        <TabsContent value="checklists" className="mt-2 space-y-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold text-white">Fotos de Checklists</h2>

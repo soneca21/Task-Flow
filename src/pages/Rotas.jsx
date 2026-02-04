@@ -1,4 +1,4 @@
-Ôªøimport React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -58,7 +58,7 @@ import {
 const STATUS_LABELS = {
   [AGENDAMENTO_STATUS.AGENDADO]: 'Agendado',
   [AGENDAMENTO_STATUS.EM_ATENDIMENTO]: 'Em atendimento',
-  [AGENDAMENTO_STATUS.CONCLUIDO]: 'Conclu√≠do',
+  [AGENDAMENTO_STATUS.CONCLUIDO]: 'ConcluÌdo',
   [AGENDAMENTO_STATUS.CANCELADO]: 'Cancelado',
 };
 
@@ -74,7 +74,7 @@ const TIPO_LABELS = {
   [AGENDAMENTO_TIPO.DESCARGA]: 'Descarga',
   [AGENDAMENTO_TIPO.RETIRADA]: 'Retirada',
   [AGENDAMENTO_TIPO.TROCA]: 'Troca',
-  [AGENDAMENTO_TIPO.DEVOLUCAO]: 'Devolu√ß√£o',
+  [AGENDAMENTO_TIPO.DEVOLUCAO]: 'DevoluÁ„o',
 };
 
 export default function Rotas() {
@@ -130,11 +130,11 @@ export default function Rotas() {
 
   const handleSave = (formData) => {
     if (!isManager) {
-      toast.error('Apenas l√≠der/admin pode criar ou editar agendamentos.');
+      toast.error('Apenas lÌder/admin pode criar ou editar agendamentos.');
       return;
     }
     if (!formData.data || !formData.hora) {
-      toast.error('Informe data e hor√°rio.');
+      toast.error('Informe data e hor·rio.');
       return;
     }
     if (!formData.tipo) {
@@ -142,7 +142,7 @@ export default function Rotas() {
       return;
     }
     if (!formData.veiculo_id || formData.veiculo_id === 'sem_veiculo') {
-      toast.error('Selecione o ve√≠culo.');
+      toast.error('Selecione o veÌculo.');
       return;
     }
     if (!formData.motorista_id || formData.motorista_id === 'sem_motorista') {
@@ -150,13 +150,13 @@ export default function Rotas() {
       return;
     }
     if (formData.necessita_movimentacao && (!formData.equipamento_preferido || formData.equipamento_preferido === 'nenhum')) {
-      toast.error('Selecione o equipamento preferido para movimenta√ß√£o.');
+      toast.error('Selecione o equipamento preferido para movimentaÁ„o.');
       return;
     }
 
     if (editingAgendamento) {
       if (editingAgendamento.status === AGENDAMENTO_STATUS.EM_ATENDIMENTO) {
-        toast.error('N√£o √© poss√≠vel editar um agendamento em atendimento.');
+        toast.error('N„o È possÌvel editar um agendamento em atendimento.');
         return;
       }
       updateMutation.mutate({ id: editingAgendamento.id, data: formData });
@@ -170,7 +170,7 @@ export default function Rotas() {
 
   const handleDisparar = async (agendamento) => {
     if (!isManager) {
-      toast.error('Apenas l√≠der/admin pode liberar o atendimento.');
+      toast.error('Apenas lÌder/admin pode liberar o atendimento.');
       return;
     }
     try {
@@ -188,7 +188,7 @@ export default function Rotas() {
 
   const handleConcluir = async (agendamento) => {
     if (!isManager) {
-      toast.error('Apenas l√≠der/admin pode concluir o atendimento.');
+      toast.error('Apenas lÌder/admin pode concluir o atendimento.');
       return;
     }
     try {
@@ -200,7 +200,7 @@ export default function Rotas() {
       }
       queryClient.invalidateQueries({ queryKey: ['agendamentos'] });
       queryClient.invalidateQueries({ queryKey: ['veiculos'] });
-      toast.success('Agendamento conclu√≠do.');
+      toast.success('Agendamento concluÌdo.');
     } catch (error) {
       console.error(error);
       toast.error('Erro ao concluir agendamento.');
@@ -209,7 +209,7 @@ export default function Rotas() {
 
   const handleCancel = async (agendamento) => {
     if (!isManager) {
-      toast.error('Apenas l√≠der/admin pode cancelar agendamentos.');
+      toast.error('Apenas lÌder/admin pode cancelar agendamentos.');
       return;
     }
     try {
@@ -273,7 +273,7 @@ export default function Rotas() {
         </div>
         <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-green-400">{stats.concluidos}</p>
-          <p className="text-xs text-slate-500">Conclu√≠dos</p>
+          <p className="text-xs text-slate-500">ConcluÌdos</p>
         </div>
       </div>
 
@@ -304,7 +304,7 @@ export default function Rotas() {
             <SelectItem value="todos">Todos os Status</SelectItem>
             <SelectItem value={AGENDAMENTO_STATUS.AGENDADO}>Agendado</SelectItem>
             <SelectItem value={AGENDAMENTO_STATUS.EM_ATENDIMENTO}>Em atendimento</SelectItem>
-            <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>Conclu√≠do</SelectItem>
+            <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>ConcluÌdo</SelectItem>
             <SelectItem value={AGENDAMENTO_STATUS.CANCELADO}>Cancelado</SelectItem>
           </SelectContent>
         </Select>
@@ -340,14 +340,14 @@ export default function Rotas() {
                     </span>
                     <span className="flex items-center gap-1">
                       <Truck className="w-4 h-4" />
-                      {agendamento.veiculo_placa || 'Ve√≠culo n√£o informado'}
+                      {agendamento.veiculo_placa || 'VeÌculo n„o informado'}
                     </span>
                     <span className="flex items-center gap-1">
                       <User className="w-4 h-4" />
-                      {agendamento.motorista_nome || 'Motorista n√£o informado'}
+                      {agendamento.motorista_nome || 'Motorista n„o informado'}
                     </span>
                     <span className="text-xs px-2 py-1 rounded-full bg-slate-800 border border-slate-700">
-                      {TIPO_LABELS[agendamento.tipo] || 'Opera√ß√£o'}
+                      {TIPO_LABELS[agendamento.tipo] || 'OperaÁ„o'}
                     </span>
                   </div>
                   {agendamento.observacoes && (
@@ -512,7 +512,7 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{agendamento ? 'Editar Agendamento' : 'Novo Agendamento'}</DialogTitle>
         </DialogHeader>
@@ -529,7 +529,7 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
               />
             </div>
             <div>
-              <Label>Hor√°rio *</Label>
+              <Label>Hor·rio *</Label>
               <Input
                 type="time"
                 value={formData.hora}
@@ -540,7 +540,7 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
           </div>
 
           <div>
-            <Label>Tipo de Opera√ß√£o *</Label>
+            <Label>Tipo de OperaÁ„o *</Label>
             <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
               <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
                 <SelectValue />
@@ -550,15 +550,15 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
                 <SelectItem value={AGENDAMENTO_TIPO.DESCARGA}>Descarga</SelectItem>
                 <SelectItem value={AGENDAMENTO_TIPO.RETIRADA}>Retirada</SelectItem>
                 <SelectItem value={AGENDAMENTO_TIPO.TROCA}>Troca</SelectItem>
-                <SelectItem value={AGENDAMENTO_TIPO.DEVOLUCAO}>Devolu√ß√£o</SelectItem>
+                <SelectItem value={AGENDAMENTO_TIPO.DEVOLUCAO}>DevoluÁ„o</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="flex items-center justify-between gap-3 bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-white">Necessita movimenta√ß√£o?</p>
-              <p className="text-xs text-slate-400">Defina se precisa de ponte rolante, p√≥rtico ou empilhadeira.</p>
+              <p className="text-sm font-medium text-white">Necessita movimentaÁ„o?</p>
+              <p className="text-xs text-slate-400">Defina se precisa de ponte rolante, pÛrtico ou empilhadeira.</p>
             </div>
             <Switch
               checked={!!formData.necessita_movimentacao}
@@ -578,7 +578,7 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ponte_rolante">Ponte rolante</SelectItem>
-                  <SelectItem value="portico">P√≥rtico</SelectItem>
+                  <SelectItem value="portico">PÛrtico</SelectItem>
                   <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
                 </SelectContent>
               </Select>
@@ -587,13 +587,13 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Ve√≠culo</Label>
+              <Label>VeÌculo</Label>
               <Select value={formData.veiculo_id || 'sem_veiculo'} onValueChange={handleVeiculoChange}>
                 <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sem_veiculo">N√£o informado</SelectItem>
+                  <SelectItem value="sem_veiculo">N„o informado</SelectItem>
                   {veiculos.map((v) => (
                     <SelectItem key={v.id} value={v.id}>{v.placa} - {v.modelo}</SelectItem>
                   ))}
@@ -607,7 +607,7 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sem_motorista">N√£o informado</SelectItem>
+                  <SelectItem value="sem_motorista">N„o informado</SelectItem>
                   {funcionarios.map((f) => (
                     <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
                   ))}
@@ -625,14 +625,14 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
               <SelectContent>
                 <SelectItem value={AGENDAMENTO_STATUS.AGENDADO}>Agendado</SelectItem>
                 <SelectItem value={AGENDAMENTO_STATUS.EM_ATENDIMENTO}>Em atendimento</SelectItem>
-                <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>Conclu√≠do</SelectItem>
+                <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>ConcluÌdo</SelectItem>
                 <SelectItem value={AGENDAMENTO_STATUS.CANCELADO}>Cancelado</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label>Observa√ß√µes</Label>
+            <Label>ObservaÁıes</Label>
             <Textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
@@ -658,3 +658,4 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
     </Dialog>
   );
 }
+

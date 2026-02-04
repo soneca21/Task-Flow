@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import ExecutarChecklist from '../components/tarefas/ExecutarChecklist';
-import AutomacaoTarefas, { useSincronizacaoTarefas } from '../components/tarefas/AutomacaoTarefas';
+import { useSincronizacaoTarefas } from '../components/tarefas/AutomacaoTarefas';
 import { selecionarMelhoresFuncionarios } from '../components/tarefas/AlocacaoInteligente';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -329,14 +329,14 @@ export default function Tarefas() {
   };
 
   const tipoLabels = {
-    producao: '🏭 Produção',
-    carregamento: '📦 Carregamento',
-    movimentacao: '🏗️ Movimentação',
-    conferencia: '✅ Conferência',
-    retirada: '🛒 Retirada',
-    entrega: '🚚 Entrega',
-    manutencao: '🔧 Manutenção',
-    outros: '📋 Outros',
+    producao: 'Produção',
+    carregamento: 'Carregamento',
+    movimentacao: 'Movimentação',
+    conferencia: 'Conferência',
+    retirada: 'Retirada',
+    entrega: 'Entrega',
+    manutencao: 'Manutenção',
+    outros: 'Outros',
   };
 
   const stats = {
@@ -349,7 +349,6 @@ export default function Tarefas() {
   return (
     <>
       {/* Automação de Tarefas */}
-      <AutomacaoTarefas />
 
       <div className="space-y-6">
         <PageHeader 
@@ -473,7 +472,7 @@ export default function Tarefas() {
                   )}
                   {tarefa.nota_numero && (
                     <span className="flex items-center gap-1">
-                      📋 Nota: {tarefa.nota_numero}
+                      Nota: {tarefa.nota_numero}
                     </span>
                   )}
                   {tarefa.funcionarios_nomes?.length > 0 && (
@@ -745,28 +744,24 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{tarefa ? 'Editar Tarefa' : 'Nova Tarefa'}</DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          {!tarefa && (templates?.length || 0) > 0 && (
-            <div className="flex items-center justify-between gap-3 p-3 bg-slate-900/40 border border-slate-800 rounded-xl">
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-white">Usar template</p>
-                <p className="text-xs text-slate-500 truncate">Preencha automaticamente os campos principais</p>
-              </div>
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="pr-12">
+          <div className="flex items-center gap-3">
+            <DialogTitle>{tarefa ? 'Editar Tarefa' : 'Nova Tarefa'}</DialogTitle>
+            {!tarefa && (templates?.length || 0) > 0 && (
               <Button
                 type="button"
                 variant="outline"
-                className="border-slate-700 text-slate-200"
+                className="ml-auto h-7 px-3 text-xs border-slate-700 text-slate-200"
                 onClick={() => setTemplatePickerOpen(true)}
               >
-                Selecionar
+                Usar Template
               </Button>
-            </div>
-          )}
+            )}
+          </div>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
           <div>
             <Label>Título da Tarefa *</Label>
             <Input
@@ -944,4 +939,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     </>
   );
 }
+
+
+
 

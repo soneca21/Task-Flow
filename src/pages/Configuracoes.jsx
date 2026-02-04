@@ -498,7 +498,7 @@ export default function Configuracoes() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
       <PageHeader 
         title="Configurações do Sistema"
         subtitle="Gerencie checklists, regras e auditoria"
@@ -506,52 +506,52 @@ export default function Configuracoes() {
       />
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-slate-900/50 border border-slate-800 p-1">
-            <TabsTrigger value="checklists" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+          <TabsList className="bg-slate-900/50 border border-slate-800 p-2 grid grid-cols-2 gap-2 rounded-xl mb-4 w-full h-auto">
+            <TabsTrigger value="checklists" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <ClipboardCheck className="w-4 h-4 mr-2" />
               Checklists
             </TabsTrigger>
-            <TabsTrigger value="templates" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+            <TabsTrigger value="templates" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Layers className="w-4 h-4 mr-2" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="automacoes" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+            <TabsTrigger value="automacoes" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Sliders className="w-4 h-4 mr-2" />
               Automações
             </TabsTrigger>
-            <TabsTrigger value="seguranca" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+            <TabsTrigger value="seguranca" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Shield className="w-4 h-4 mr-2" />
               Segurança
             </TabsTrigger>
-            <TabsTrigger value="notificacoes" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+            <TabsTrigger value="notificacoes" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Bell className="w-4 h-4 mr-2" />
               Notificações
             </TabsTrigger>
-            <TabsTrigger value="auditoria" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+            <TabsTrigger value="auditoria" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <History className="w-4 h-4 mr-2" />
               Auditoria
             </TabsTrigger>
           </TabsList>
 
           {/* Checklists */}
-          <TabsContent value="checklists" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
+          <TabsContent value="checklists" className="mt-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editor de Checklists</h2>
                 <p className="text-sm text-slate-400">Crie e modifique checklists obrigatórios</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={handleSeedChecklists}
                   disabled={seedingChecklists}
-                  className="border-slate-700 text-slate-200"
+                  className="border-slate-700 text-slate-200 w-full sm:w-auto"
                 >
                   {seedingChecklists ? 'Adicionando...' : 'Adicionar Checklists Padrão'}
                 </Button>
                 <Button 
                   onClick={() => { setEditingChecklist(null); setChecklistDialog(true); }}
-                  className="bg-amber-500 hover:bg-amber-600 text-black"
+                  className="bg-amber-500 hover:bg-amber-600 text-black w-full sm:w-auto"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Checklist
@@ -627,25 +627,25 @@ export default function Configuracoes() {
           </TabsContent>
 
           {/* Templates */}
-          <TabsContent value="templates" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
+          <TabsContent value="templates" className="mt-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-white">Templates de Tarefas</h2>
                 <p className="text-sm text-slate-400">Crie modelos para abrir tarefas rapidamente (com ou sem checklist)</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={handleSeedTemplates}
                   disabled={!isAdmin || seedingTemplates}
-                  className="border-slate-700 text-slate-200"
+                  className="border-slate-700 text-slate-200 w-full sm:w-auto"
                 >
                   {seedingTemplates ? 'Adicionando...' : 'Adicionar Templates Padrão'}
                 </Button>
                 <Button
                   onClick={() => { setEditingTemplate(null); setTemplateDialog(true); }}
                   disabled={!isAdmin}
-                  className="bg-amber-500 hover:bg-amber-600 text-black"
+                  className="bg-amber-500 hover:bg-amber-600 text-black w-full sm:w-auto"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Novo Template
@@ -689,7 +689,7 @@ export default function Configuracoes() {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                       <Button
                         size="icon"
                         variant="ghost"
@@ -743,8 +743,8 @@ export default function Configuracoes() {
           </TabsContent>
 
           {/* Automações */}
-          <TabsContent value="automacoes" className="mt-6">
-          <div className="space-y-6">
+          <TabsContent value="automacoes" className="mt-2">
+          <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
               <h2 className="text-xl font-semibold text-white mb-2">Gestão de Automações</h2>
               <p className="text-sm text-slate-400">Configure regras automáticas do sistema</p>
@@ -918,7 +918,7 @@ export default function Configuracoes() {
               </div>
 
               <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-slate-200">Mapeamento Nota → Tarefa</h3>
+                <h3 className="text-sm font-semibold text-slate-200">Mapeamento Nota ? Tarefa</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Entrega</Label>
@@ -991,8 +991,8 @@ export default function Configuracoes() {
         </TabsContent>
 
         {/* Segurança */}
-        <TabsContent value="seguranca" className="mt-6">
-          <div className="space-y-6">
+        <TabsContent value="seguranca" className="mt-2">
+          <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
               <h2 className="text-xl font-semibold text-white mb-2">Bloqueios de Segurança</h2>
               <p className="text-sm text-slate-400">Configure regras automáticas de segurança</p>
@@ -1103,8 +1103,8 @@ export default function Configuracoes() {
         </TabsContent>
 
         {/* Notificações */}
-        <TabsContent value="notificacoes" className="mt-6">
-          <div className="space-y-6">
+        <TabsContent value="notificacoes" className="mt-2">
+          <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
               <h2 className="text-xl font-semibold text-white mb-2">Notificações em Tempo Real</h2>
               <p className="text-sm text-slate-400">Configure alertas personalizados para eventos do sistema</p>
@@ -1195,8 +1195,8 @@ export default function Configuracoes() {
         </TabsContent>
 
         {/* Auditoria */}
-        <TabsContent value="auditoria" className="mt-6">
-          <div className="space-y-6">
+        <TabsContent value="auditoria" className="mt-2">
+          <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
               <h2 className="text-xl font-semibold text-white mb-2">Log de Auditoria</h2>
               <p className="text-sm text-slate-400">Histórico completo de ações no sistema</p>
@@ -1313,7 +1313,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{checklist?.id ? 'Editar Checklist' : 'Novo Checklist'}</DialogTitle>
         </DialogHeader>
@@ -1352,14 +1352,14 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <Switch 
                 checked={formData.ativo}
                 onCheckedChange={(v) => setFormData({ ...formData, ativo: v })}
               />
               <Label>Ativo</Label>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
               <Switch 
                 checked={formData.bloqueio_saida}
                 onCheckedChange={(v) => setFormData({ ...formData, bloqueio_saida: v })}
@@ -1381,7 +1381,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
                       {item.tipo_resposta === 'texto' && 'Texto'}
                       {item.tipo_resposta === 'numero' && 'Número'}
                       {item.tipo_resposta === 'foto_obrigatoria' && 'Foto Obrigatória'}
-                      {item.obrigatorio && ' • Obrigatório'}
+                      {item.obrigatorio && ' é Obrigatório'}
                     </p>
                   </div>
                   <Button 
@@ -1419,7 +1419,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
                 </Select>
               </div>
               <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                   <input
                     type="checkbox"
                     checked={novoItem.obrigatorio}
@@ -1537,7 +1537,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{template?.id ? 'Editar Template' : 'Novo Template'}</DialogTitle>
         </DialogHeader>
@@ -1672,7 +1672,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
             <Switch checked={formData.ativo} onCheckedChange={(v) => setFormData({ ...formData, ativo: v })} />
             <Label>Ativo</Label>
           </div>
@@ -1694,5 +1694,6 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
     </Dialog>
   );
 }
+
 
 

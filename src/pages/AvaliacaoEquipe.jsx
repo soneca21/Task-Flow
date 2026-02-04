@@ -73,6 +73,17 @@ export default function AvaliacaoEquipe() {
     return map;
   }, [avaliacoes]);
 
+  const statusLabel = (status) => {
+    if (!status) return '-';
+    const labels = {
+      disponivel: 'Disponível',
+      ocupado: 'Ocupado',
+      ferias: 'Férias',
+      indisponivel: 'Indisponível',
+    };
+    return labels[status] || status;
+  };
+
   const openForFuncionario = (func) => {
     setForm((prev) => ({
       ...prev,
@@ -102,7 +113,7 @@ export default function AvaliacaoEquipe() {
       return api.entities.AvaliacaoFuncionario.create(payload);
     },
     onSuccess: () => {
-      toast.success('Avaliação registrada');
+      toast.success('Avalia��o registrada');
       queryClient.invalidateQueries({ queryKey: ['avaliacoes-funcionarios'] });
       setDialogOpen(false);
       setForm({
@@ -118,7 +129,7 @@ export default function AvaliacaoEquipe() {
     },
     onError: (error) => {
       console.error(error);
-      toast.error('Erro ao salvar avaliação');
+      toast.error('Erro ao salvar avalia��o');
     },
   });
 
@@ -126,13 +137,13 @@ export default function AvaliacaoEquipe() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="Avaliação da Equipe"
-          subtitle="Acesso restrito para administradores e líderes"
+          title="Avalia��o da Equipe"
+          subtitle="Acesso restrito para administradores e l�deres"
           icon={ClipboardCheck}
         />
         <div className="bg-slate-900/70 border border-slate-700 rounded-2xl p-6">
           <p className="text-white font-medium">Acesso restrito</p>
-          <p className="text-slate-300 mt-2">Você não tem permissão para acessar este painel.</p>
+          <p className="text-slate-300 mt-2">Voc� n�o tem permiss�o para acessar este painel.</p>
         </div>
       </div>
     );
@@ -141,7 +152,7 @@ export default function AvaliacaoEquipe() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Avaliação da Equipe"
+        title="Avalia��o da Equipe"
         subtitle="Feedback e desempenho por colaborador"
         icon={ClipboardCheck}
         actions={
@@ -150,7 +161,7 @@ export default function AvaliacaoEquipe() {
             className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
             onClick={() => setDialogOpen(true)}
           >
-            Nova Avaliação
+            Nova Avalia��o
           </Button>
         }
       />
@@ -158,11 +169,11 @@ export default function AvaliacaoEquipe() {
       <div className="rounded-2xl border border-slate-800/80 bg-slate-900/40 p-4 lg:p-6 space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="bg-slate-900/70 border border-slate-700 rounded-xl p-4">
-          <p className="text-xs text-slate-400">Total de Avaliações</p>
+          <p className="text-xs text-slate-400">Total de Avalia��es</p>
           <p className="text-2xl font-bold text-white">{avaliacoes.length}</p>
         </div>
         <div className="bg-slate-900/70 border border-slate-700 rounded-xl p-4">
-          <p className="text-xs text-slate-400">Funcionários Avaliados</p>
+          <p className="text-xs text-slate-400">Funcion�rios Avaliados</p>
           <p className="text-2xl font-bold text-white">{avaliacoesPorFuncionario.size}</p>
         </div>
         <div className="bg-slate-900/70 border border-slate-700 rounded-xl p-4">
@@ -176,7 +187,7 @@ export default function AvaliacaoEquipe() {
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-1">
           <Input
-            placeholder="Buscar funcionário..."
+            placeholder="Buscar funcion�rio..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="bg-slate-950 border-slate-700 text-white h-11"
@@ -184,7 +195,7 @@ export default function AvaliacaoEquipe() {
         </div>
         <Select value={selectedFuncionarioId} onValueChange={setSelectedFuncionarioId}>
           <SelectTrigger className="w-full lg:w-64 bg-slate-950 border-slate-700 text-white h-11">
-            <SelectValue placeholder="Filtrar por funcionário" />
+            <SelectValue placeholder="Filtrar por funcion�rio" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
@@ -209,7 +220,7 @@ export default function AvaliacaoEquipe() {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-lg font-semibold text-white">{func.nome}</p>
-                  <p className="text-sm text-slate-400">{func.cargo || 'Cargo não informado'}</p>
+                  <p className="text-sm text-slate-400">{func.cargo || 'Cargo n�o informado'}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-amber-400" />
@@ -228,17 +239,17 @@ export default function AvaliacaoEquipe() {
                 </div>
                 <div className="bg-slate-800/80 rounded-xl p-3 border border-slate-700">
                   <p className="text-xs text-slate-400">Status</p>
-                  <p className="text-sm font-semibold text-white">{func.status || '-'}</p>
+                  <p className="text-sm font-semibold text-white">{statusLabel(func.status)}</p>
                 </div>
               </div>
 
               <div className="mt-4 text-sm text-slate-300">
                 {ultima ? (
                   <p>
-                    Última avaliação: <span className="text-white">{ultima.periodo || 'Sem período'}</span> — Nota {ultima.nota_geral}
+                    �ltima avalia��o: <span className="text-white">{ultima.periodo || 'Sem per�odo'}</span> � Nota {ultima.nota_geral}
                   </p>
                 ) : (
-                  <p>Nenhuma avaliação registrada.</p>
+                  <p>Nenhuma avalia��o registrada.</p>
                 )}
               </div>
 
@@ -259,14 +270,14 @@ export default function AvaliacaoEquipe() {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Nova Avaliação</DialogTitle>
+            <DialogTitle>Nova Avalia��o</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Funcionário</label>
+              <label className="text-sm text-slate-300">Funcion�rio</label>
               <Select
                 value={form.funcionario_id}
                 onValueChange={(v) => setForm((p) => ({ ...p, funcionario_id: v }))}
@@ -286,7 +297,7 @@ export default function AvaliacaoEquipe() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Período (AAAA-MM)</label>
+                <label className="text-sm text-slate-300">Per�odo (AAAA-MM)</label>
                 <Input
                   value={form.periodo}
                   onChange={(e) => setForm((p) => ({ ...p, periodo: e.target.value }))}
@@ -352,7 +363,7 @@ export default function AvaliacaoEquipe() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Colaboração</label>
+                <label className="text-sm text-slate-300">Colabora��o</label>
                 <Select
                   value={form.colaboracao}
                   onValueChange={(v) => setForm((p) => ({ ...p, colaboracao: v }))}
@@ -372,7 +383,7 @@ export default function AvaliacaoEquipe() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Comentário</label>
+              <label className="text-sm text-slate-300">Coment�rio</label>
               <Textarea
                 value={form.comentario}
                 onChange={(e) => setForm((p) => ({ ...p, comentario: e.target.value }))}
@@ -383,11 +394,11 @@ export default function AvaliacaoEquipe() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Tags (separadas por vírgula)</label>
+              <label className="text-sm text-slate-300">Tags (separadas por v�rgula)</label>
               <Input
                 value={form.tags}
                 onChange={(e) => setForm((p) => ({ ...p, tags: e.target.value }))}
-                placeholder="qualidade, proatividade, segurança"
+                placeholder="qualidade, proatividade, seguran�a"
                 className="bg-slate-950 border-slate-800"
               />
             </div>
@@ -407,7 +418,7 @@ export default function AvaliacaoEquipe() {
                 disabled={!form.funcionario_id || createMutation.isPending}
                 onClick={() => createMutation.mutate()}
               >
-                {createMutation.isPending ? 'Salvando...' : 'Salvar Avaliação'}
+                {createMutation.isPending ? 'Salvando...' : 'Salvar Avalia��o'}
               </Button>
             </div>
           </div>
@@ -416,6 +427,7 @@ export default function AvaliacaoEquipe() {
     </div>
   );
 }
+
 
 
 

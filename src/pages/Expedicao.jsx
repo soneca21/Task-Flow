@@ -1,7 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import AutomacaoTarefas from '../components/tarefas/AutomacaoTarefas';
 import { 
   Package, 
   Plus, 
@@ -114,10 +113,10 @@ export default function Expedicao() {
   };
 
   const tipoLabels = {
-    entrega: '🚚 Entrega',
-    retirada_balcao: '🏪 Retirada Balcão',
-    retirada_terceiro: '🚛 Retirada Terceiro',
-    transferencia: '📦 Transferência',
+    entrega: 'Entrega',
+    retirada_balcao: 'Retirada Balcão',
+    retirada_terceiro: 'Retirada Terceiro',
+    transferencia: 'Transferência',
   };
 
   const stats = {
@@ -129,7 +128,6 @@ export default function Expedicao() {
 
   return (
     <>
-      <AutomacaoTarefas />
       <div className="space-y-6">
         <PageHeader 
           title="Expedição"
@@ -249,7 +247,7 @@ export default function Expedicao() {
                   )}
                   {nota.frente_destino_nome && (
                     <span className="text-xs px-2 py-1 rounded bg-slate-800">
-                      → {nota.frente_destino_nome}
+                      Frente: {nota.frente_destino_nome}
                     </span>
                   )}
                 </div>
@@ -359,7 +357,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{nota ? 'Editar Nota' : 'Nova Nota'}</DialogTitle>
         </DialogHeader>
@@ -504,4 +502,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
     </Dialog>
   );
 }
+
+
+
 

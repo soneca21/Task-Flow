@@ -1,6 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   Plus, 
@@ -45,11 +46,13 @@ import { cn, formatTelefoneBR } from "@/lib/utils";
 
 export default function GestaoEquipe() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [filterVinculo, setFilterVinculo] = useState('todos');
   const [filterStatus, setFilterStatus] = useState('todos');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingFuncionario, setEditingFuncionario] = useState(null);
+  const [dialogMode, setDialogMode] = useState('create');
 
   const { data: funcionarios = [], isLoading } = useQuery({
     queryKey: ['funcionarios'],
@@ -142,7 +145,7 @@ export default function GestaoEquipe() {
         icon={Users}
         actions={
           <Button 
-            onClick={() => { setEditingFuncionario(null); setDialogOpen(true); }}
+            onClick={() => { setEditingFuncionario(null); setDialogMode('create'); setDialogOpen(true); }}
             className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -220,8 +223,8 @@ export default function GestaoEquipe() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Vínculos</SelectItem>
-            <SelectItem value="da_casa">🏠 Da Casa</SelectItem>
-            <SelectItem value="terceirizado">🚛 Terceirizado</SelectItem>
+            <SelectItem value="da_casa">Da Casa</SelectItem>
+            <SelectItem value="terceirizado">Terceirizado</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -269,7 +272,7 @@ export default function GestaoEquipe() {
                         ? "bg-blue-500/20 text-blue-400" 
                         : "bg-orange-500/20 text-orange-400"
                     )}>
-                      {funcionario.vinculo === 'da_casa' ? '🏠 Da Casa' : '🚛 Terceirizado'}
+                      {funcionario.vinculo === 'da_casa' ? 'Da Casa' : 'Terceirizado'}
                     </span>
                     <span className={cn("text-xs px-2 py-1 rounded-full border", statusColors[funcionario.status])}>
                       {funcionario.status}
@@ -292,7 +295,10 @@ export default function GestaoEquipe() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => { setEditingFuncionario(funcionario); setDialogOpen(true); }}>
+                  <DropdownMenuItem onClick={() => { navigate(`/perfil-funcionario/${funcionario.id}`); }}>
+                    <UserCheck className="w-4 h-4 mr-2" /> Ver Perfil
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => { setEditingFuncionario(funcionario); setDialogMode('edit'); setDialogOpen(true); }}>
                     <Edit2 className="w-4 h-4 mr-2" /> Editar
                   </DropdownMenuItem>
                   <DropdownMenuItem 
@@ -364,12 +370,14 @@ export default function GestaoEquipe() {
         cargoOptions={cargoOptions}
         onSave={handleSave}
         isLoading={createMutation.isPending || updateMutation.isPending}
+        mode={dialogMode}
       />
     </div>
   );
 }
 
-function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOptions, onSave, isLoading }) {
+function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOptions, onSave, isLoading, mode = 'create' }) {
+  const isView = mode === 'view';
   const [formData, setFormData] = useState({
     user_id: '',
     nome: '',
@@ -427,12 +435,12 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{funcionario ? 'Editar Funcionário' : 'Novo Funcionário'}</DialogTitle>
+          <DialogTitle>{isView ? 'Perfil do Funcionário' : (funcionario ? 'Editar Funcionário' : 'Novo Funcionário')}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <fieldset disabled={isView} className="space-y-4 py-4">
           <div>
             <Label>ID do Usuário (Supabase)</Label>
             <Input
@@ -463,8 +471,8 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="da_casa">🏠 Da Casa</SelectItem>
-                  <SelectItem value="terceirizado">🚛 Terceirizado</SelectItem>
+                  <SelectItem value="da_casa">Da Casa</SelectItem>
+                  <SelectItem value="terceirizado">Terceirizado</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -582,22 +590,25 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             />
             <Label htmlFor="ativo">Funcionário Ativo</Label>
           </div>
-        </div>
+        </fieldset>
 
         <div className="flex gap-3 pt-4 border-t border-slate-800">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
-            Cancelar
+            {isView ? 'Fechar' : 'Cancelar'}
           </Button>
-          <Button 
-            className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
-            onClick={() => onSave(formData)}
-            disabled={isLoading || !formData.nome || !formData.cargo}
-          >
-            {isLoading ? 'Salvando...' : 'Salvar'}
-          </Button>
+          {!isView && (
+            <Button 
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
+              onClick={() => onSave(formData)}
+              disabled={isLoading || !formData.nome || !formData.cargo}
+            >
+              {isLoading ? 'Salvando...' : 'Salvar'}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
   );
 }
+
 

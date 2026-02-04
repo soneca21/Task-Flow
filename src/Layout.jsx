@@ -28,6 +28,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Toaster } from 'sonner';
 import AgendamentoMonitor from '@/components/veiculos/AgendamentoMonitor';
+import AutomacaoTarefas from '@/components/tarefas/AutomacaoTarefas';
+import TextNormalizer from '@/components/TextNormalizer';
 
 export default function Layout({ children, currentPageName }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -137,6 +139,8 @@ export default function Layout({ children, currentPageName }) {
     <>
       <Toaster position="top-right" expand={true} richColors closeButton />
       <AgendamentoMonitor />
+      <AutomacaoTarefas />
+      <TextNormalizer />
       <div className="min-h-screen bg-slate-950 text-white">
       <style>{`
         :root {

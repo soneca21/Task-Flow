@@ -1,4 +1,4 @@
-ï»¿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -68,7 +68,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     // Monitorar status online/offline
     const handleOnline = () => {
       setIsOffline(false);
-      toast.success('ConexÃ£o restabelecida');
+      toast.success('Conexão restabelecida');
       syncOfflineData();
     };
     const handleOffline = () => {
@@ -96,7 +96,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     const saved = localStorage.getItem(`checklist_${tarefa.id}`);
     if (saved && !isOffline) {
       toast.info('Sincronizando dados...');
-      // Dados serÃ£o sincronizados ao concluir
+      // Dados serão sincronizados ao concluir
     }
   };
 
@@ -166,15 +166,15 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
       if (item.obrigatorio) {
         const resposta = respostas[i];
         if (!resposta?.resposta && item.tipo_resposta !== 'foto_obrigatoria') {
-          erros.push(`"${item.pergunta}" Ã© obrigatÃ³rio`);
+          erros.push(`"${item.pergunta}" é obrigatório`);
         }
       }
       const resposta = respostas[i];
       if (fotoObrigatoriaItem && !resposta?.foto_url) {
-        erros.push(`Foto obrigatÃ³ria para "${item.pergunta}"`);
+        erros.push(`Foto obrigatória para "${item.pergunta}"`);
       }
       if (item.tipo_resposta === 'numero' && resposta?.resposta && isNaN(resposta.resposta)) {
-        erros.push(`"${item.pergunta}" deve ser um nÃºmero`);
+        erros.push(`"${item.pergunta}" deve ser um número`);
       }
     });
     return erros;
@@ -182,7 +182,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
 
   const handleConcluir = async () => {
     if (readOnly) {
-      toast.info('Somente visualizaÃ§Ã£o');
+      toast.info('Somente visualização');
       return;
     }
     const erros = validarRespostas();
@@ -195,7 +195,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     try {
       if (isOffline) {
         // Salvar no localStorage e notificar
-        toast.warning('Checklist salvo localmente. SerÃ¡ enviado quando houver conexÃ£o.');
+        toast.warning('Checklist salvo localmente. Será enviado quando houver conexão.');
         localStorage.setItem(`checklist_pending_${tarefa.id}`, JSON.stringify({
           tarefaId: tarefa.id,
           respostas,
@@ -209,7 +209,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
           data_conclusao: new Date().toISOString(),
         });
 
-        // Liberar funcionÃ¡rios (admin libera todos; usuÃ¡rio libera apenas o prÃ³prio)
+        // Liberar funcionários (admin libera todos; usuário libera apenas o próprio)
         if (tarefa.funcionarios_designados?.length > 0) {
           for (const funcId of tarefa.funcionarios_designados) {
             if (!isAdmin && funcionarioAtual?.id !== funcId) continue;
@@ -229,7 +229,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
           acao: 'validar_checklist',
           entidade: 'Tarefa',
           entidade_id: tarefa.id,
-          descricao: `Checklist concluÃ­do para tarefa ${tarefa.titulo}`,
+          descricao: `Checklist concluído para tarefa ${tarefa.titulo}`,
         });
 
         // Limpar localStorage
@@ -237,7 +237,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         localStorage.removeItem(`checklist_pending_${tarefa.id}`);
 
         queryClient.invalidateQueries({ queryKey: ['tarefas'] });
-        toast.success('Checklist concluÃ­do com sucesso!');
+        toast.success('Checklist concluído com sucesso!');
       }
 
       onConcluir?.();
@@ -263,8 +263,8 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
   const percentual = total > 0 ? Math.round((progresso / total) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-slate-900 rounded-2xl border border-slate-800 max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center px-4 pb-4 pt-0 sm:items-center sm:p-6 sm:pt-4">
+      <div className="bg-slate-900 rounded-2xl border border-slate-800 max-w-2xl w-full max-h-[calc(100svh-2rem)] sm:max-h-[90vh] overflow-hidden flex flex-col min-h-0">
         {/* Header */}
         <div className="p-5 border-b border-slate-800">
           <div className="flex items-center justify-between mb-3">
@@ -296,7 +296,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         </div>
 
         {/* Checklist Items */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-5 space-y-4 [-webkit-overflow-scrolling:touch]">
           {checklist.itens?.map((item, index) => {
             const resposta = respostas[index];
             const fotoObrigatoriaItem = item.tipo_resposta === 'foto_obrigatoria' || exigeFotoEmTodosItens;
@@ -331,12 +331,12 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                       {item.obrigatorio && <span className="text-red-400 ml-1">*</span>}
                     </Label>
                     <p className="text-xs text-slate-500 mt-1">
-                      {item.tipo_resposta === 'sim_nao' && 'Resposta: Sim ou NÃ£o'}
+                      {item.tipo_resposta === 'sim_nao' && 'Resposta: Sim ou Não'}
                       {item.tipo_resposta === 'texto' && 'Resposta em texto'}
-                      {item.tipo_resposta === 'numero' && 'Resposta numÃ©rica'}
-                      {item.tipo_resposta === 'foto_obrigatoria' && 'Foto obrigatÃ³ria'}
-                      {item.tipo_resposta === 'selecao' && 'Selecione uma opÃ§Ã£o'}
-                      {item.tipo_resposta !== 'foto_obrigatoria' && exigeFotoEmTodosItens && ' â€¢ Foto obrigatÃ³ria'}
+                      {item.tipo_resposta === 'numero' && 'Resposta numérica'}
+                      {item.tipo_resposta === 'foto_obrigatoria' && 'Foto obrigatória'}
+                      {item.tipo_resposta === 'selecao' && 'Selecione uma opção'}
+                      {item.tipo_resposta !== 'foto_obrigatoria' && exigeFotoEmTodosItens && ' • Foto obrigatória'}
                     </p>
                   </div>
                   {!readOnly && (
@@ -384,7 +384,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                         onClick={() => handleResposta(index, 'nao')}
                         disabled={readOnly}
                       >
-                        NÃ£o
+                        Não
                       </Button>
                     </div>
                   )}
@@ -406,7 +406,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                       value={resposta?.resposta || ''}
                       onChange={(e) => handleResposta(index, e.target.value)}
                       className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="Digite o nÃºmero..."
+                      placeholder="Digite o número..."
                       disabled={readOnly}
                     />
                   )}
@@ -546,7 +546,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
           </div>
           {!readOnly && percentual < 100 && (
             <p className="text-xs text-amber-400 text-center mt-2">
-              Preencha todos os campos obrigatÃ³rios para concluir
+              Preencha todos os campos obrigatórios para concluir
             </p>
           )}
         </div>
@@ -554,6 +554,11 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     </div>
   );
 }
+
+
+
+
+
 
 
 
