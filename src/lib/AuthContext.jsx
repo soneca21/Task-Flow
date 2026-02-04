@@ -22,6 +22,13 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
       setIsLoadingAuth(false);
+      if (currentUser && !currentUser.user_metadata?.role) {
+        supabase.auth.updateUser({ data: { role: 'colaborador' } }).then(({ data, error }) => {
+          if (!error && data?.user) {
+            setUser(data.user);
+          }
+        });
+      }
       if (!currentUser) {
         setAuthError({
           type: 'auth_required',
@@ -58,6 +65,14 @@ export const AuthProvider = ({ children }) => {
       const currentUser = data?.session?.user ?? null;
       setUser(currentUser);
       setIsAuthenticated(!!currentUser);
+      if (currentUser && !currentUser.user_metadata?.role) {
+        const { data: updated, error: updateError } = await supabase.auth.updateUser({
+          data: { role: 'colaborador' },
+        });
+        if (!updateError && updated?.user) {
+          setUser(updated.user);
+        }
+      }
       setIsLoadingAuth(false);
       if (!currentUser) {
         setAuthError({
@@ -134,4 +149,3 @@ export const useAuth = () => {
   }
   return context;
 };
-

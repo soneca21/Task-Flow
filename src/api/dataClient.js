@@ -167,9 +167,21 @@ const auth = {
   },
   async register(payload) {
     const emailRedirectTo = `${window.location.origin}/login`;
-    const normalizedPayload = payload?.options
-      ? payload
-      : { ...payload, options: { emailRedirectTo } };
+    const defaultOptions = {
+      emailRedirectTo,
+      data: { role: 'colaborador' },
+    };
+    const mergedOptions = payload?.options
+      ? {
+          ...defaultOptions,
+          ...payload.options,
+          data: {
+            ...defaultOptions.data,
+            ...(payload.options.data ?? {}),
+          },
+        }
+      : defaultOptions;
+    const normalizedPayload = { ...payload, options: mergedOptions };
     const { data, error } = await supabase.auth.signUp(normalizedPayload);
     if (error) throw error;
     return data;
@@ -223,4 +235,3 @@ export const api = {
   appLogs,
   integrations,
 };
-
