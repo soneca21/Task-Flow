@@ -6,6 +6,7 @@ import {
   Shield, 
   Bell, 
   ClipboardCheck, 
+  Layers,
   Truck,
   Factory,
   FileText,
@@ -41,16 +42,23 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { cn, fixMojibakePtBr } from "@/lib/utils";
 import { format } from 'date-fns';
 import { toast } from "sonner";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function Configuracoes() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const role = user?.user_metadata?.role || 'colaborador';
+  const isAdmin = role === 'admin';
   const [activeTab, setActiveTab] = useState('checklists');
   const [checklistDialog, setChecklistDialog] = useState(false);
   const [editingChecklist, setEditingChecklist] = useState(null);
   const [seedingChecklists, setSeedingChecklists] = useState(false);
+  const [templateDialog, setTemplateDialog] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [seedingTemplates, setSeedingTemplates] = useState(false);
 
   const { data: checklists = [] } = useQuery({
     queryKey: ['checklists'],
@@ -60,6 +68,16 @@ export default function Configuracoes() {
   const { data: configuracoes = [] } = useQuery({
     queryKey: ['configuracoes'],
     queryFn: () => api.entities.ConfiguracaoSistema.list(),
+  });
+
+  const { data: frentes = [] } = useQuery({
+    queryKey: ['frentes-config'],
+    queryFn: () => api.entities.FrenteTrabalho.filter({ ativo: true }),
+  });
+
+  const { data: templates = [] } = useQuery({
+    queryKey: ['tarefa-templates'],
+    queryFn: () => api.entities.TarefaTemplate.list('-created_date'),
   });
 
   const { data: logs = [] } = useQuery({
@@ -88,6 +106,32 @@ export default function Configuracoes() {
   const deleteChecklistMutation = useMutation({
     mutationFn: (id) => api.entities.Checklist.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['checklists'] }),
+  });
+
+  const createTemplateMutation = useMutation({
+    mutationFn: (data) => api.entities.TarefaTemplate.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tarefa-templates'] });
+      setTemplateDialog(false);
+      setEditingTemplate(null);
+    },
+    onError: () => toast.error('Erro ao criar template.'),
+  });
+
+  const updateTemplateMutation = useMutation({
+    mutationFn: ({ id, data }) => api.entities.TarefaTemplate.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tarefa-templates'] });
+      setTemplateDialog(false);
+      setEditingTemplate(null);
+    },
+    onError: () => toast.error('Erro ao atualizar template.'),
+  });
+
+  const deleteTemplateMutation = useMutation({
+    mutationFn: (id) => api.entities.TarefaTemplate.delete(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tarefa-templates'] }),
+    onError: () => toast.error('Erro ao excluir template.'),
   });
 
   const updateConfigMutation = useMutation({
@@ -157,7 +201,7 @@ export default function Configuracoes() {
       itens: [
         { pergunta: 'Nota/romaneio conferidos?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Quantidade de volumes conferida?', tipo_resposta: 'sim_nao', obrigatorio: true },
-        { pergunta: 'Etiquetas/identificação dos volumes ok?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Etiquetas/identificação dos volumes OK?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Integridade dos itens (sem avarias)?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Amarração e fixação corretas?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Foto do carregamento finalizado', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
@@ -175,9 +219,9 @@ export default function Configuracoes() {
         { pergunta: 'Cliente e endereço confirmados?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Produtos conferidos por item?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Foto da carga no veículo', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
-        { pergunta: 'Assinatura/Confirmação do responsável?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Assinatura/confirmação do responsável?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Número do lacre', tipo_resposta: 'texto', obrigatorio: true },
-        { pergunta: 'EPI do motorista ok?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'EPI do motorista OK?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Checklist de segurança aprovado?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Observações', tipo_resposta: 'texto', obrigatorio: false },
       ],
@@ -206,7 +250,7 @@ export default function Configuracoes() {
         { pergunta: 'Freios, buzina e luzes funcionando?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Carga dentro da capacidade do equipamento?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'EPI do operador em dia?', tipo_resposta: 'sim_nao', obrigatorio: true },
-        { pergunta: 'Amarração/estabilidade da carga ok?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Amarração/estabilidade da carga OK?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Rotas livres de obstáculos?', tipo_resposta: 'sim_nao', obrigatorio: true },
         { pergunta: 'Foto da carga movimentada', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
         { pergunta: 'Observações', tipo_resposta: 'texto', obrigatorio: false },
@@ -239,6 +283,144 @@ export default function Configuracoes() {
         { pergunta: 'Ocorrências', tipo_resposta: 'texto', obrigatorio: false },
       ],
     },
+    {
+      nome: 'Checklist de Descarga - Pátio',
+      tipo: 'descarga',
+      bloqueio_saida: false,
+      itens: [
+        { pergunta: 'Nota/romaneio recebidos conferidos?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Placa e veículo confirmados?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Motorista identificado?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Local de descarga liberado e sinalizado?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'EPI e sinalização OK?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Integridade da carga (sem avarias) confirmada?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Foto da carga na chegada', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
+        { pergunta: 'Foto após descarregar', tipo_resposta: 'foto_obrigatoria', obrigatorio: false },
+        { pergunta: 'Observações', tipo_resposta: 'texto', obrigatorio: false },
+      ],
+    },
+    {
+      nome: 'Checklist de Troca - Pátio',
+      tipo: 'troca',
+      bloqueio_saida: false,
+      itens: [
+        { pergunta: 'Motivo da troca informado?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Itens devolvidos conferidos?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Itens para entrega conferidos?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Conferência por item realizada?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Foto dos itens devolvidos', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
+        { pergunta: 'Foto dos itens entregues', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
+        { pergunta: 'Assinatura/confirmação do responsável?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Observações', tipo_resposta: 'texto', obrigatorio: false },
+      ],
+    },
+    {
+      nome: 'Checklist de Devolução - Pátio',
+      tipo: 'devolucao',
+      bloqueio_saida: false,
+      itens: [
+        { pergunta: 'Motivo da devolução informado?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Itens devolvidos conferidos por item?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Condição/avarias registradas?', tipo_resposta: 'sim_nao', obrigatorio: true },
+        { pergunta: 'Destino informado (estoque/produção/sucata)?', tipo_resposta: 'texto', obrigatorio: true },
+        { pergunta: 'Foto dos itens devolvidos', tipo_resposta: 'foto_obrigatoria', obrigatorio: true },
+        { pergunta: 'Foto da nota/romaneio (se houver)', tipo_resposta: 'foto_obrigatoria', obrigatorio: false },
+        { pergunta: 'Observações', tipo_resposta: 'texto', obrigatorio: false },
+      ],
+    },
+  ];
+
+  const templatesPadrao = [
+    {
+      nome: 'Atendimento no Pátio - Carga (Expedição)',
+      tipo: 'carregamento',
+      prioridade: 'media',
+      frente_trabalho_id: 'logistica_expedicao_retirar',
+      checklist_nome: 'Checklist de Carregamento - Expedição',
+      quantidade_profissionais: 1,
+      descricao: 'Triagem, documentos e liberação de carga.',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Atendimento no Pátio - Descarga (Expedição)',
+      tipo: 'descarga',
+      prioridade: 'media',
+      frente_trabalho_id: 'logistica_expedicao_retirar',
+      checklist_nome: 'Checklist de Descarga - Pátio',
+      quantidade_profissionais: 1,
+      descricao: 'Triagem e conferência de documentos para descarga.',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Atendimento no Pátio - Retirada (Expedição)',
+      tipo: 'retirada',
+      prioridade: 'media',
+      frente_trabalho_id: 'logistica_expedicao_retirar',
+      checklist_nome: 'Checklist de Retirada - Balcão/Cliente',
+      quantidade_profissionais: 1,
+      descricao: 'Separação e liberação para retirada.',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Atendimento no Pátio - Troca (Expedição)',
+      tipo: 'troca',
+      prioridade: 'media',
+      frente_trabalho_id: 'logistica_expedicao_retirar',
+      checklist_nome: 'Checklist de Troca - Pátio',
+      quantidade_profissionais: 1,
+      descricao: 'Processo de troca: devolução + entrega.',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Atendimento no Pátio - Devolução (Expedição)',
+      tipo: 'devolucao',
+      prioridade: 'media',
+      frente_trabalho_id: 'logistica_expedicao_retirar',
+      checklist_nome: 'Checklist de Devolução - Pátio',
+      quantidade_profissionais: 1,
+      descricao: 'Recebimento e registro de devolução.',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Movimentação - Empilhadeira (Padrão)',
+      tipo: 'movimentacao',
+      prioridade: 'media',
+      frente_trabalho_id: 'mov_empilhadeira',
+      checklist_nome: 'Checklist de Movimentação de Carga',
+      quantidade_profissionais: 1,
+      descricao: 'Movimentação interna de carga (empilhadeira).',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Movimentação - Ponte Rolante (Padrão)',
+      tipo: 'movimentacao',
+      prioridade: 'media',
+      frente_trabalho_id: 'mov_ponte_rolante',
+      checklist_nome: 'Checklist de Movimentação de Carga',
+      quantidade_profissionais: 1,
+      descricao: 'Movimentação interna de carga (ponte rolante).',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Movimentação - Pórtico (Padrão)',
+      tipo: 'movimentacao',
+      prioridade: 'media',
+      frente_trabalho_id: 'mov_portico',
+      checklist_nome: 'Checklist de Movimentação de Carga',
+      quantidade_profissionais: 1,
+      descricao: 'Movimentação interna de carga (pórtico).',
+      observacoes: 'Template padrão do sistema.',
+    },
+    {
+      nome: 'Tarefa Rápida (Sem Checklist)',
+      tipo: 'outros',
+      prioridade: 'media',
+      frente_trabalho_id: 'logistica_expedicao_retirar',
+      checklist_nome: null,
+      quantidade_profissionais: 1,
+      descricao: 'Tarefa simples sem checklist obrigatório.',
+      observacoes: 'Template padrão do sistema.',
+    },
   ];
 
   const handleSeedChecklists = async () => {
@@ -263,12 +445,54 @@ export default function Configuracoes() {
     }
   };
 
+  const handleSeedTemplates = async () => {
+    setSeedingTemplates(true);
+    try {
+      const existingNames = new Set(templates.map((t) => t.nome));
+      const checklistByName = new Map(checklists.map((c) => [c.nome, c]));
+      const frenteById = new Map(frentes.map((f) => [f.id, f]));
+
+      const toCreate = templatesPadrao.filter((t) => !existingNames.has(t.nome));
+      for (const t of toCreate) {
+        const frente = frenteById.get(t.frente_trabalho_id);
+        const checklist = t.checklist_nome ? checklistByName.get(t.checklist_nome) : null;
+        await api.entities.TarefaTemplate.create({
+          nome: t.nome,
+          descricao: t.descricao || null,
+          tipo: t.tipo,
+          prioridade: t.prioridade || 'media',
+          frente_trabalho_id: t.frente_trabalho_id,
+          frente_trabalho_nome: frente?.nome || '',
+          checklist_id: checklist?.id || null,
+          quantidade_profissionais: t.quantidade_profissionais || 1,
+          observacoes: t.observacoes || null,
+          ativo: true,
+        });
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['tarefa-templates'] });
+      if (toCreate.length === 0) {
+        toast.info('Os templates padrão já estão cadastrados.');
+      } else {
+        toast.success('Templates padrão adicionados.');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao adicionar templates.');
+    } finally {
+      setSeedingTemplates(false);
+    }
+  };
+
   const tipoChecklistLabels = {
     producao: 'Produção',
     carregamento: 'Carregamento',
     conferencia: 'Conferência',
     retirada: 'Retirada',
     movimentacao: 'Movimentação',
+    descarga: 'Descarga',
+    troca: 'Troca',
+    devolucao: 'Devolução',
     saida_veiculo: 'Saída de Veículo',
     entrada_veiculo: 'Entrada de Veículo',
   };
@@ -281,32 +505,36 @@ export default function Configuracoes() {
         icon={Settings}
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-slate-900/50 border border-slate-800 p-1">
-          <TabsTrigger value="checklists" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-            <ClipboardCheck className="w-4 h-4 mr-2" />
-            Checklists
-          </TabsTrigger>
-          <TabsTrigger value="automacoes" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-            <Sliders className="w-4 h-4 mr-2" />
-            Automações
-          </TabsTrigger>
-          <TabsTrigger value="seguranca" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-            <Shield className="w-4 h-4 mr-2" />
-            Segurança
-          </TabsTrigger>
-          <TabsTrigger value="notificacoes" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-            <Bell className="w-4 h-4 mr-2" />
-            Notificações
-          </TabsTrigger>
-          <TabsTrigger value="auditoria" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-            <History className="w-4 h-4 mr-2" />
-            Auditoria
-          </TabsTrigger>
-        </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="bg-slate-900/50 border border-slate-800 p-1">
+            <TabsTrigger value="checklists" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+              <ClipboardCheck className="w-4 h-4 mr-2" />
+              Checklists
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+              <Layers className="w-4 h-4 mr-2" />
+              Templates
+            </TabsTrigger>
+            <TabsTrigger value="automacoes" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+              <Sliders className="w-4 h-4 mr-2" />
+              Automações
+            </TabsTrigger>
+            <TabsTrigger value="seguranca" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+              <Shield className="w-4 h-4 mr-2" />
+              Segurança
+            </TabsTrigger>
+            <TabsTrigger value="notificacoes" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+              <Bell className="w-4 h-4 mr-2" />
+              Notificações
+            </TabsTrigger>
+            <TabsTrigger value="auditoria" className="data-[state=active]:bg-amber-500 data-[state=active]:text-black">
+              <History className="w-4 h-4 mr-2" />
+              Auditoria
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Checklists */}
-        <TabsContent value="checklists" className="mt-6">
+          {/* Checklists */}
+          <TabsContent value="checklists" className="mt-6">
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-semibold text-white">Editor de Checklists</h2>
@@ -342,7 +570,7 @@ export default function Configuracoes() {
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-white">{checklist.nome}</h3>
+                    <h3 className="font-semibold text-white">{fixMojibakePtBr(checklist.nome)}</h3>
                     <p className="text-sm text-slate-400 mt-1">
                       {tipoChecklistLabels[checklist.tipo] || checklist.tipo}
                     </p>
@@ -372,7 +600,7 @@ export default function Configuracoes() {
                   {checklist.itens?.slice(0, 3).map((item, i) => (
                     <div key={i} className="text-sm text-slate-400 flex items-center gap-2 py-1">
                       <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
-                      <span className="truncate">{item.pergunta}</span>
+                      <span className="truncate">{fixMojibakePtBr(item.pergunta)}</span>
                     </div>
                   ))}
                   {(checklist.itens?.length || 0) > 3 && (
@@ -396,10 +624,126 @@ export default function Configuracoes() {
               <p className="text-slate-500">Nenhum checklist cadastrado</p>
             </div>
           )}
-        </TabsContent>
+          </TabsContent>
 
-        {/* Automações */}
-        <TabsContent value="automacoes" className="mt-6">
+          {/* Templates */}
+          <TabsContent value="templates" className="mt-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-xl font-semibold text-white">Templates de Tarefas</h2>
+                <p className="text-sm text-slate-400">Crie modelos para abrir tarefas rapidamente (com ou sem checklist)</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleSeedTemplates}
+                  disabled={!isAdmin || seedingTemplates}
+                  className="border-slate-700 text-slate-200"
+                >
+                  {seedingTemplates ? 'Adicionando...' : 'Adicionar Templates Padrão'}
+                </Button>
+                <Button
+                  onClick={() => { setEditingTemplate(null); setTemplateDialog(true); }}
+                  disabled={!isAdmin}
+                  className="bg-amber-500 hover:bg-amber-600 text-black"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Novo Template
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {templates.map((tpl) => (
+                <div
+                  key={tpl.id}
+                  className={cn(
+                    "bg-slate-900/50 border rounded-2xl p-5 transition-all hover:border-slate-600",
+                    tpl.ativo ? "border-slate-800" : "border-red-900/30 opacity-60"
+                  )}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-semibold text-white">{fixMojibakePtBr(tpl.nome)}</h3>
+                      <p className="text-xs text-slate-500 mt-1">{fixMojibakePtBr(tpl.descricao) || 'Sem descrição'}</p>
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <span className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                          {tpl.tipo || 'tipo'}
+                        </span>
+                        {tpl.frente_trabalho_nome && (
+                          <span className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                            {fixMojibakePtBr(tpl.frente_trabalho_nome)}
+                          </span>
+                        )}
+                        <span className="text-xs px-2 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                          {tpl.prioridade || 'media'}
+                        </span>
+                        {tpl.checklist_id ? (
+                          <span className="text-xs px-2 py-1 rounded-full bg-purple-500/10 text-purple-200 border border-purple-500/20">
+                            Checklist
+                          </span>
+                        ) : (
+                          <span className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                            Sem checklist
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-slate-400 hover:text-white"
+                        disabled={!isAdmin}
+                        onClick={() => { setEditingTemplate(tpl); setTemplateDialog(true); }}
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-red-400 hover:text-red-300"
+                        disabled={!isAdmin}
+                        onClick={() => deleteTemplateMutation.mutate(tpl.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {tpl.observacoes && (
+                    <p className="text-xs text-slate-400 mt-3">{fixMojibakePtBr(tpl.observacoes)}</p>
+                  )}
+                </div>
+              ))}
+
+              {templates.length === 0 && (
+                <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl md:col-span-2 lg:col-span-3">
+                  <Layers className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                  <p className="text-slate-500">Nenhum template cadastrado</p>
+                </div>
+              )}
+            </div>
+
+            <TemplateDialog
+              open={templateDialog}
+              onOpenChange={setTemplateDialog}
+              template={editingTemplate}
+              frentes={frentes}
+              checklists={checklists}
+              onSave={(data) => {
+                if (editingTemplate) {
+                  updateTemplateMutation.mutate({ id: editingTemplate.id, data });
+                } else {
+                  createTemplateMutation.mutate(data);
+                }
+              }}
+              isLoading={createTemplateMutation.isPending || updateTemplateMutation.isPending}
+            />
+          </TabsContent>
+
+          {/* Automações */}
+          <TabsContent value="automacoes" className="mt-6">
           <div className="space-y-6">
             <div>
               <h2 className="text-xl font-semibold text-white mb-2">Gestão de Automações</h2>
@@ -997,6 +1341,9 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
                   <SelectItem value="conferencia">Conferência</SelectItem>
                   <SelectItem value="retirada">Retirada</SelectItem>
                   <SelectItem value="movimentacao">Movimentação</SelectItem>
+                  <SelectItem value="descarga">Descarga</SelectItem>
+                  <SelectItem value="troca">Troca</SelectItem>
+                  <SelectItem value="devolucao">Devolução</SelectItem>
                   <SelectItem value="saida_veiculo">Saída de Veículo</SelectItem>
                   <SelectItem value="entrada_veiculo">Entrada de Veículo</SelectItem>
                 </SelectContent>
@@ -1102,6 +1449,243 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
             className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
             onClick={() => onSave(formData)}
             disabled={isLoading || !formData.nome}
+          >
+            {isLoading ? 'Salvando...' : 'Salvar'}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onSave, isLoading }) {
+  const NO_CHECKLIST = '__sem_checklist__';
+
+  const [formData, setFormData] = useState({
+    nome: '',
+    descricao: '',
+    tipo: 'outros',
+    prioridade: 'media',
+    frente_trabalho_id: '',
+    frente_trabalho_nome: '',
+    checklist_id: null,
+    quantidade_profissionais: 1,
+    observacoes: '',
+    ativo: true,
+  });
+
+  React.useEffect(() => {
+    if (!open) return;
+    if (template) {
+      setFormData({
+        nome: template.nome || '',
+        descricao: template.descricao || '',
+        tipo: template.tipo || 'outros',
+        prioridade: template.prioridade || 'media',
+        frente_trabalho_id: template.frente_trabalho_id || '',
+        frente_trabalho_nome: template.frente_trabalho_nome || '',
+        checklist_id: template.checklist_id || null,
+        quantidade_profissionais: Number(template.quantidade_profissionais || 1) || 1,
+        observacoes: template.observacoes || '',
+        ativo: template.ativo !== false,
+      });
+      return;
+    }
+
+    setFormData({
+      nome: '',
+      descricao: '',
+      tipo: 'outros',
+      prioridade: 'media',
+      frente_trabalho_id: '',
+      frente_trabalho_nome: '',
+      checklist_id: null,
+      quantidade_profissionais: 1,
+      observacoes: '',
+      ativo: true,
+    });
+  }, [open, template]);
+
+  const handleFrenteChange = (id) => {
+    const frente = frentes.find((f) => f.id === id);
+    setFormData((prev) => ({
+      ...prev,
+      frente_trabalho_id: id,
+      frente_trabalho_nome: frente?.nome || '',
+    }));
+  };
+
+  const checklistValue = formData.checklist_id ? String(formData.checklist_id) : NO_CHECKLIST;
+
+  const handleSave = () => {
+    const payload = {
+      nome: formData.nome?.trim(),
+      descricao: formData.descricao?.trim() || null,
+      tipo: formData.tipo,
+      prioridade: formData.prioridade || 'media',
+      frente_trabalho_id: formData.frente_trabalho_id,
+      frente_trabalho_nome: formData.frente_trabalho_nome || '',
+      checklist_id: formData.checklist_id || null,
+      quantidade_profissionais: Number(formData.quantidade_profissionais || 1) || 1,
+      observacoes: formData.observacoes?.trim() || null,
+      ativo: !!formData.ativo,
+    };
+    onSave(payload);
+  };
+
+  const canSave = Boolean(formData.nome?.trim()) && Boolean(formData.frente_trabalho_id);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{template?.id ? 'Editar Template' : 'Novo Template'}</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Label>Nome *</Label>
+              <Input
+                value={formData.nome}
+                onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                className="bg-slate-800 border-slate-700 mt-1"
+                placeholder="Ex: Atendimento no Pátio - Carga"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>Descrição (opcional)</Label>
+            <Textarea
+              value={formData.descricao}
+              onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
+              className="bg-slate-800 border-slate-700 mt-1"
+              rows={2}
+              placeholder="Uma descrição curta do que este template cria..."
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Tipo *</Label>
+              <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="producao">Produção</SelectItem>
+                  <SelectItem value="carregamento">Carregamento</SelectItem>
+                  <SelectItem value="descarga">Descarga</SelectItem>
+                  <SelectItem value="retirada">Retirada</SelectItem>
+                  <SelectItem value="troca">Troca</SelectItem>
+                  <SelectItem value="devolucao">Devolução</SelectItem>
+                  <SelectItem value="movimentacao">Movimentação</SelectItem>
+                  <SelectItem value="conferencia">Conferência</SelectItem>
+                  <SelectItem value="entrega">Entrega</SelectItem>
+                  <SelectItem value="manutencao">Manutenção</SelectItem>
+                  <SelectItem value="outros">Outros</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Prioridade</Label>
+              <Select value={formData.prioridade} onValueChange={(v) => setFormData({ ...formData, prioridade: v })}>
+                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="baixa">Baixa</SelectItem>
+                  <SelectItem value="media">Média</SelectItem>
+                  <SelectItem value="alta">Alta</SelectItem>
+                  <SelectItem value="urgente">Urgente</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div>
+            <Label>Frente de Trabalho *</Label>
+            <Select value={formData.frente_trabalho_id || undefined} onValueChange={handleFrenteChange}>
+              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectValue placeholder="Selecione a frente..." />
+              </SelectTrigger>
+              <SelectContent>
+                {frentes.map((f) => (
+                  <SelectItem key={f.id} value={String(f.id)}>
+                    {f.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Checklist (opcional)</Label>
+              <Select
+                value={checklistValue}
+                onValueChange={(v) =>
+                  setFormData({ ...formData, checklist_id: v === NO_CHECKLIST ? null : v })
+                }
+              >
+                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={NO_CHECKLIST}>Sem checklist</SelectItem>
+                  {checklists
+                    .filter((c) => c.ativo !== false)
+                    .map((c) => (
+                      <SelectItem key={c.id} value={String(c.id)}>
+                        {fixMojibakePtBr(c.nome)}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Qtd. Profissionais</Label>
+              <Input
+                type="number"
+                min={1}
+                value={formData.quantidade_profissionais}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    quantidade_profissionais: parseInt(e.target.value, 10) || 1,
+                  })
+                }
+                className="bg-slate-800 border-slate-700 mt-1"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label>Observações (opcional)</Label>
+            <Textarea
+              value={formData.observacoes}
+              onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
+              className="bg-slate-800 border-slate-700 mt-1"
+              rows={2}
+              placeholder="Regras, lembretes ou instruções para o líder..."
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch checked={formData.ativo} onCheckedChange={(v) => setFormData({ ...formData, ativo: v })} />
+            <Label>Ativo</Label>
+          </div>
+        </div>
+
+        <div className="flex gap-3 pt-4 border-t border-slate-800">
+          <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
+          <Button
+            className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
+            onClick={handleSave}
+            disabled={isLoading || !canSave}
           >
             {isLoading ? 'Salvando...' : 'Salvar'}
           </Button>

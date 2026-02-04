@@ -53,6 +53,7 @@ import { cn } from "@/lib/utils";
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { AUTOMATION_CONFIG } from '@/automation/config';
+import SelecionarTemplateDialog from '@/components/tarefas/SelecionarTemplateDialog';
 
 export default function Tarefas() {
   const queryClient = useQueryClient();
@@ -104,6 +105,11 @@ export default function Tarefas() {
   const { data: checklists = [] } = useQuery({
     queryKey: ['checklists-tarefas'],
     queryFn: () => api.entities.Checklist.filter({ ativo: true }),
+  });
+  
+  const { data: templates = [] } = useQuery({
+    queryKey: ['templates-tarefas'],
+    queryFn: () => api.entities.TarefaTemplate.filter({ ativo: true }, '-created_date'),
   });
 
   const resolveAutoAlocacao = (data) => {
@@ -598,6 +604,7 @@ export default function Tarefas() {
         frentes={frentes}
         funcionarios={funcionarios}
         checklists={checklists}
+        templates={templates}
         onSave={handleSave}
         isLoading={createMutation.isPending || updateMutation.isPending}
       />
@@ -628,7 +635,8 @@ export default function Tarefas() {
   );
 }
 
-function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, checklists, onSave, isLoading }) {
+function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, checklists, templates, onSave, isLoading }) {
+  const NO_CHECKLIST = '__sem_checklist__';
   const [formData, setFormData] = useState({
     titulo: '',
     descricao: '',
@@ -644,6 +652,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     checklist_id: '',
     observacoes: '',
   });
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
 
   React.useEffect(() => {
     if (tarefa) {
@@ -681,6 +690,24 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     }
   }, [tarefa, open]);
 
+  const applyTemplate = (tpl) => {
+    if (!tpl) return;
+    setFormData((prev) => ({
+      ...prev,
+      titulo: tpl.nome || prev.titulo,
+      descricao: tpl.descricao || '',
+      tipo: tpl.tipo || prev.tipo,
+      prioridade: tpl.prioridade || prev.prioridade,
+      frente_trabalho_id: tpl.frente_trabalho_id || '',
+      frente_trabalho_nome: tpl.frente_trabalho_nome || '',
+      checklist_id: tpl.checklist_id || '',
+      quantidade_profissionais: Number(tpl.quantidade_profissionais || 1) || 1,
+      observacoes: tpl.observacoes || '',
+      funcionarios_designados: [],
+      funcionarios_nomes: [],
+    }));
+  };
+
   const handleFrenteChange = (frenteId) => {
     const frente = frentes.find(f => f.id === frenteId);
     setFormData(prev => ({
@@ -716,6 +743,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     : funcionarios.filter(f => f.status === 'disponivel');
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
@@ -723,6 +751,22 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
         </DialogHeader>
 
         <div className="space-y-4 py-4">
+          {!tarefa && (templates?.length || 0) > 0 && (
+            <div className="flex items-center justify-between gap-3 p-3 bg-slate-900/40 border border-slate-800 rounded-xl">
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-white">Usar template</p>
+                <p className="text-xs text-slate-500 truncate">Preencha automaticamente os campos principais</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="border-slate-700 text-slate-200"
+                onClick={() => setTemplatePickerOpen(true)}
+              >
+                Selecionar
+              </Button>
+            </div>
+          )}
           <div>
             <Label>Título da Tarefa *</Label>
             <Input
@@ -753,9 +797,12 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
                 <SelectContent>
                   <SelectItem value="producao">Produção</SelectItem>
                   <SelectItem value="carregamento">Carregamento</SelectItem>
+                  <SelectItem value="descarga">Descarga</SelectItem>
                   <SelectItem value="movimentacao">Movimentação</SelectItem>
                   <SelectItem value="conferencia">Conferência</SelectItem>
                   <SelectItem value="retirada">Retirada</SelectItem>
+                  <SelectItem value="troca">Troca</SelectItem>
+                  <SelectItem value="devolucao">Devolução</SelectItem>
                   <SelectItem value="entrega">Entrega</SelectItem>
                   <SelectItem value="manutencao">Manutenção</SelectItem>
                   <SelectItem value="outros">Outros</SelectItem>
@@ -844,12 +891,15 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
 
           <div>
             <Label>Checklist</Label>
-            <Select value={formData.checklist_id} onValueChange={(v) => setFormData({ ...formData, checklist_id: v })}>
+            <Select
+              value={formData.checklist_id || ''}
+              onValueChange={(v) => setFormData({ ...formData, checklist_id: v === NO_CHECKLIST ? '' : v })}
+            >
               <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
                 <SelectValue placeholder="Selecione um checklist..." />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={null}>Nenhum</SelectItem>
+                <SelectItem value={NO_CHECKLIST}>Nenhum</SelectItem>
                 {checklists.filter(c => c.tipo === formData.tipo || !formData.tipo).map(c => (
                   <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
                 ))}
@@ -882,6 +932,16 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
         </div>
       </DialogContent>
     </Dialog>
+    <SelecionarTemplateDialog
+      open={templatePickerOpen}
+      onOpenChange={setTemplatePickerOpen}
+      templates={templates || []}
+      onSelect={(tpl) => {
+        applyTemplate(tpl);
+        setTemplatePickerOpen(false);
+      }}
+    />
+    </>
   );
 }
 

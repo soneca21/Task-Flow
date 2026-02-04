@@ -45,6 +45,8 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/AuthContext';
+import { Switch } from '@/components/ui/switch';
 import {
   AGENDAMENTO_STATUS,
   AGENDAMENTO_TIPO,
@@ -70,10 +72,16 @@ const STATUS_COLORS = {
 const TIPO_LABELS = {
   [AGENDAMENTO_TIPO.CARGA]: 'Carga',
   [AGENDAMENTO_TIPO.DESCARGA]: 'Descarga',
+  [AGENDAMENTO_TIPO.RETIRADA]: 'Retirada',
+  [AGENDAMENTO_TIPO.TROCA]: 'Troca',
+  [AGENDAMENTO_TIPO.DEVOLUCAO]: 'Devolução',
 };
 
 export default function Rotas() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const role = user?.user_metadata?.role || '';
+  const isManager = role === 'admin' || role === 'lider';
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('todos');
   const [filterData, setFilterData] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -121,12 +129,28 @@ export default function Rotas() {
   });
 
   const handleSave = (formData) => {
+    if (!isManager) {
+      toast.error('Apenas líder/admin pode criar ou editar agendamentos.');
+      return;
+    }
     if (!formData.data || !formData.hora) {
       toast.error('Informe data e horário.');
       return;
     }
-    if (!formData.veiculo_id || !formData.motorista_id) {
-      toast.error('Selecione veículo e motorista.');
+    if (!formData.tipo) {
+      toast.error('Selecione o tipo de atendimento.');
+      return;
+    }
+    if (!formData.veiculo_id || formData.veiculo_id === 'sem_veiculo') {
+      toast.error('Selecione o veículo.');
+      return;
+    }
+    if (!formData.motorista_id || formData.motorista_id === 'sem_motorista') {
+      toast.error('Selecione o motorista.');
+      return;
+    }
+    if (formData.necessita_movimentacao && (!formData.equipamento_preferido || formData.equipamento_preferido === 'nenhum')) {
+      toast.error('Selecione o equipamento preferido para movimentação.');
       return;
     }
 
@@ -145,6 +169,10 @@ export default function Rotas() {
   };
 
   const handleDisparar = async (agendamento) => {
+    if (!isManager) {
+      toast.error('Apenas líder/admin pode liberar o atendimento.');
+      return;
+    }
     try {
       await dispararAgendamento({
         agendamento,
@@ -159,6 +187,10 @@ export default function Rotas() {
   };
 
   const handleConcluir = async (agendamento) => {
+    if (!isManager) {
+      toast.error('Apenas líder/admin pode concluir o atendimento.');
+      return;
+    }
     try {
       await api.entities.AgendamentoVeiculo.update(agendamento.id, {
         status: AGENDAMENTO_STATUS.CONCLUIDO,
@@ -176,6 +208,10 @@ export default function Rotas() {
   };
 
   const handleCancel = async (agendamento) => {
+    if (!isManager) {
+      toast.error('Apenas líder/admin pode cancelar agendamentos.');
+      return;
+    }
     try {
       await api.entities.AgendamentoVeiculo.update(agendamento.id, {
         status: AGENDAMENTO_STATUS.CANCELADO,
@@ -214,6 +250,7 @@ export default function Rotas() {
           <Button
             onClick={() => { setEditingAgendamento(null); setDialogOpen(true); }}
             className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
+            disabled={!isManager}
           >
             <Plus className="w-5 h-5 mr-2" />
             Novo Agendamento
@@ -345,6 +382,7 @@ export default function Rotas() {
                       variant="outline"
                       className="border-slate-700 text-slate-200"
                       onClick={() => handleCancel(agendamento)}
+                      disabled={!isManager}
                     >
                       <XCircle className="w-4 h-4 mr-1" />
                       Cancelar
@@ -358,9 +396,9 @@ export default function Rotas() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
-                        disabled={agendamento.status === AGENDAMENTO_STATUS.EM_ATENDIMENTO}
+                        disabled={!isManager || agendamento.status === AGENDAMENTO_STATUS.EM_ATENDIMENTO}
                         onClick={() => {
-                          if (agendamento.status === AGENDAMENTO_STATUS.EM_ATENDIMENTO) return;
+                          if (!isManager || agendamento.status === AGENDAMENTO_STATUS.EM_ATENDIMENTO) return;
                           setEditingAgendamento(agendamento);
                           setDialogOpen(true);
                         }}
@@ -369,7 +407,11 @@ export default function Rotas() {
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="text-red-400"
-                        onClick={() => deleteMutation.mutate(agendamento.id)}
+                        disabled={!isManager}
+                        onClick={() => {
+                          if (!isManager) return;
+                          deleteMutation.mutate(agendamento.id);
+                        }}
                       >
                         <Trash2 className="w-4 h-4 mr-2" /> Excluir
                       </DropdownMenuItem>
@@ -411,6 +453,8 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
     veiculo_placa: '',
     motorista_id: '',
     motorista_nome: '',
+    necessita_movimentacao: false,
+    equipamento_preferido: 'nenhum',
     status: AGENDAMENTO_STATUS.AGENDADO,
     observacoes: '',
   });
@@ -425,6 +469,8 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
         veiculo_placa: agendamento.veiculo_placa || '',
         motorista_id: agendamento.motorista_id || '',
         motorista_nome: agendamento.motorista_nome || '',
+        necessita_movimentacao: !!agendamento.necessita_movimentacao,
+        equipamento_preferido: agendamento.equipamento_preferido || 'nenhum',
         status: agendamento.status || AGENDAMENTO_STATUS.AGENDADO,
         observacoes: agendamento.observacoes || '',
       });
@@ -439,6 +485,8 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
       veiculo_placa: '',
       motorista_id: '',
       motorista_nome: '',
+      necessita_movimentacao: false,
+      equipamento_preferido: 'nenhum',
       status: AGENDAMENTO_STATUS.AGENDADO,
       observacoes: '',
     });
@@ -500,9 +548,42 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
               <SelectContent>
                 <SelectItem value={AGENDAMENTO_TIPO.CARGA}>Carga</SelectItem>
                 <SelectItem value={AGENDAMENTO_TIPO.DESCARGA}>Descarga</SelectItem>
+                <SelectItem value={AGENDAMENTO_TIPO.RETIRADA}>Retirada</SelectItem>
+                <SelectItem value={AGENDAMENTO_TIPO.TROCA}>Troca</SelectItem>
+                <SelectItem value={AGENDAMENTO_TIPO.DEVOLUCAO}>Devolução</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
+          <div className="flex items-center justify-between gap-3 bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-white">Necessita movimentação?</p>
+              <p className="text-xs text-slate-400">Defina se precisa de ponte rolante, pórtico ou empilhadeira.</p>
+            </div>
+            <Switch
+              checked={!!formData.necessita_movimentacao}
+              onCheckedChange={(v) => setFormData({ ...formData, necessita_movimentacao: !!v, equipamento_preferido: v ? formData.equipamento_preferido : 'nenhum' })}
+            />
+          </div>
+
+          {formData.necessita_movimentacao && (
+            <div>
+              <Label>Equipamento Preferido *</Label>
+              <Select
+                value={formData.equipamento_preferido}
+                onValueChange={(v) => setFormData({ ...formData, equipamento_preferido: v })}
+              >
+                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ponte_rolante">Ponte rolante</SelectItem>
+                  <SelectItem value="portico">Pórtico</SelectItem>
+                  <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>

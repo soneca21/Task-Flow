@@ -6,12 +6,15 @@ import { useAuth } from '@/lib/AuthContext';
 import { dispararAgendamento, isAgendamentoVencido } from '@/lib/agendamentoVeiculos';
 
 export default function AgendamentoMonitor() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   const runningRef = useRef(false);
 
   useEffect(() => {
     if (!isAuthenticated) return undefined;
+    const role = user?.user_metadata?.role || '';
+    const isManager = role === 'admin' || role === 'lider';
+    if (!isManager) return undefined;
 
     let cancelled = false;
 
@@ -50,7 +53,7 @@ export default function AgendamentoMonitor() {
       cancelled = true;
       clearInterval(interval);
     };
-  }, [isAuthenticated, queryClient]);
+  }, [isAuthenticated, queryClient, user]);
 
   return null;
 }

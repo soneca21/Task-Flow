@@ -87,10 +87,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const navigateToLogin = () => {
-    window.location.href = '/Login';
-  };
-
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -101,7 +97,6 @@ export const AuthProvider = ({ children }) => {
       appPublicSettings,
       logout,
       promoteToAdmin,
-      navigateToLogin,
       checkAppState
     }}>
       {children}

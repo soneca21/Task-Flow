@@ -3,10 +3,11 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { createPageUrl } from './utils';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -24,7 +25,7 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 
 const AuthenticatedApp = () => {
   const location = useLocation();
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -41,8 +42,7 @@ const AuthenticatedApp = () => {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
       if (location.pathname.toLowerCase() !== '/login') {
-        navigateToLogin();
-        return null;
+        return <Navigate to="/login" replace />;
       }
     }
   }
@@ -56,15 +56,14 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
       {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
+        <Route key={path} path={createPageUrl(path)} element={
+          <LayoutWrapper currentPageName={path}>
+            <Page />
+          </LayoutWrapper>
+        } />
+      ))}
+      {Object.keys(Pages).map((path) => (
+        <Route key={`${path}-legacy`} path={`/${path}`} element={<Navigate to={createPageUrl(path)} replace />} />
       ))}
       <Route path="*" element={<PageNotFound />} />
     </Routes>

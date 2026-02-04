@@ -48,6 +48,7 @@ const applyFilters = (query, filter) => {
 
 const TABLE_MAP = {
   Tarefa: 'tarefa',
+  TarefaTemplate: 'tarefa_template',
   Funcionario: 'funcionario',
   FrenteTrabalho: 'frente_trabalho',
   Checklist: 'checklist',
@@ -165,7 +166,11 @@ const auth = {
     return data;
   },
   async register(payload) {
-    const { data, error } = await supabase.auth.signUp(payload);
+    const emailRedirectTo = `${window.location.origin}/login`;
+    const normalizedPayload = payload?.options
+      ? payload
+      : { ...payload, options: { emailRedirectTo } };
+    const { data, error } = await supabase.auth.signUp(normalizedPayload);
     if (error) throw error;
     return data;
   },

@@ -11,6 +11,8 @@ create table if not exists agendamento_veiculo (
   veiculo_placa text,
   motorista_id text,
   motorista_nome text,
+  necessita_movimentacao boolean default false,
+  equipamento_preferido text,
   status text,
   observacoes text,
   tarefa_id text,
@@ -32,10 +34,11 @@ create policy agendamento_veiculo_select on agendamento_veiculo
   for select using (auth.role() = 'authenticated');
 
 create policy agendamento_veiculo_insert on agendamento_veiculo
-  for insert with check (auth.role() = 'authenticated');
+  for insert with check (coalesce(auth.jwt()->'user_metadata'->>'role', '') in ('admin','lider'));
 
 create policy agendamento_veiculo_update on agendamento_veiculo
-  for update using (auth.role() = 'authenticated');
+  for update using (coalesce(auth.jwt()->'user_metadata'->>'role', '') in ('admin','lider'))
+  with check (coalesce(auth.jwt()->'user_metadata'->>'role', '') in ('admin','lider'));
 
 create policy agendamento_veiculo_delete on agendamento_veiculo
-  for delete using (auth.role() = 'authenticated');
+  for delete using (coalesce(auth.jwt()->'user_metadata'->>'role', '') in ('admin','lider'));

@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="/manifest.json" />
     <title>Casa do Serralheiro</title>
+    <script>
+      // Restore SPA route from /404.html fallback without triggering a new request.
+      (function () {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var redirect = params.get('redirect');
+          if (!redirect) return;
+          var target = decodeURIComponent(redirect);
+          window.history.replaceState(null, '', target);
+        } catch (_) {
+          // ignore
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

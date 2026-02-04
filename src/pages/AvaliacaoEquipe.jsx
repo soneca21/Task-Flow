@@ -22,7 +22,7 @@ import {
 import { ClipboardCheck, Star } from 'lucide-react';
 import { toast } from 'sonner';
 
-const MANAGER_ROLES = ['admin', 'lider', 'supervisor'];
+const MANAGER_ROLES = ['admin', 'lider'];
 
 export default function AvaliacaoEquipe() {
   const { user } = useAuth();
@@ -127,7 +127,7 @@ export default function AvaliacaoEquipe() {
       <div className="space-y-6">
         <PageHeader
           title="Avaliação da Equipe"
-          subtitle="Acesso restrito para administradores, líderes e supervisores"
+          subtitle="Acesso restrito para administradores e líderes"
           icon={ClipboardCheck}
         />
         <div className="bg-slate-900/70 border border-slate-700 rounded-2xl p-6">

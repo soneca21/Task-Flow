@@ -19,6 +19,7 @@ import { LayoutDashboard } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,12 +39,14 @@ import {
 import { toast } from "sonner";
 import { selecionarMelhoresFuncionarios } from '../components/tarefas/AlocacaoInteligente';
 import { AUTOMATION_CONFIG } from '@/automation/config';
+import SelecionarTemplateDialog from '@/components/tarefas/SelecionarTemplateDialog';
 
 export default function Dashboard() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { data: funcionarioAtual } = useFuncionarioAtual();
   const [quickTaskOpen, setQuickTaskOpen] = useState(false);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [taskForm, setTaskForm] = useState({
     titulo: '',
     descricao: '',
@@ -81,6 +84,11 @@ export default function Dashboard() {
   const { data: frentes = [] } = useQuery({
     queryKey: ['frentes-dashboard'],
     queryFn: () => api.entities.FrenteTrabalho.filter({ ativo: true }),
+  });
+
+  const { data: templates = [] } = useQuery({
+    queryKey: ['templates-dashboard'],
+    queryFn: () => api.entities.TarefaTemplate.filter({ ativo: true }, '-created_date'),
   });
 
   const tarefasProducao = tarefas.filter(t => t.tipo === 'producao');
@@ -133,6 +141,23 @@ export default function Dashboard() {
 
   const openQuickTask = () => {
     setQuickTaskOpen(true);
+  };
+  
+  const applyTemplate = (tpl) => {
+    if (!tpl) return;
+    const frenteNome =
+      tpl.frente_trabalho_nome ||
+      frentes.find((f) => f.id === tpl.frente_trabalho_id)?.nome ||
+      '';
+    setTaskForm((p) => ({
+      ...p,
+      titulo: tpl.nome || '',
+      descricao: tpl.descricao || '',
+      tipo: tpl.tipo || 'outros',
+      prioridade: tpl.prioridade || 'media',
+      frente_trabalho_id: tpl.frente_trabalho_id || '',
+      frente_trabalho_nome: frenteNome,
+    }));
   };
 
   const handleQuickCreate = () => {
@@ -211,7 +236,7 @@ export default function Dashboard() {
           subtitle="Ordens ativas"
           icon={Factory}
           color="amber"
-          linkTo="Produção"
+          linkTo="Producao"
         />
         <StatCard
           title="Veículos no Pátio"
@@ -227,7 +252,7 @@ export default function Dashboard() {
           subtitle="Notas em expedição"
           icon={Package}
           color="purple"
-          linkTo="Expedição"
+          linkTo="Expedicao"
         />
         <StatCard
           title="Pendências"
@@ -235,7 +260,7 @@ export default function Dashboard() {
           subtitle="Alertas críticos"
           icon={AlertTriangle}
           color="red"
-          linkTo="Pendências"
+          linkTo="Pendencias"
         />
         <StatCard
           title="Equipe"
@@ -348,6 +373,22 @@ export default function Dashboard() {
           </DialogHeader>
 
           <div className="space-y-4">
+            {(templates?.length || 0) > 0 && (
+              <div className="flex items-center justify-between gap-3 p-3 bg-slate-950/40 border border-slate-800 rounded-xl">
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-white">Usar template</p>
+                  <p className="text-xs text-slate-500 truncate">Preencha automaticamente os campos principais</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-slate-800"
+                  onClick={() => setTemplatePickerOpen(true)}
+                >
+                  Selecionar
+                </Button>
+              </div>
+            )}
             <div className="space-y-2">
               <label className="text-sm text-slate-300">Título</label>
               <Input
@@ -399,8 +440,11 @@ export default function Dashboard() {
                     <SelectItem value="entrega">Entrega</SelectItem>
                     <SelectItem value="retirada">Retirada</SelectItem>
                     <SelectItem value="carregamento">Carregamento</SelectItem>
+                    <SelectItem value="descarga">Descarga</SelectItem>
                     <SelectItem value="movimentacao">Movimentação</SelectItem>
                     <SelectItem value="conferencia">Conferência</SelectItem>
+                    <SelectItem value="troca">Troca</SelectItem>
+                    <SelectItem value="devolucao">Devolução</SelectItem>
                     <SelectItem value="manutencao">Manutenção</SelectItem>
                     <SelectItem value="outros">Outros</SelectItem>
                   </SelectContent>
@@ -437,7 +481,7 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center justify-between gap-3 pt-2">
-              <Link to="/Tarefas" className="text-sm text-slate-400 hover:text-white">
+              <Link to={createPageUrl('Tarefas')} className="text-sm text-slate-400 hover:text-white">
                 Abrir Tarefas
               </Link>
               <div className="flex items-center gap-2">
@@ -462,6 +506,15 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+      <SelecionarTemplateDialog
+        open={templatePickerOpen}
+        onOpenChange={setTemplatePickerOpen}
+        templates={templates || []}
+        onSelect={(tpl) => {
+          applyTemplate(tpl);
+          setTemplatePickerOpen(false);
+        }}
+      />
 
       </div>
     </>

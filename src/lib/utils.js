@@ -31,3 +31,21 @@ export function formatTelefoneBR(value) {
   const part2 = rest.slice(5, 9);
   return `(${ddd}) ${part1}${part2 ? `-${part2}` : ''}`;
 }
+
+export function fixMojibakePtBr(value) {
+  if (typeof value !== 'string' || !value) return value;
+  // Heuristic: common UTF-8->Latin1 mojibake sequences for PT-BR characters.
+  if (!/(Ã§|Ã£|Ã¡|Ã©|Ã­|Ã³|Ãº|Ãµ|Ãª|Ãº|ÃÇ|Ã)/.test(value)) return value;
+  try {
+    const bytes = Uint8Array.from(value, (c) => c.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  } catch {
+    // Fallback for older environments
+    try {
+      // eslint-disable-next-line no-undef
+      return decodeURIComponent(escape(value));
+    } catch {
+      return value;
+    }
+  }
+}

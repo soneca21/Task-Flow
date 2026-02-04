@@ -3,6 +3,7 @@ import { api } from '@/api/dataClient';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AlertTriangle, CheckCircle, Clock, Users, Zap } from 'lucide-react';
+import { createPageUrl } from '@/utils';
 
 /**
  * Sistema de Notificações Push em Tempo Real
@@ -51,11 +52,11 @@ export default function SistemaNotificacoes() {
           toast.error(`Nova tarefa ${tarefa.prioridade.toUpperCase()}: ${tarefa.titulo}`, {
             icon: <AlertTriangle className="w-5 h-5" />,
             duration: 8000,
-            action: {
-              label: 'Ver',
-              onClick: () => window.location.href = '/Tarefas',
-            },
-          });
+             action: {
+               label: 'Ver',
+              onClick: () => window.location.href = createPageUrl('Tarefas'),
+             },
+           });
           
           // Som de alerta (se suportado)
           if ('vibrate' in navigator) {
@@ -94,11 +95,11 @@ export default function SistemaNotificacoes() {
           toast.error(`PENDÊNCIA CRÍTICA: ${pendencia.titulo}`, {
             icon: <AlertTriangle className="w-5 h-5" />,
             duration: 10000,
-            action: {
-              label: 'Resolver',
-              onClick: () => window.location.href = '/Pendências',
-            },
-          });
+             action: {
+               label: 'Resolver',
+              onClick: () => window.location.href = createPageUrl('Pendencias'),
+             },
+           });
           
           if ('vibrate' in navigator) {
             navigator.vibrate([300, 100, 300, 100, 300]);
@@ -153,7 +154,7 @@ export default function SistemaNotificacoes() {
               duration: 8000,
               action: {
                 label: 'Ver',
-                onClick: () => window.location.href = '/Expedição',
+                onClick: () => window.location.href = createPageUrl('Expedicao'),
               },
             });
           }

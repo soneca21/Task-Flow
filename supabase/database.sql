@@ -16,6 +16,7 @@ drop table if exists frente_trabalho cascade;
 drop table if exists avaliacao_funcionario cascade;
 drop table if exists funcionario cascade;
 drop table if exists tarefa cascade;
+drop table if exists tarefa_template cascade;
 
 -- Schema
 create table if not exists tarefa (
@@ -55,6 +56,21 @@ create table if not exists funcionario (
   data_nascimento date,
   tarefas_ativas integer default 0,
   tarefas_concluidas integer default 0,
+  ativo boolean default true
+);
+
+create table if not exists tarefa_template (
+  id uuid primary key default gen_random_uuid(),
+  created_date timestamptz not null default now(),
+  nome text,
+  descricao text,
+  tipo text,
+  prioridade text,
+  frente_trabalho_id text,
+  frente_trabalho_nome text,
+  checklist_id text,
+  quantidade_profissionais integer default 1,
+  observacoes text,
   ativo boolean default true
 );
 
@@ -225,6 +241,7 @@ create index if not exists idx_agendamento_veiculo_status on agendamento_veiculo
 create index if not exists idx_agendamento_veiculo_created on agendamento_veiculo (created_date desc);
 create index if not exists idx_avaliacao_funcionario_funcionario_id on avaliacao_funcionario (funcionario_id);
 create index if not exists idx_avaliacao_funcionario_created on avaliacao_funcionario (created_date desc);
+create index if not exists idx_tarefa_template_created on tarefa_template (created_date desc);
 
 -- RLS
 alter table tarefa enable row level security;
@@ -240,6 +257,7 @@ alter table pendencia enable row level security;
 alter table configuracao_sistema enable row level security;
 alter table log_auditoria enable row level security;
 alter table app_logs enable row level security;
+alter table tarefa_template enable row level security;
 
 create or replace function public.current_role()
 returns text
@@ -262,7 +280,7 @@ returns boolean
 language sql
 stable
 as $$
-  select public.current_role() in ('admin', 'lider', 'supervisor')
+  select public.current_role() in ('admin', 'lider')
 $$;
 
 create or replace function public.is_colaborador()
@@ -382,6 +400,16 @@ create policy app_logs_select on app_logs for select using (auth.role() = 'authe
 create policy app_logs_insert on app_logs for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy app_logs_update on app_logs for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy app_logs_delete on app_logs for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+
+create policy tarefa_template_select on tarefa_template
+  for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy tarefa_template_insert on tarefa_template
+  for insert with check (is_admin());
+create policy tarefa_template_update on tarefa_template
+  for update using (is_admin())
+  with check (is_admin());
+create policy tarefa_template_delete on tarefa_template
+  for delete using (is_admin());
 
 -- Seed (frentes confirmadas + exemplos)
 insert into frente_trabalho (id, nome, categoria, descricao, cor, ativo, ordem) values
