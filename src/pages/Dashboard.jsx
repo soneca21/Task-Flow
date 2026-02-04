@@ -192,7 +192,6 @@ export default function Dashboard() {
       );
     }
 
-    const autoAssigned = funcionariosSelecionados.length > 0;
     createTarefaMutation.mutate({
       titulo: taskForm.titulo,
       descricao: taskForm.descricao,
@@ -202,9 +201,9 @@ export default function Dashboard() {
       frente_trabalho_nome: taskForm.frente_trabalho_nome,
       funcionarios_designados: funcionariosSelecionados.map(f => f.id),
       funcionarios_nomes: funcionariosSelecionados.map(f => f.nome),
-      quantidade_profissionais: autoAssigned ? funcionariosSelecionados.length : 1,
-      status: autoAssigned ? 'em_execucao' : 'aguardando_alocacao',
-      data_inicio: autoAssigned ? new Date().toISOString() : null,
+      quantidade_profissionais: funcionariosSelecionados.length || 1,
+      status: 'aguardando_alocacao',
+      data_inicio: null,
     });
   };
 

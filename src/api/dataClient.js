@@ -52,6 +52,7 @@ const TABLE_MAP = {
   Funcionario: 'funcionario',
   FrenteTrabalho: 'frente_trabalho',
   Checklist: 'checklist',
+  ChecklistExecucao: 'checklist_execucao',
   Nota: 'nota',
   Rota: 'rota',
   Veiculo: 'veiculo',

@@ -19,7 +19,7 @@ export default function MeuPerfil() {
   const [isCopying, setIsCopying] = useState(false);
   const [isPromoting, setIsPromoting] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [editForm, setEditForm] = useState({ telefone: '', data_nascimento: '' });
+  const [editForm, setEditForm] = useState({ nome: '', telefone: '', data_nascimento: '' });
 
   const isDev = import.meta.env.DEV;
   const role = user?.user_metadata?.role || '';
@@ -166,13 +166,60 @@ export default function MeuPerfil() {
 
   const currentStatus = funcionarioAtual?.status || 'disponivel';
 
+  const parseBirthdateInput = (value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return null;
+
+    const toISO = (y, m, d) => `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const isValidYMD = (y, m, d) => {
+      const yy = Number(y);
+      const mm = Number(m);
+      const dd = Number(d);
+      if (!Number.isInteger(yy) || !Number.isInteger(mm) || !Number.isInteger(dd)) return false;
+      if (yy < 1900 || yy > 2100) return false;
+      if (mm < 1 || mm > 12) return false;
+      if (dd < 1 || dd > 31) return false;
+      const dt = new Date(Date.UTC(yy, mm - 1, dd));
+      return dt.getUTCFullYear() === yy && dt.getUTCMonth() === mm - 1 && dt.getUTCDate() === dd;
+    };
+
+    // Accept YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      const [y, m, d] = raw.split('-');
+      if (!isValidYMD(y, m, d)) return undefined;
+      return raw;
+    }
+
+    // Accept DD/MM/YYYY or DD-MM-YYYY
+    if (/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(raw)) {
+      const [d, m, y] = raw.split(/\/|-/);
+      if (!isValidYMD(y, m, d)) return undefined;
+      return toISO(y, m, d);
+    }
+
+    return undefined;
+  };
+
+  const formatISODateToBR = (value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+      const [y, m, d] = raw.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    return raw;
+  };
+
   const openEdit = () => {
     setEditForm({
+      nome: funcionarioAtual?.nome || user?.user_metadata?.full_name || '',
       telefone: funcionarioAtual?.telefone || '',
-      data_nascimento: funcionarioAtual?.data_nascimento || '',
+      data_nascimento: formatISODateToBR(funcionarioAtual?.data_nascimento || ''),
     });
     setEditOpen(true);
   };
+
+  const displayName = funcionarioAtual?.nome || user?.user_metadata?.full_name || 'Usuario';
 
   return (
     <div className="space-y-6">
@@ -213,12 +260,12 @@ export default function MeuPerfil() {
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
               <span className="text-amber-400 font-bold text-lg">
-                {user?.user_metadata?.full_name?.[0] || user?.email?.[0] || 'U'}
+                {displayName?.[0] || user?.email?.[0] || 'U'}
               </span>
             </div>
             <div>
               <p className="text-lg font-semibold text-white">
-                {user?.user_metadata?.full_name || 'Usuário'}
+                {displayName}
               </p>
               <p className="text-sm text-slate-400">{user?.email || '-'}</p>
             </div>
@@ -478,6 +525,17 @@ export default function MeuPerfil() {
 
           <div className="space-y-4 py-2">
             <div>
+              <Label>Nome</Label>
+              <Input
+                value={editForm.nome}
+                onChange={(e) => setEditForm((prev) => ({ ...prev, nome: e.target.value }))}
+                className="bg-slate-800 border-slate-700 mt-1"
+                placeholder="Seu nome"
+                autoComplete="name"
+              />
+            </div>
+
+            <div>
               <Label>Telefone</Label>
               <Input
                 value={editForm.telefone}
@@ -494,10 +552,11 @@ export default function MeuPerfil() {
               <div className="relative mt-1">
                 <CalendarDays className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                 <Input
-                  type="date"
                   value={editForm.data_nascimento || ''}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, data_nascimento: e.target.value }))}
                   className="pl-10 bg-slate-800 border-slate-700"
+                  placeholder="DD/MM/AAAA ou AAAA-MM-DD"
+                  inputMode="numeric"
                 />
               </div>
               <p className="text-xs text-slate-500 mt-1">Usamos apenas para identificação interna (aniversário).</p>
@@ -510,10 +569,19 @@ export default function MeuPerfil() {
             </Button>
             <Button
               className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
-              onClick={() => updateFuncionarioMutation.mutate({
-                telefone: editForm.telefone || null,
-                data_nascimento: editForm.data_nascimento || null,
-              })}
+              onClick={() => {
+                const parsedBirthdate = parseBirthdateInput(editForm.data_nascimento);
+                if (parsedBirthdate === undefined) {
+                  toast.error('Data de nascimento invalida. Use DD/MM/AAAA ou AAAA-MM-DD.');
+                  return;
+                }
+                const nomeValue = editForm.nome?.trim() || funcionarioAtual?.nome || null;
+                updateFuncionarioMutation.mutate({
+                  nome: nomeValue,
+                  telefone: editForm.telefone || null,
+                  data_nascimento: parsedBirthdate,
+                });
+              }}
               disabled={updateFuncionarioMutation.isPending}
             >
               {updateFuncionarioMutation.isPending ? 'Salvando...' : 'Salvar'}

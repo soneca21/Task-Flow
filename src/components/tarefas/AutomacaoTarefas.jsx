@@ -99,10 +99,7 @@ export default function AutomacaoTarefas() {
  */
 export function useSincronizacaoTarefas() {
   const queryClient = useQueryClient();
-  const { user, isAuthenticated } = useAuth();
-  const role = user?.user_metadata?.role || '';
-  const isManager = role === 'admin' || role === 'lider';
-  const runningRef = useRef(false);
+  const { user } = useAuth();
 
   const sincronizar = async () => {
     // Verificar se há tarefas pendentes no localStorage
@@ -120,26 +117,19 @@ export function useSincronizacaoTarefas() {
         const data = JSON.parse(localStorage.getItem(key));
         if (data && data.tarefaId) {
           const tarefa = await api.entities.Tarefa.get(data.tarefaId);
-          // Tentar enviar
-          await api.entities.Tarefa.update(data.tarefaId, {
-            checklist_preenchido: data.respostas,
-            status: 'concluida',
-            data_conclusao: new Date().toISOString(),
+          await api.entities.ChecklistExecucao.create({
+            tarefa_id: data.tarefaId,
+            checklist_id: data.checklistId || tarefa?.checklist_id || null,
+            funcionario_id: data.funcionarioId || funcionarioAtual?.id || null,
+            funcionario_nome: data.funcionarioNome || funcionarioAtual?.nome || null,
+            status: 'salvo',
+            respostas: data.respostas,
           });
 
-          if (tarefa?.funcionarios_designados?.length > 0) {
-            for (const funcId of tarefa.funcionarios_designados) {
-              if (!isAdmin && funcionarioAtual?.id !== funcId) continue;
-              const func = await api.entities.Funcionario.get(funcId);
-              if (func) {
-                await api.entities.Funcionario.update(funcId, {
-                  status: 'disponivel',
-                  tarefas_ativas: Math.max(0, (func.tarefas_ativas || 1) - 1),
-                  tarefas_concluidas: (func.tarefas_concluidas || 0) + 1,
-                });
-              }
-            }
-          }
+          // Atualizar tarefa com o último checklist salvo (sem concluir)
+          await api.entities.Tarefa.update(data.tarefaId, {
+            checklist_preenchido: data.respostas,
+          });
 
           // Remover do localStorage
           localStorage.removeItem(key);

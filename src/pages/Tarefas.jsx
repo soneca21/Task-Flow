@@ -19,10 +19,12 @@ import {
   Trash2,
   MoreVertical,
   AlertCircle,
-  FileCheck
+  FileCheck,
+  History
 } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import ExecutarChecklist from '../components/tarefas/ExecutarChecklist';
+import ChecklistHistoricoDialog from '../components/tarefas/ChecklistHistoricoDialog';
 import { useSincronizacaoTarefas } from '../components/tarefas/AutomacaoTarefas';
 import { selecionarMelhoresFuncionarios } from '../components/tarefas/AlocacaoInteligente';
 import { Button } from "@/components/ui/button";
@@ -70,6 +72,8 @@ export default function Tarefas() {
   const [executandoChecklist, setExecutandoChecklist] = useState(null);
   const [checklistExecucao, setChecklistExecucao] = useState(null);
   const [checklistReadOnly, setChecklistReadOnly] = useState(false);
+  const [historicoOpen, setHistoricoOpen] = useState(false);
+  const [historicoTarefa, setHistoricoTarefa] = useState(null);
 
   // Sincronização ao montar
   useEffect(() => {
@@ -149,15 +153,14 @@ export default function Tarefas() {
       };
     }
 
-    const shouldStart = !data.status || data.status === 'criada' || data.status === 'aguardando_alocacao';
     return {
       payload: {
         ...data,
         funcionarios_designados: selecionados.map(f => f.id),
         funcionarios_nomes: selecionados.map(f => f.nome),
         quantidade_profissionais: selecionados.length,
-        status: shouldStart ? 'em_execucao' : data.status,
-        data_inicio: shouldStart ? new Date().toISOString() : data.data_inicio,
+        status: 'aguardando_alocacao',
+        data_inicio: null,
       },
       autoAssigned: true,
     };
@@ -167,21 +170,8 @@ export default function Tarefas() {
     mutationFn: async (data) => {
       const { payload, autoAssigned } = resolveAutoAlocacao(data);
       const tarefa = await api.entities.Tarefa.create(payload);
-      // Atualizar status dos funcionários designados
-      if (payload.funcionarios_designados?.length > 0) {
-        for (const funcId of payload.funcionarios_designados) {
-          if (!isAdmin && funcionarioAtual?.id !== funcId) continue;
-          const func = funcionarios.find(f => f.id === funcId);
-          if (func) {
-            await api.entities.Funcionario.update(funcId, {
-              status: 'ocupado',
-              tarefas_ativas: (func.tarefas_ativas || 0) + 1
-            });
-          }
-        }
-      }
       if (autoAssigned) {
-        toast.success('Funcionário alocado automaticamente');
+        toast.success('Funcionário atribuído à tarefa');
       }
       return tarefa;
     },
@@ -209,9 +199,37 @@ export default function Tarefas() {
     onError: () => toast.error('Você não tem permissão para excluir esta tarefa'),
   });
 
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  const role = user?.user_metadata?.role || '';
+  const isAdmin = role === 'admin';
+  const isManager = role === 'admin' || role === 'lider';
   const canEditTarefa = (tarefa) =>
     isAdmin || (funcionarioAtual && tarefa.funcionarios_designados?.includes(funcionarioAtual.id));
+
+  const tarefasVisiveis = isManager
+    ? tarefas
+    : tarefas.filter((t) => {
+        if (!funcionarioAtual?.id) return false;
+        const assigned = t.funcionarios_designados?.includes(funcionarioAtual.id);
+        if (!assigned) return false;
+        if (!t.frente_trabalho_id) return true;
+        const frentes = funcionarioAtual.frentes_trabalho || [];
+        return frentes.length === 0 || frentes.includes(t.frente_trabalho_id);
+      });
+
+  const marcarChecklistConcluido = async (tarefaId) => {
+    try {
+      const rows = await api.entities.ChecklistExecucao.filter({ tarefa_id: tarefaId }, '-created_date', 1);
+      const execucao = rows?.[0];
+      if (execucao) {
+        await api.entities.ChecklistExecucao.update(execucao.id, {
+          status: 'concluido',
+          data_conclusao: new Date().toISOString(),
+        });
+      }
+    } catch {
+      // Best-effort
+    }
+  };
 
   const finalizarTarefa = async (tarefa, extraData = {}) => {
     if (tarefa.checklist_id && (!tarefa.checklist_preenchido || tarefa.checklist_preenchido.length === 0)) {
@@ -225,6 +243,10 @@ export default function Tarefas() {
         status: 'concluida',
         data_conclusao: new Date().toISOString(),
       });
+
+      if (tarefa.checklist_id) {
+        await marcarChecklistConcluido(tarefa.id);
+      }
 
       if (tarefa.funcionarios_designados?.length > 0) {
         for (const funcId of tarefa.funcionarios_designados) {
@@ -268,13 +290,14 @@ export default function Tarefas() {
     }
   };
 
-  const handleUpdateStatus = (tarefa, newStatus) => {
+  const handleUpdateStatus = async (tarefa, newStatus) => {
     if (!canEditTarefa(tarefa)) {
       toast.error('Somente o responsável pode editar esta tarefa');
       return;
     }
     if (newStatus === 'concluida') {
-      if (tarefa.checklist_id) {
+      const checklistPreenchido = Array.isArray(tarefa.checklist_preenchido) && tarefa.checklist_preenchido.length > 0;
+      if (tarefa.checklist_id && !checklistPreenchido) {
         handleExecutarChecklist(tarefa);
         return;
       }
@@ -285,7 +308,54 @@ export default function Tarefas() {
     if (newStatus === 'em_execucao' && !tarefa.data_inicio) {
       updates.data_inicio = new Date().toISOString();
     }
-    updateMutation.mutate({ id: tarefa.id, data: updates });
+    const optimistic = {
+      ...tarefa,
+      ...updates,
+      data_inicio: updates.data_inicio ?? tarefa.data_inicio,
+    };
+    queryClient.setQueryData(['tarefas'], (old = []) =>
+      Array.isArray(old) ? old.map(t => (t.id === tarefa.id ? optimistic : t)) : old
+    );
+    try {
+      const updated = await updateMutation.mutateAsync({ id: tarefa.id, data: updates });
+      if (!updated || updated.status !== updates.status) {
+        queryClient.invalidateQueries({ queryKey: ['tarefas'] });
+        toast.error('Não foi possível alterar o status da tarefa');
+        return;
+      }
+      if (updated?.id) {
+        queryClient.setQueryData(['tarefas'], (old = []) =>
+          Array.isArray(old) ? old.map(t => (t.id === updated.id ? { ...t, ...updated } : t)) : old
+        );
+      }
+      if (newStatus === 'pausada') {
+        toast.success('Tarefa pausada');
+      }
+      if (newStatus === 'em_execucao') {
+        toast.success('Tarefa iniciada');
+      }
+    } catch (error) {
+      queryClient.invalidateQueries({ queryKey: ['tarefas'] });
+      toast.error(error?.message || 'Erro ao atualizar status da tarefa');
+      return;
+    }
+
+    if (newStatus === 'em_execucao' && tarefa.funcionarios_designados?.length > 0) {
+      tarefa.funcionarios_designados.forEach(async (funcId) => {
+        if (!isAdmin && funcionarioAtual?.id !== funcId) return;
+        try {
+          const func = funcionarios.find(f => f.id === funcId) || await api.entities.Funcionario.get(funcId);
+          if (func) {
+            await api.entities.Funcionario.update(funcId, {
+              status: 'ocupado',
+              tarefas_ativas: (func.tarefas_ativas || 0) + 1,
+            });
+          }
+        } catch {
+          // Best-effort
+        }
+      });
+    }
   };
 
   const handleExecutarChecklist = async (tarefa) => {
@@ -294,16 +364,20 @@ export default function Tarefas() {
       return;
     }
     try {
-      const checklist = await api.entities.Checklist.get(tarefa.checklist_id);
-      setExecutandoChecklist(tarefa);
+      const [checklist, tarefaAtualizada] = await Promise.all([
+        api.entities.Checklist.get(tarefa.checklist_id),
+        api.entities.Tarefa.get(tarefa.id),
+      ]);
+      const tarefaRef = tarefaAtualizada || tarefa;
+      setExecutandoChecklist(tarefaRef);
       setChecklistExecucao(checklist);
-      setChecklistReadOnly(!canEditTarefa(tarefa));
+      setChecklistReadOnly(tarefaRef.status === 'concluida' || !canEditTarefa(tarefaRef));
     } catch (error) {
       toast.error('Erro ao carregar checklist');
     }
   };
 
-  const filteredTarefas = tarefas.filter(t => {
+  const filteredTarefas = tarefasVisiveis.filter(t => {
     const matchSearch = t.titulo?.toLowerCase().includes(search.toLowerCase()) ||
                        t.nota_numero?.toLowerCase().includes(search.toLowerCase());
     const matchStatus = filterStatus === 'todos' || t.status === filterStatus;
@@ -340,10 +414,10 @@ export default function Tarefas() {
   };
 
   const stats = {
-    total: tarefas.filter(t => t.status !== 'concluida' && t.status !== 'cancelada').length,
-    emExecucao: tarefas.filter(t => t.status === 'em_execucao').length,
-    aguardando: tarefas.filter(t => t.status === 'aguardando_alocacao' || t.status === 'criada').length,
-    concluidas: tarefas.filter(t => t.status === 'concluida').length,
+    total: tarefasVisiveis.filter(t => t.status !== 'concluida' && t.status !== 'cancelada').length,
+    emExecucao: tarefasVisiveis.filter(t => t.status === 'em_execucao').length,
+    aguardando: tarefasVisiveis.filter(t => t.status === 'aguardando_alocacao' || t.status === 'criada').length,
+    concluidas: tarefasVisiveis.filter(t => t.status === 'concluida').length,
   };
 
   return (
@@ -441,6 +515,8 @@ export default function Tarefas() {
       <div className="space-y-3">
         {filteredTarefas.map(tarefa => {
           const canEdit = canEditTarefa(tarefa);
+          const checklistPreenchido = Array.isArray(tarefa.checklist_preenchido) && tarefa.checklist_preenchido.length > 0;
+          const canOpenMenu = canEdit || isManager;
           return (
           <div 
             key={tarefa.id}
@@ -497,20 +573,22 @@ export default function Tarefas() {
               </div>
 
               <div className="flex items-center gap-2 flex-wrap">
-                {tarefa.checklist_id && tarefa.status === 'em_execucao' && (
-                  <Button 
-                    size="sm"
-                    className="bg-purple-500 hover:bg-purple-600 touch-btn"
-                    onClick={() => handleExecutarChecklist(tarefa)}
-                  >
-                    <FileCheck className="w-4 h-4 mr-1" />
-                    {canEdit ? 'Checklist' : 'Ver Checklist'}
-                  </Button>
-                )}
                 {(tarefa.status === 'criada' || tarefa.status === 'aguardando_alocacao') && (
                   <Button 
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 touch-btn"
+                    className="bg-blue-500 hover:bg-blue-600 touch-btn order-1"
+                    onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
+                    disabled={!canEdit}
+                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                  >
+                    <Play className="w-4 h-4 mr-1" />
+                    Iniciar
+                  </Button>
+                )}
+                {tarefa.status === 'pausada' && (
+                  <Button 
+                    size="sm"
+                    className="bg-blue-500 hover:bg-blue-600 touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -520,52 +598,59 @@ export default function Tarefas() {
                   </Button>
                 )}
                 {tarefa.status === 'em_execucao' && (
-                  <>
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 touch-btn"
-                      onClick={() => handleUpdateStatus(tarefa, 'pausada')}
-                      disabled={!canEdit}
-                      title={!canEdit ? 'Somente o responsável pode editar' : undefined}
-                    >
-                      <Pause className="w-4 h-4 mr-1" />
-                      Pausar
-                    </Button>
-                    {!tarefa.checklist_id && (
-                      <Button 
-                        size="sm"
-                        className="bg-green-500 hover:bg-green-600 touch-btn"
-                        onClick={() => handleUpdateStatus(tarefa, 'concluida')}
-                        disabled={!canEdit}
-                        title={!canEdit ? 'Somente o responsável pode editar' : undefined}
-                      >
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Concluir
-                      </Button>
-                    )}
-                  </>
-                )}
-                {tarefa.status === 'pausada' && (
                   <Button 
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 touch-btn"
-                    onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
+                    variant="outline"
+                    className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 touch-btn order-1"
+                    onClick={() => handleUpdateStatus(tarefa, 'pausada')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
                   >
-                    <Play className="w-4 h-4 mr-1" />
-                    Retomar
+                    <Pause className="w-4 h-4 mr-1" />
+                    Pausar
                   </Button>
                 )}
-                {(canEdit || isAdmin) && (
+                {tarefa.checklist_id && (
+                  <Button 
+                    size="sm"
+                    className="bg-purple-500 hover:bg-purple-600 touch-btn order-2"
+                    onClick={() => handleExecutarChecklist(tarefa)}
+                  >
+                    <FileCheck className="w-4 h-4 mr-1" />
+                    {canEdit && tarefa.status !== 'concluida' ? 'Checklist' : 'Ver Checklist'}
+                  </Button>
+                )}
+                {tarefa.status === 'em_execucao' && (
+                  <Button 
+                    size="sm"
+                    className="bg-green-500 hover:bg-green-600 touch-btn order-3"
+                    onClick={() => handleUpdateStatus(tarefa, 'concluida')}
+                    disabled={!canEdit || (tarefa.checklist_id && !checklistPreenchido)}
+                    title={
+                      !canEdit
+                        ? 'Somente o responsável pode editar'
+                        : (tarefa.checklist_id && !checklistPreenchido)
+                          ? 'Preencha o checklist para concluir'
+                          : undefined
+                    }
+                  >
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Concluir
+                  </Button>
+                )}
+                {canOpenMenu && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white order-5">
                         <MoreVertical className="w-5 h-5" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
+                      {tarefa.checklist_id && isManager && (
+                        <DropdownMenuItem onClick={() => { setHistoricoTarefa(tarefa); setHistoricoOpen(true); }}>
+                          <History className="w-4 h-4 mr-2" /> Histórico de Checklists
+                        </DropdownMenuItem>
+                      )}
                       {canEdit && (
                         <DropdownMenuItem onClick={() => { setEditingTarefa(tarefa); setDialogOpen(true); }}>
                           <Edit2 className="w-4 h-4 mr-2" /> Editar
@@ -606,6 +691,16 @@ export default function Tarefas() {
         templates={templates}
         onSave={handleSave}
         isLoading={createMutation.isPending || updateMutation.isPending}
+      />
+
+      <ChecklistHistoricoDialog
+        open={historicoOpen}
+        onOpenChange={(open) => {
+          setHistoricoOpen(open);
+          if (!open) setHistoricoTarefa(null);
+        }}
+        tarefa={historicoTarefa}
+        checklists={checklists}
       />
 
       {/* Executar Checklist */}

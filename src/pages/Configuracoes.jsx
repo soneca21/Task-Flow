@@ -1228,7 +1228,7 @@ export default function Configuracoes() {
                             log.acao === 'editar' && "bg-blue-500/20 text-blue-400",
                             log.acao === 'excluir' && "bg-red-500/20 text-red-400",
                             log.acao === 'aprovar' && "bg-amber-500/20 text-amber-400",
-                            log.acao === 'validar_checklist' && "bg-purple-500/20 text-purple-400",
+                            (log.acao === 'validar_checklist' || log.acao === 'salvar_checklist') && "bg-purple-500/20 text-purple-400",
                             log.acao === 'liberar_veiculo' && "bg-cyan-500/20 text-cyan-400",
                           )}>
                             {log.acao}

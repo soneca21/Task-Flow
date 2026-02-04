@@ -8,9 +8,7 @@ import {
   Upload,
   Save,
   Loader2,
-  AlertCircle,
-  WifiOff,
-  CheckCheck
+  WifiOff
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,23 +46,6 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
   const exigeFotoEmTodosItens = fotoObrigatoriaTodos || fotoObrigatoriaConferencia;
 
   useEffect(() => {
-    // Carregar respostas salvas do localStorage (modo offline)
-    const saved = localStorage.getItem(`checklist_${tarefa.id}`);
-    if (readOnly && tarefa.checklist_preenchido) {
-      setRespostas(tarefa.checklist_preenchido);
-    } else if (saved) {
-      setRespostas(JSON.parse(saved));
-    } else {
-      // Inicializar respostas vazias
-      setRespostas(checklist.itens?.map((item, i) => ({
-        item: item.pergunta,
-        resposta: '',
-        foto_url: '',
-        data_hora: new Date().toISOString(),
-        index: i,
-      })) || []);
-    }
-
     // Monitorar status online/offline
     const handleOnline = () => {
       setIsOffline(false);
@@ -83,7 +64,55 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [tarefa.id, checklist, readOnly]);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const carregarRespostas = async () => {
+      const saved = localStorage.getItem(`checklist_${tarefa.id}`);
+      const savedParsed = saved ? JSON.parse(saved) : null;
+      let execucao = null;
+
+      if (!isOffline) {
+        try {
+          const rows = await api.entities.ChecklistExecucao.filter(
+            { tarefa_id: tarefa.id },
+            '-created_date',
+            1
+          );
+          execucao = rows?.[0] || null;
+        } catch (error) {
+          // Best-effort
+        }
+      }
+
+      if (!active) return;
+
+      if (!readOnly && Array.isArray(savedParsed) && savedParsed.length > 0) {
+        setRespostas(savedParsed);
+      } else if (Array.isArray(execucao?.respostas) && execucao.respostas.length > 0) {
+        setRespostas(execucao.respostas);
+      } else if (Array.isArray(tarefa.checklist_preenchido) && tarefa.checklist_preenchido.length > 0) {
+        setRespostas(tarefa.checklist_preenchido);
+      } else {
+        // Inicializar respostas vazias
+        setRespostas(checklist.itens?.map((item, i) => ({
+          item: item.pergunta,
+          resposta: '',
+          foto_url: '',
+          data_hora: new Date().toISOString(),
+          index: i,
+        })) || []);
+      }
+
+    };
+
+    carregarRespostas();
+    return () => {
+      active = false;
+    };
+  }, [tarefa.id, tarefa.checklist_preenchido, checklist, readOnly, isOffline]);
 
   // Auto-save no localStorage
   useEffect(() => {
@@ -204,7 +233,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     return erros;
   };
 
-  const handleConcluir = async () => {
+  const handleSalvarChecklist = async () => {
     if (readOnly) {
       toast.info('Somente visualização');
       return;
@@ -222,6 +251,9 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         toast.warning('Checklist salvo localmente. Será enviado quando houver conexão.');
         localStorage.setItem(`checklist_pending_${tarefa.id}`, JSON.stringify({
           tarefaId: tarefa.id,
+          checklistId: tarefa.checklist_id,
+          funcionarioId: funcionarioAtual?.id || null,
+          funcionarioNome: funcionarioAtual?.nome || null,
           respostas,
           timestamp: new Date().toISOString(),
         }));
@@ -229,42 +261,34 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         const respostasUpload = await Promise.all(
           respostas.map((r, i) => uploadDataUrlIfNeeded(r, i))
         );
-        // Atualizar tarefa com checklist preenchido
-        await api.entities.Tarefa.update(tarefa.id, {
-          checklist_preenchido: respostasUpload,
-          status: 'concluida',
-          data_conclusao: new Date().toISOString(),
+        await api.entities.ChecklistExecucao.create({
+          tarefa_id: tarefa.id,
+          checklist_id: tarefa.checklist_id || checklist?.id || null,
+          funcionario_id: funcionarioAtual?.id || null,
+          funcionario_nome: funcionarioAtual?.nome || null,
+          status: 'salvo',
+          respostas: respostasUpload,
         });
 
-        // Liberar funcionários (admin libera todos; usuário libera apenas o próprio)
-        if (tarefa.funcionarios_designados?.length > 0) {
-          for (const funcId of tarefa.funcionarios_designados) {
-            if (!isAdmin && funcionarioAtual?.id !== funcId) continue;
-            const func = await api.entities.Funcionario.get(funcId);
-            if (func) {
-              await api.entities.Funcionario.update(funcId, {
-                status: 'disponivel',
-                tarefas_ativas: Math.max(0, (func.tarefas_ativas || 1) - 1),
-                tarefas_concluidas: (func.tarefas_concluidas || 0) + 1,
-              });
-            }
-          }
-        }
+        // Atualizar tarefa com último checklist preenchido (sem concluir)
+        await api.entities.Tarefa.update(tarefa.id, {
+          checklist_preenchido: respostasUpload,
+        });
 
         // Log de auditoria
         await api.entities.LogAuditoria.create({
-          acao: 'validar_checklist',
+          acao: 'salvar_checklist',
           entidade: 'Tarefa',
           entidade_id: tarefa.id,
-          descricao: `Checklist concluído para tarefa ${tarefa.titulo}`,
+          descricao: `Checklist salvo para tarefa ${tarefa.titulo}`,
         });
 
-        // Limpar localStorage
-        localStorage.removeItem(`checklist_${tarefa.id}`);
+        // Atualizar localStorage com o último conteúdo salvo
+        localStorage.setItem(`checklist_${tarefa.id}`, JSON.stringify(respostasUpload));
         localStorage.removeItem(`checklist_pending_${tarefa.id}`);
 
         queryClient.invalidateQueries({ queryKey: ['tarefas'] });
-        toast.success('Checklist concluído com sucesso!');
+        toast.success('Checklist salvo com sucesso!');
       }
 
       onConcluir?.();
@@ -554,28 +578,28 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
             {!readOnly && (
               <Button
                 className="flex-1 bg-green-500 hover:bg-green-600 touch-btn"
-                onClick={handleConcluir}
-                disabled={isSaving || percentual < 100}
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <CheckCheck className="w-4 h-4 mr-2" />
-                    Concluir Checklist
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-          {!readOnly && percentual < 100 && (
-            <p className="text-xs text-amber-400 text-center mt-2">
-              Preencha todos os campos obrigatórios para concluir
-            </p>
+              onClick={handleSalvarChecklist}
+              disabled={isSaving || percentual < 100}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Checklist
+                </>
+              )}
+            </Button>
           )}
+        </div>
+        {!readOnly && percentual < 100 && (
+          <p className="text-xs text-amber-400 text-center mt-2">
+            Preencha todos os campos obrigatórios para salvar
+          </p>
+        )}
         </div>
       </div>
     </div>

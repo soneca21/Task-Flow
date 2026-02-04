@@ -12,6 +12,7 @@ drop table if exists veiculo cascade;
 drop table if exists rota cascade;
 drop table if exists nota cascade;
 drop table if exists checklist cascade;
+drop table if exists checklist_execucao cascade;
 drop table if exists frente_trabalho cascade;
 drop table if exists avaliacao_funcionario cascade;
 drop table if exists funcionario cascade;
@@ -107,6 +108,18 @@ create table if not exists checklist (
   itens jsonb,
   ativo boolean default true,
   bloqueio_saida boolean default false
+);
+
+create table if not exists checklist_execucao (
+  id uuid primary key default gen_random_uuid(),
+  created_date timestamptz not null default now(),
+  tarefa_id text,
+  checklist_id text,
+  funcionario_id text,
+  funcionario_nome text,
+  status text,
+  respostas jsonb,
+  data_conclusao timestamptz
 );
 
 create table if not exists nota (
@@ -242,6 +255,8 @@ create index if not exists idx_agendamento_veiculo_created on agendamento_veicul
 create index if not exists idx_avaliacao_funcionario_funcionario_id on avaliacao_funcionario (funcionario_id);
 create index if not exists idx_avaliacao_funcionario_created on avaliacao_funcionario (created_date desc);
 create index if not exists idx_tarefa_template_created on tarefa_template (created_date desc);
+create index if not exists idx_checklist_execucao_tarefa on checklist_execucao (tarefa_id);
+create index if not exists idx_checklist_execucao_created on checklist_execucao (created_date desc);
 
 -- RLS
 alter table tarefa enable row level security;
@@ -249,6 +264,7 @@ alter table funcionario enable row level security;
 alter table avaliacao_funcionario enable row level security;
 alter table frente_trabalho enable row level security;
 alter table checklist enable row level security;
+alter table checklist_execucao enable row level security;
 alter table nota enable row level security;
 alter table rota enable row level security;
 alter table veiculo enable row level security;
@@ -355,6 +371,51 @@ create policy checklist_select on checklist for select using (auth.role() = 'aut
 create policy checklist_insert on checklist for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy checklist_update on checklist for update using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy checklist_delete on checklist for delete using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+
+create policy checklist_execucao_select on checklist_execucao
+  for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
+create policy checklist_execucao_insert on checklist_execucao
+  for insert with check (
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
+    and (
+      is_manager()
+      or exists (
+        select 1
+          from tarefa t
+          join funcionario f on f.user_id = auth.uid()
+         where t.id::text = checklist_execucao.tarefa_id
+           and f.id::text = any (t.funcionarios_designados)
+      )
+    )
+  );
+create policy checklist_execucao_update on checklist_execucao
+  for update using (
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
+    and (
+      is_manager()
+      or exists (
+        select 1
+          from tarefa t
+          join funcionario f on f.user_id = auth.uid()
+         where t.id::text = checklist_execucao.tarefa_id
+           and f.id::text = any (t.funcionarios_designados)
+      )
+    )
+  )
+  with check (
+    auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador')
+    and (
+      is_manager()
+      or exists (
+        select 1
+          from tarefa t
+          join funcionario f on f.user_id = auth.uid()
+         where t.id::text = checklist_execucao.tarefa_id
+           and f.id::text = any (t.funcionarios_designados)
+      )
+    )
+  );
+create policy checklist_execucao_delete on checklist_execucao for delete using (is_admin());
 
 create policy nota_select on nota for select using (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));
 create policy nota_insert on nota for insert with check (auth.role() = 'authenticated' and public.current_role() in ('admin','lider','operador','colaborador'));

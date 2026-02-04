@@ -119,23 +119,14 @@ export async function criarTarefaAutomatica({ nota, api, queryClient, config = A
       prioridade: nota.prioridade === config.prioridadeUrgente
         ? config.prioridadeUrgente
         : config.tarefaPrioridadeDefault,
-      status: funcionariosSelecionados.length > 0
-        ? config.tarefaStatusExecucao
-        : config.tarefaStatusAguardando,
+      status: config.tarefaStatusAguardando,
       checklist_id: checklist?.id || '',
-      data_inicio: funcionariosSelecionados.length > 0 ? new Date().toISOString() : null,
+      data_inicio: null,
     });
 
     if (frente.categoria === config.frenteCategoriaProducao) {
       await api.entities.Nota.update(nota.id, {
         status: config.notaStatusProducao,
-      });
-    }
-
-    for (const funcSelecionado of funcionariosSelecionados) {
-      await api.entities.Funcionario.update(funcSelecionado.id, {
-        status: config.funcionarioStatusOcupado,
-        tarefas_ativas: (funcSelecionado.tarefas_ativas || 0) + 1,
       });
     }
 
