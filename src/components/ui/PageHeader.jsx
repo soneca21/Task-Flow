@@ -7,14 +7,14 @@ export default function PageHeader({ title, subtitle, icon: Icon, actions, class
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="flex items-center gap-2">
           {Icon && (
-            <div className="p-2 rounded-xl bg-slate-800/80 border border-slate-700/50">
-              <Icon className="w-5 h-5 text-amber-400" />
+            <div className="p-2 rounded-2xl bg-card border border-border">
+              <Icon className="w-5 h-5 text-primary" />
             </div>
           )}
           <div className="ml-2">
-            <h1 className="text-2xl lg:text-3xl font-bold text-white mt-2">{title}</h1>
+            <h1 className="text-2xl lg:text-3xl font-bold text-foreground mt-2">{title}</h1>
             {subtitle && (
-              <p className="text-slate-400 mt-1">{subtitle}</p>
+              <p className="text-muted-foreground mt-1">{subtitle}</p>
             )}
           </div>
         </div>

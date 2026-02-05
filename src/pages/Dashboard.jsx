@@ -272,20 +272,20 @@ export default function Dashboard() {
       {/* Detalhes Rápidos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Tarefas Recentes */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white flex items-center gap-2">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
               <ClipboardCheck className="w-5 h-5 text-blue-400" />
               Tarefas em Execução
             </h3>
-            <span className="text-xs text-slate-500">{tarefas.filter(t => t.status === 'em_execucao').length} ativas</span>
+            <span className="text-xs text-muted-foreground">{tarefas.filter(t => t.status === 'em_execucao').length} ativas</span>
           </div>
           <div className="space-y-3">
             {tarefas.filter(t => t.status === 'em_execucao').slice(0, 4).map(tarefa => (
-              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-muted/40 border border-border/60 rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">{tarefa.titulo}</p>
-                  <p className="text-xs text-slate-500">{tarefa.frente_trabalho_nome}</p>
+                  <p className="text-sm font-medium text-foreground">{tarefa.titulo}</p>
+                  <p className="text-xs text-muted-foreground">{tarefa.frente_trabalho_nome}</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   tarefa.prioridade === 'urgente' ? 'bg-red-500/20 text-red-400' :
@@ -297,26 +297,26 @@ export default function Dashboard() {
               </div>
             ))}
             {tarefas.filter(t => t.status === 'em_execucao').length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-4">Nenhuma tarefa em execução</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhuma tarefa em execucao</p>
             )}
           </div>
         </div>
 
         {/* Veículos */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white flex items-center gap-2">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
               <Truck className="w-5 h-5 text-green-400" />
               Veículos no Pátio
             </h3>
-            <span className="text-xs text-slate-500">{veiculosPatio.length} veículos</span>
+            <span className="text-xs text-muted-foreground">{veiculosPatio.length} veiculos</span>
           </div>
           <div className="space-y-3">
             {veiculosPatio.slice(0, 4).map(veiculo => (
-              <div key={veiculo.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div key={veiculo.id} className="flex items-center justify-between p-3 bg-muted/40 border border-border/60 rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">{veiculo.placa}</p>
-                  <p className="text-xs text-slate-500">{veiculo.modelo}</p>
+                  <p className="text-sm font-medium text-foreground">{veiculo.placa}</p>
+                  <p className="text-xs text-muted-foreground">{veiculo.modelo}</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   veiculo.status === 'carregando' ? 'bg-amber-500/20 text-amber-400' :
@@ -327,26 +327,26 @@ export default function Dashboard() {
               </div>
             ))}
             {veiculosPatio.length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-4">Nenhum veículo no pátio</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum veiculo no patio</p>
             )}
           </div>
         </div>
 
         {/* Pendências Críticas */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-white flex items-center gap-2">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
               Alertas Críticos
             </h3>
-            <span className="text-xs text-slate-500">{pendenciasCriticas.length} alertas</span>
+            <span className="text-xs text-muted-foreground">{pendenciasCriticas.length} alertas</span>
           </div>
           <div className="space-y-3">
             {pendenciasCriticas.slice(0, 4).map(pendencia => (
-              <div key={pendencia.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div key={pendencia.id} className="flex items-center justify-between p-3 bg-muted/40 border border-border/60 rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">{pendencia.titulo}</p>
-                  <p className="text-xs text-slate-500">{pendencia.origem}</p>
+                  <p className="text-sm font-medium text-foreground">{pendencia.titulo}</p>
+                  <p className="text-xs text-muted-foreground">{pendencia.origem}</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   pendencia.prioridade === 'critica' ? 'bg-red-500/20 text-red-400' :
@@ -357,14 +357,14 @@ export default function Dashboard() {
               </div>
             ))}
             {pendenciasCriticas.length === 0 && (
-              <p className="text-sm text-slate-500 text-center py-4">Nenhum alerta crítico</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta critico</p>
             )}
           </div>
         </div>
       </div>
 
       <Dialog open={quickTaskOpen} onOpenChange={setQuickTaskOpen}>
-        <DialogContent className="bg-slate-900 border-slate-800 text-white">
+        <DialogContent className="bg-popover border-border text-foreground">
           <DialogHeader className="pr-12">
             <div className="flex items-center gap-3">
               <DialogTitle>Criar Tarefa Rápida</DialogTitle>
@@ -372,7 +372,7 @@ export default function Dashboard() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="ml-auto h-7 px-3 text-xs border-slate-800"
+                  className="ml-auto h-7 px-3 text-xs border-border hover:bg-accent"
                   onClick={() => setTemplatePickerOpen(true)}
                 >
                   Usar Template
@@ -383,17 +383,17 @@ export default function Dashboard() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Título</label>
+              <label className="text-sm text-muted-foreground">Titulo</label>
               <Input
                 value={taskForm.titulo}
                 onChange={(e) => setTaskForm((p) => ({ ...p, titulo: e.target.value }))}
                 placeholder="Ex: Perfiladeira - Nota 123"
-                className="bg-slate-950 border-slate-800"
+                className="bg-card border-border"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Frente de Trabalho</label>
+              <label className="text-sm text-muted-foreground">Frente de Trabalho</label>
               <Select
                 value={taskForm.frente_trabalho_id}
                 onValueChange={(v) => {
@@ -405,7 +405,7 @@ export default function Dashboard() {
                   }));
                 }}
               >
-                <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
+                <SelectTrigger className="bg-card border-border text-foreground">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
@@ -420,12 +420,12 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Tipo</label>
+                <label className="text-sm text-muted-foreground">Tipo</label>
                 <Select
                   value={taskForm.tipo}
                   onValueChange={(v) => setTaskForm((p) => ({ ...p, tipo: v }))}
                 >
-                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
+                  <SelectTrigger className="bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -444,12 +444,12 @@ export default function Dashboard() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-slate-300">Prioridade</label>
+                <label className="text-sm text-muted-foreground">Prioridade</label>
                 <Select
                   value={taskForm.prioridade}
                   onValueChange={(v) => setTaskForm((p) => ({ ...p, prioridade: v }))}
                 >
-                  <SelectTrigger className="bg-slate-950 border-slate-800 text-white">
+                  <SelectTrigger className="bg-card border-border text-foreground">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -463,32 +463,32 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-slate-300">Descrição (opcional)</label>
+              <label className="text-sm text-muted-foreground">Descricao (opcional)</label>
               <Textarea
                 value={taskForm.descricao}
                 onChange={(e) => setTaskForm((p) => ({ ...p, descricao: e.target.value }))}
                 placeholder="Detalhes rápidos..."
-                className="bg-slate-950 border-slate-800"
+                className="bg-card border-border"
                 rows={3}
               />
             </div>
 
             <div className="flex items-center justify-between gap-3 pt-2">
-              <Link to={createPageUrl('Tarefas')} className="text-sm text-slate-400 hover:text-white">
+              <Link to={createPageUrl('Tarefas')} className="text-sm text-muted-foreground hover:text-foreground">
                 Abrir Tarefas
               </Link>
               <div className="flex items-center gap-2">
                 <Button
                   type="button"
                   variant="outline"
-                  className="border-slate-800"
+                  className="border-border"
                   onClick={() => setQuickTaskOpen(false)}
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="button"
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                   onClick={handleQuickCreate}
                   disabled={createTarefaMutation.isPending || !taskForm.titulo || !taskForm.frente_trabalho_id}
                 >

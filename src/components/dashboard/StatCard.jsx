@@ -33,7 +33,7 @@ export default function StatCard({
   const CardContent = (
     <div className={cn(
       "relative h-full overflow-hidden rounded-2xl border transition-all duration-300",
-      "bg-slate-900/50 backdrop-blur-sm",
+      "bg-card/55 backdrop-blur-sm border-border",
       colors.border,
       (linkTo || onClick) && "hover:scale-[1.02] hover:border-opacity-50 cursor-pointer active:scale-[0.98]",
       size === 'large' ? "p-6 lg:p-8" : "p-5 lg:p-6",
@@ -54,20 +54,20 @@ export default function StatCard({
             <Icon className={cn("w-6 h-6", colors.text)} />
           </div>
           {linkTo && (
-            <ChevronRight className="w-5 h-5 text-slate-600" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
           )}
         </div>
         
         <div className="mt-4">
           <h3 className={cn(
-            "font-bold text-white",
+            "font-bold text-foreground",
             size === 'large' ? "text-4xl lg:text-5xl" : "text-3xl"
           )}>
             {value}
           </h3>
-          <p className="text-slate-400 mt-1 font-medium">{title}</p>
+          <p className="text-muted-foreground mt-1 font-medium">{title}</p>
           {subtitle && (
-            <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
+            <p className="text-sm text-muted-foreground/80 mt-1">{subtitle}</p>
           )}
         </div>
 
@@ -79,7 +79,7 @@ export default function StatCard({
             )}>
               {trendUp ? '↑' : '↓'} {trend}%
             </span>
-            <span className="text-xs text-slate-500">vs ontem</span>
+            <span className="text-xs text-muted-foreground/80">vs ontem</span>
           </div>
         )}
       </div>

@@ -387,18 +387,18 @@ export default function Tarefas() {
   });
 
   const statusColors = {
-    criada: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-    aguardando_alocacao: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    em_execucao: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    criada: 'bg-muted/50 text-muted-foreground border-border',
+    aguardando_alocacao: 'bg-primary/15 text-primary border-primary/25',
+    em_execucao: 'bg-amber-500/15 text-amber-300 border-amber-500/25',
     pausada: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
     concluida: 'bg-green-500/20 text-green-400 border-green-500/30',
     cancelada: 'bg-red-500/20 text-red-400 border-red-500/30',
   };
 
   const prioridadeColors = {
-    baixa: 'bg-slate-500/20 text-slate-400',
-    media: 'bg-blue-500/20 text-blue-400',
-    alta: 'bg-amber-500/20 text-amber-400',
+    baixa: 'bg-muted/50 text-muted-foreground',
+    media: 'bg-primary/15 text-primary',
+    alta: 'bg-amber-500/15 text-amber-300',
     urgente: 'bg-red-500/20 text-red-400',
   };
 
@@ -432,7 +432,7 @@ export default function Tarefas() {
           actions={
             <Button 
               onClick={() => { setEditingTarefa(null); setDialogOpen(true); }}
-              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold touch-btn"
             >
               <Plus className="w-5 h-5 mr-2" />
               Nova Tarefa
@@ -442,37 +442,37 @@ export default function Tarefas() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-          <p className="text-2xl font-bold text-white">{stats.total}</p>
-          <p className="text-xs text-slate-500">Tarefas Ativas</p>
+        <div className="bg-card/60 border border-border rounded-2xl p-4">
+          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+          <p className="text-xs text-muted-foreground">Tarefas Ativas</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-amber-400">{stats.emExecucao}</p>
-          <p className="text-xs text-slate-500">Em Execução</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4">
+          <p className="text-2xl font-bold text-amber-300">{stats.emExecucao}</p>
+          <p className="text-xs text-muted-foreground">Em Execucao</p>
         </div>
-        <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-blue-400">{stats.aguardando}</p>
-          <p className="text-xs text-slate-500">Aguardando</p>
+        <div className="bg-card/60 border border-primary/25 rounded-2xl p-4">
+          <p className="text-2xl font-bold text-primary">{stats.aguardando}</p>
+          <p className="text-xs text-muted-foreground">Aguardando</p>
         </div>
-        <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-green-400">{stats.concluidas}</p>
-          <p className="text-xs text-slate-500">Concluídas</p>
+        <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4">
+          <p className="text-2xl font-bold text-emerald-300">{stats.concluidas}</p>
+          <p className="text-xs text-muted-foreground">Concluidas</p>
         </div>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar tarefa..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-44 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-44 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -485,7 +485,7 @@ export default function Tarefas() {
           </SelectContent>
         </Select>
         <Select value={filterTipo} onValueChange={setFilterTipo}>
-          <SelectTrigger className="w-full lg:w-44 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-44 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
@@ -499,7 +499,7 @@ export default function Tarefas() {
           </SelectContent>
         </Select>
         <Select value={filterFrente} onValueChange={setFilterFrente}>
-          <SelectTrigger className="w-full lg:w-52 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-52 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Frente" />
           </SelectTrigger>
           <SelectContent>
@@ -521,28 +521,28 @@ export default function Tarefas() {
           <div 
             key={tarefa.id}
             className={cn(
-              "bg-slate-900/50 border rounded-xl p-4 lg:p-5 transition-all hover:border-slate-700",
-              tarefa.prioridade === 'urgente' ? "border-red-500/50" : "border-slate-800"
+              "bg-card/50 border rounded-2xl p-4 lg:p-5 transition-all hover:border-border/80",
+              tarefa.prioridade === 'urgente' ? "border-red-500/50" : "border-border"
             )}
           >
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <h3 className="font-semibold text-white">{tarefa.titulo}</h3>
+                  <h3 className="font-semibold text-foreground">{tarefa.titulo}</h3>
                   <span className={cn("text-xs px-2 py-1 rounded-full border", statusColors[tarefa.status])}>
                     {tarefa.status?.replace('_', ' ')}
                   </span>
                   <span className={cn("text-xs px-2 py-1 rounded-full", prioridadeColors[tarefa.prioridade])}>
                     {tarefa.prioridade}
                   </span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-muted-foreground">
                     {tipoLabels[tarefa.tipo]}
                   </span>
                 </div>
-                
-                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                 
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   {tarefa.frente_trabalho_nome && (
-                    <span className="text-xs px-2 py-1 rounded bg-slate-800">
+                    <span className="text-xs px-2 py-1 rounded bg-muted/60 border border-border/60 text-muted-foreground">
                       {tarefa.frente_trabalho_nome}
                     </span>
                   )}
@@ -576,7 +576,7 @@ export default function Tarefas() {
                 {(tarefa.status === 'criada' || tarefa.status === 'aguardando_alocacao') && (
                   <Button 
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 touch-btn order-1"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -588,7 +588,7 @@ export default function Tarefas() {
                 {tarefa.status === 'pausada' && (
                   <Button 
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 touch-btn order-1"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -601,7 +601,7 @@ export default function Tarefas() {
                   <Button 
                     size="sm"
                     variant="outline"
-                    className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 touch-btn order-1"
+                    className="border-primary/30 text-primary hover:bg-primary/10 touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'pausada')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -613,7 +613,7 @@ export default function Tarefas() {
                 {tarefa.checklist_id && (
                   <Button 
                     size="sm"
-                    className="bg-purple-500 hover:bg-purple-600 touch-btn order-2"
+                    className="bg-secondary hover:bg-secondary/80 text-secondary-foreground touch-btn order-2"
                     onClick={() => handleExecutarChecklist(tarefa)}
                   >
                     <FileCheck className="w-4 h-4 mr-1" />
@@ -639,9 +639,9 @@ export default function Tarefas() {
                   </Button>
                 )}
                 {canOpenMenu && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white order-5">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground order-5">
                         <MoreVertical className="w-5 h-5" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -673,9 +673,9 @@ export default function Tarefas() {
         )})}
 
         {filteredTarefas.length === 0 && (
-          <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-            <ClipboardList className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-500">Nenhuma tarefa encontrada</p>
+          <div className="text-center py-12 bg-card/30 border border-dashed border-border/70 rounded-2xl">
+            <ClipboardList className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhuma tarefa encontrada</p>
           </div>
         )}
       </div>
@@ -839,7 +839,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
   return (
     <>
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-popover border-border text-foreground max-w-2xl sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader className="pr-12">
           <div className="flex items-center gap-3">
             <DialogTitle>{tarefa ? 'Editar Tarefa' : 'Nova Tarefa'}</DialogTitle>
@@ -847,7 +847,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
               <Button
                 type="button"
                 variant="outline"
-                className="ml-auto h-7 px-3 text-xs border-slate-700 text-slate-200"
+                className="ml-auto h-7 px-3 text-xs border-border text-foreground hover:bg-accent"
                 onClick={() => setTemplatePickerOpen(true)}
               >
                 Usar Template
@@ -862,7 +862,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
             <Input
               value={formData.titulo}
               onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Descreva a tarefa"
             />
           </div>
@@ -872,7 +872,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
             <Textarea
               value={formData.descricao}
               onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={2}
             />
           </div>
@@ -881,7 +881,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
             <div>
               <Label>Tipo *</Label>
               <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -902,7 +902,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
             <div>
               <Label>Prioridade</Label>
               <Select value={formData.prioridade} onValueChange={(v) => setFormData({ ...formData, prioridade: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -918,7 +918,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
           <div>
             <Label>Frente de Trabalho *</Label>
             <Select value={formData.frente_trabalho_id} onValueChange={handleFrenteChange}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue placeholder="Selecione a frente..." />
               </SelectTrigger>
               <SelectContent>
@@ -935,7 +935,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
               <Input
                 value={formData.nota_numero}
                 onChange={(e) => setFormData({ ...formData, nota_numero: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="Ex: NF-12345"
               />
             </div>
@@ -946,14 +946,14 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
                 min={1}
                 value={formData.quantidade_profissionais}
                 onChange={(e) => setFormData({ ...formData, quantidade_profissionais: parseInt(e.target.value) || 1 })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
           </div>
 
           <div>
             <Label>Designar Funcionários</Label>
-            <p className="text-xs text-slate-500 mb-2">
+            <p className="text-xs text-muted-foreground mb-2">
               {funcionariosFiltrados.length} funcionários disponíveis 
               {formData.frente_trabalho_id && ' nesta frente'}
             </p>
@@ -966,15 +966,15 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
                   className={cn(
                     "px-3 py-2 rounded-lg text-sm transition-all",
                     formData.funcionarios_designados.includes(func.id)
-                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                      : "bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600"
+                      ? "bg-primary/15 text-primary border border-primary/25"
+                      : "bg-card text-muted-foreground border border-border hover:border-border/80"
                   )}
                 >
                   {func.nome}
                 </button>
               ))}
               {funcionariosFiltrados.length === 0 && (
-                <p className="text-sm text-slate-500">Nenhum funcionário disponível</p>
+                <p className="text-sm text-muted-foreground">Nenhum funcionario disponivel</p>
               )}
             </div>
           </div>
@@ -985,7 +985,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
               value={formData.checklist_id || ''}
               onValueChange={(v) => setFormData({ ...formData, checklist_id: v === NO_CHECKLIST ? '' : v })}
             >
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue placeholder="Selecione um checklist..." />
               </SelectTrigger>
               <SelectContent>
@@ -1002,18 +1002,18 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
             <Textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={2}
             />
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
           <Button 
-            className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
+            className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
             onClick={() => onSave(formData)}
             disabled={isLoading || !formData.titulo || !formData.frente_trabalho_id}
           >

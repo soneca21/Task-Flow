@@ -90,18 +90,18 @@ export default function Producao() {
   });
 
   const statusColors = {
-    criada: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-    aguardando_alocacao: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    em_execucao: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    criada: 'bg-muted/50 text-muted-foreground border-border',
+    aguardando_alocacao: 'bg-primary/15 text-primary border-primary/25',
+    em_execucao: 'bg-amber-500/15 text-amber-300 border-amber-500/25',
     pausada: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
     concluida: 'bg-green-500/20 text-green-400 border-green-500/30',
     cancelada: 'bg-red-500/20 text-red-400 border-red-500/30',
   };
 
   const prioridadeColors = {
-    baixa: 'bg-slate-500/20 text-slate-400',
-    media: 'bg-blue-500/20 text-blue-400',
-    alta: 'bg-amber-500/20 text-amber-400',
+    baixa: 'bg-muted/50 text-muted-foreground',
+    media: 'bg-primary/15 text-primary',
+    alta: 'bg-amber-500/15 text-amber-300',
     urgente: 'bg-red-500/20 text-red-400',
   };
 
@@ -272,37 +272,37 @@ export default function Producao() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-          <p className="text-2xl font-bold text-white">{stats.total}</p>
-          <p className="text-xs text-slate-500">Total de Ordens</p>
+        <div className="bg-card/60 border border-border rounded-2xl p-4">
+          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+          <p className="text-xs text-muted-foreground">Total de Ordens</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-amber-400">{stats.emExecucao}</p>
-          <p className="text-xs text-slate-500">Em Execução</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4">
+          <p className="text-2xl font-bold text-amber-300">{stats.emExecucao}</p>
+          <p className="text-xs text-muted-foreground">Em Execucao</p>
         </div>
-        <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-blue-400">{stats.aguardando}</p>
-          <p className="text-xs text-slate-500">Aguardando</p>
+        <div className="bg-card/60 border border-primary/25 rounded-2xl p-4">
+          <p className="text-2xl font-bold text-primary">{stats.aguardando}</p>
+          <p className="text-xs text-muted-foreground">Aguardando</p>
         </div>
-        <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-green-400">{stats.concluidas}</p>
-          <p className="text-xs text-slate-500">Concluídas Hoje</p>
+        <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4">
+          <p className="text-2xl font-bold text-emerald-300">{stats.concluidas}</p>
+          <p className="text-xs text-muted-foreground">Concluidas Hoje</p>
         </div>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar por título ou nota..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -315,7 +315,7 @@ export default function Producao() {
           </SelectContent>
         </Select>
         <Select value={filterFrente} onValueChange={setFilterFrente}>
-          <SelectTrigger className="w-full lg:w-56 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Frente de Trabalho" />
           </SelectTrigger>
           <SelectContent>
@@ -336,14 +336,14 @@ export default function Producao() {
           <div 
             key={tarefa.id}
             className={cn(
-              "bg-slate-900/50 border rounded-xl p-4 lg:p-5 transition-all",
-              tarefa.prioridade === 'urgente' ? "border-red-500/30" : "border-slate-800"
+              "bg-card/50 border rounded-2xl p-4 lg:p-5 transition-all",
+              tarefa.prioridade === 'urgente' ? "border-red-500/30" : "border-border"
             )}
           >
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-semibold text-white">{tarefa.titulo}</h3>
+                  <h3 className="font-semibold text-foreground">{tarefa.titulo}</h3>
                   <span className={cn("text-xs px-2 py-1 rounded-full border", statusColors[tarefa.status])}>
                     {tarefa.status?.replace('_', ' ')}
                   </span>
@@ -351,7 +351,7 @@ export default function Producao() {
                     {tarefa.prioridade}
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   {tarefa.nota_numero && (
                     <span className="flex items-center gap-1">
                       📋 Nota: {tarefa.nota_numero}
@@ -379,7 +379,7 @@ export default function Producao() {
                 {(tarefa.status === 'criada' || tarefa.status === 'aguardando_alocacao') && (
                   <Button 
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 touch-btn order-1"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -391,7 +391,7 @@ export default function Producao() {
                 {tarefa.status === 'pausada' && (
                   <Button 
                     size="sm"
-                    className="bg-blue-500 hover:bg-blue-600 touch-btn order-1"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -404,7 +404,7 @@ export default function Producao() {
                   <Button 
                     size="sm"
                     variant="outline"
-                    className="border-amber-500/30 text-amber-400 hover:bg-amber-500/10 touch-btn order-1"
+                    className="border-primary/30 text-primary hover:bg-primary/10 touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'pausada')}
                     disabled={!canEdit}
                     title={!canEdit ? 'Somente o responsável pode editar' : undefined}
@@ -416,7 +416,7 @@ export default function Producao() {
                 {tarefa.checklist_id && (
                   <Button
                     size="sm"
-                    className="bg-purple-500 hover:bg-purple-600 touch-btn order-2"
+                    className="bg-secondary hover:bg-secondary/80 text-secondary-foreground touch-btn order-2"
                     onClick={() => handleExecutarChecklist(tarefa)}
                   >
                     <FileCheck className="w-4 h-4 mr-1" />
@@ -445,7 +445,7 @@ export default function Producao() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-slate-700 text-slate-200 hover:bg-slate-800/60 touch-btn order-4"
+                    className="border-border text-foreground hover:bg-accent/60 touch-btn order-4"
                     onClick={() => { setHistoricoTarefa(tarefa); setHistoricoOpen(true); }}
                   >
                     <History className="w-4 h-4 mr-1" />
@@ -458,9 +458,9 @@ export default function Producao() {
         )})}
 
         {filteredTarefas.length === 0 && (
-          <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-            <Factory className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-500">Nenhuma ordem de produção encontrada</p>
+          <div className="text-center py-12 bg-card/30 border border-dashed border-border/70 rounded-2xl">
+            <Factory className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhuma ordem de producao encontrada</p>
           </div>
         )}
       </div>
