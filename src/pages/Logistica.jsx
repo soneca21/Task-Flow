@@ -46,10 +46,10 @@ const PATIO_STATUS = new Set(['no_patio', 'carregando']);
 const isPatioStatus = (status) => PATIO_STATUS.has(status);
 
 const statusLabels = {
-  disponivel: 'Disponível',
+  disponivel: 'DisponÃ­vel',
   em_rota: 'Em rota',
-  em_manutencao: 'Em manutenção',
-  no_patio: 'No pátio',
+  em_manutencao: 'Em manutenÃ§Ã£o',
+  no_patio: 'No pÃ¡tio',
   carregando: 'Em atendimento',
 };
 
@@ -74,11 +74,11 @@ export default function Logistica() {
 
   const announceVeiculo = async (veiculo, acao = 'veiculo_no_patio') => {
     if (!veiculo || !isPatioStatus(veiculo.status)) return;
-    const placa = veiculo.placa || 'Veículo';
+    const placa = veiculo.placa || 'VeÃ­culo';
     const statusLabel = veiculo.status === 'carregando'
       ? 'em atendimento'
       : 'aguardando atendimento';
-    const descricao = `${placa} ${statusLabel} no pátio.`;
+    const descricao = `${placa} ${statusLabel} no pÃ¡tio.`;
 
     try {
       await api.entities.LogAuditoria.create({
@@ -91,7 +91,7 @@ export default function Logistica() {
       // Best-effort
     }
 
-    toast.info(`Veículo no pátio: ${placa}`);
+    toast.info(`VeÃ­culo no pÃ¡tio: ${placa}`);
   };
 
   const handleDialogChange = (open) => {
@@ -194,8 +194,8 @@ export default function Logistica() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Veículos no Pátio"
-        subtitle={`${patioTotal} veículos aguardando atendimento`}
+        title="VeÃ­culos no PÃ¡tio"
+        subtitle={`${patioTotal} veÃ­culos aguardando atendimento`}
         icon={Truck}
         iconColor="text-green-500"
         actions={
@@ -213,7 +213,7 @@ export default function Logistica() {
               className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
             >
               <Plus className="w-5 h-5 mr-2" />
-              Cadastrar Veículo
+              Cadastrar VeÃ­culo
             </Button>
           </div>
         }
@@ -222,7 +222,7 @@ export default function Logistica() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card/60 border border-border rounded-xl p-4">
           <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total de Veículos</p>
+          <p className="text-xs text-muted-foreground">Total de VeÃ­culos</p>
         </div>
         <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-amber-400">{stats.aguardando}</p>
@@ -253,13 +253,13 @@ export default function Logistica() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="patio">No Pátio (Aguardando)</SelectItem>
+            <SelectItem value="patio">No PÃ¡tio (Aguardando)</SelectItem>
             <SelectItem value="todos">Todos os Status</SelectItem>
-            <SelectItem value="disponivel">Disponível</SelectItem>
+            <SelectItem value="disponivel">DisponÃ­vel</SelectItem>
             <SelectItem value="em_rota">Em Rota</SelectItem>
-            <SelectItem value="no_patio">No Pátio</SelectItem>
+            <SelectItem value="no_patio">No PÃ¡tio</SelectItem>
             <SelectItem value="carregando">Em Atendimento</SelectItem>
-            <SelectItem value="em_manutencao">Em Manutenção</SelectItem>
+            <SelectItem value="em_manutencao">Em ManutenÃ§Ã£o</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterTipo} onValueChange={setFilterTipo}>
@@ -268,8 +268,8 @@ export default function Logistica() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Tipos</SelectItem>
-            <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
-            <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
+            <SelectItem value="caminhao_proprio">CaminhÃ£o PrÃ³prio</SelectItem>
+            <SelectItem value="caminhao_terceiro">CaminhÃ£o Terceiro</SelectItem>
             <SelectItem value="carro">Carro</SelectItem>
             <SelectItem value="moto">Moto</SelectItem>
             <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
@@ -324,7 +324,7 @@ export default function Logistica() {
                     )}
                     {isPatioStatus(veiculo.status) && (
                       <DropdownMenuItem onClick={() => handleAnnounce(veiculo)}>
-                        <Megaphone className="w-4 h-4 mr-2" /> Anunciar no Pátio
+                        <Megaphone className="w-4 h-4 mr-2" /> Anunciar no PÃ¡tio
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem onClick={() => { setEditingVeiculo(veiculo); setDialogMode('edit'); setDialogOpen(true); }}>
@@ -365,7 +365,7 @@ export default function Logistica() {
                 )}
                 {veiculo.status === 'em_manutencao' && (
                   <div className="flex items-center gap-2 text-xs text-red-400">
-                    <Wrench className="w-4 h-4" /> Em manutenção
+                    <Wrench className="w-4 h-4" /> Em manutenÃ§Ã£o
                   </div>
                 )}
               </div>
@@ -377,7 +377,7 @@ export default function Logistica() {
       {filteredVeiculos.length === 0 && (
         <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
           <Truck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">Nenhum veículo aguardando atendimento</p>
+          <p className="text-muted-foreground">Nenhum veÃ­culo aguardando atendimento</p>
         </div>
       )}
 
@@ -435,14 +435,14 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
   }, [veiculo, open, isArrival]);
 
   const dialogTitle = veiculo
-    ? 'Editar Veículo'
+    ? 'Editar VeÃ­culo'
     : isArrival
       ? 'Registrar Chegada'
-      : 'Cadastrar Veículo';
+      : 'Cadastrar VeÃ­culo';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border text-foreground max-w-lg">
+      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
@@ -477,8 +477,8 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
-                  <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
+                  <SelectItem value="caminhao_proprio">CaminhÃ£o PrÃ³prio</SelectItem>
+                  <SelectItem value="caminhao_terceiro">CaminhÃ£o Terceiro</SelectItem>
                   <SelectItem value="carro">Carro</SelectItem>
                   <SelectItem value="moto">Moto</SelectItem>
                   <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
@@ -497,11 +497,11 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="disponivel">Disponível</SelectItem>
+                  <SelectItem value="disponivel">DisponÃ­vel</SelectItem>
                   <SelectItem value="em_rota">Em Rota</SelectItem>
-                  <SelectItem value="no_patio">No Pátio</SelectItem>
+                  <SelectItem value="no_patio">No PÃ¡tio</SelectItem>
                   <SelectItem value="carregando">Em Atendimento</SelectItem>
-                  <SelectItem value="em_manutencao">Em Manutenção</SelectItem>
+                  <SelectItem value="em_manutencao">Em ManutenÃ§Ã£o</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -554,7 +554,7 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
               onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
               className="rounded border-border"
             />
-            <Label htmlFor="ativo">Veículo Ativo</Label>
+            <Label htmlFor="ativo">VeÃ­culo Ativo</Label>
           </div>
         </div>
 

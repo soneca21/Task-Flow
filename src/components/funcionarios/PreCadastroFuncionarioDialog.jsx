@@ -72,11 +72,11 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
+      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle>Pré-cadastro de Funcionário</DialogTitle>
         </DialogHeader>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           Complete os dados básicos. O admin poderá complementar ou ajustar depois.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">
@@ -85,7 +85,7 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
             <Input
               value={formData.nome}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-background border-border mt-1"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -95,7 +95,7 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
                 value={formData.vinculo}
                 onValueChange={(v) => setFormData({ ...formData, vinculo: v })}
               >
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-background border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -109,7 +109,7 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
               <Input
                 value={formData.telefone}
                 onChange={(e) => setFormData({ ...formData, telefone: formatTelefoneBR(e.target.value) })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-background border-border mt-1"
                 placeholder="(00) 00000-0000"
                 inputMode="numeric"
                 autoComplete="tel"
@@ -121,14 +121,14 @@ export default function PreCadastroFuncionarioDialog({ open, onOpenChange, user 
             <Input
               value={formData.cargo}
               onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-background border-border mt-1"
               placeholder="Ex: Operador de Perfiladeira"
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button
               type="submit"
-              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold"
+              className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
               disabled={createMutation.isPending}
             >
               {createMutation.isPending ? 'Salvando...' : 'Enviar'}

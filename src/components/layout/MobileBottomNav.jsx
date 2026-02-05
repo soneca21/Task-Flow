@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 const items = [
   { page: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'Tarefas', label: 'Tarefas', icon: ClipboardList },
-  { page: 'Producao', label: 'Producao', icon: Factory },
+  { page: 'Producao', label: 'Produção', icon: Factory },
 ];
 
 export default function MobileBottomNav({ currentPageName }) {
@@ -42,7 +42,7 @@ export default function MobileBottomNav({ currentPageName }) {
         "border-t border-border bg-background/80 backdrop-blur-xl",
         "pb-[env(safe-area-inset-bottom)]"
       )}
-      aria-label="Navegacao principal"
+      aria-label="Navegação principal"
     >
       <div className="mx-auto max-w-xl px-3 py-2 grid grid-cols-3 gap-2">
         {items.map((item) => {

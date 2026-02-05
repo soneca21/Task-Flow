@@ -361,7 +361,7 @@ function FrenteDialog({ open, onOpenChange, frente, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border text-foreground max-w-lg">
+      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle>{frente?.id ? 'Editar Frente' : 'Nova Frente de Trabalho'}</DialogTitle>
         </DialogHeader>

@@ -69,7 +69,7 @@ export default function SistemaNotificacoes() {
         const tarefa = event.data;
         const funcionarioId = funcionarioIdRef.current;
         if (funcionarioId && tarefa.funcionarios_designados?.includes(funcionarioId)) {
-          toast.success('Nova tarefa atribuida: ' + tarefa.titulo, {
+          toast.success('Nova tarefa atribuída: ' + tarefa.titulo, {
             duration: 6000,
             action: {
               label: 'Ver',
@@ -124,7 +124,7 @@ export default function SistemaNotificacoes() {
         const pendencia = event.data;
 
         if (pendencia.prioridade === 'critica') {
-          toast.error(`PENDENCIA CRITICA: ${pendencia.titulo}`, {
+          toast.error(`PENDÊNCIA CRÍTICA: ${pendencia.titulo}`, {
             icon: <AlertTriangle className="w-5 h-5" />,
             duration: 10000,
             action: {
@@ -143,7 +143,7 @@ export default function SistemaNotificacoes() {
         const pendencia = event.data;
 
         if (config.notificarMudancasStatus && pendencia.prioridade === 'critica' && pendencia.status === 'resolvida') {
-          toast.success(`Pendencia critica resolvida: ${pendencia.titulo}`, {
+          toast.success(`Pendência crítica resolvida: ${pendencia.titulo}`, {
             icon: <CheckCircle className="w-5 h-5" />,
           });
         }
@@ -228,8 +228,8 @@ export function notificarChecklistSeguranca(tarefa, itensReprovados) {
  * Notificacao de alocacao bem-sucedida
  */
 export function notificarAlocacaoSucesso(tarefa, funcionarios) {
-  toast.success('Tarefa atribuida com sucesso', {
-    description: `${funcionarios.length} funcionario(s) designado(s) para "${tarefa.titulo}"`,
+  toast.success('Tarefa atribuída com sucesso', {
+    description: `${funcionarios.length} funcionário(s) designado(s) para "${tarefa.titulo}"`,
     icon: <Zap className="w-5 h-5" />,
     duration: 4000,
   });

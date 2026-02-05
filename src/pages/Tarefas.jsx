@@ -75,7 +75,7 @@ export default function Tarefas() {
   const [historicoOpen, setHistoricoOpen] = useState(false);
   const [historicoTarefa, setHistoricoTarefa] = useState(null);
 
-  // Sincronização ao montar
+  // SincronizaÃ§Ã£o ao montar
   useEffect(() => {
     sincronizar();
   }, []);
@@ -171,7 +171,7 @@ export default function Tarefas() {
       const { payload, autoAssigned } = resolveAutoAlocacao(data);
       const tarefa = await api.entities.Tarefa.create(payload);
       if (autoAssigned) {
-        toast.success('Funcionário atribuído à tarefa');
+        toast.success('FuncionÃ¡rio atribuÃ­do Ã  tarefa');
       }
       return tarefa;
     },
@@ -190,13 +190,13 @@ export default function Tarefas() {
       setDialogOpen(false);
       setEditingTarefa(null);
     },
-    onError: () => toast.error('Você não tem permissão para editar esta tarefa'),
+    onError: () => toast.error('VocÃª nÃ£o tem permissÃ£o para editar esta tarefa'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => api.entities.Tarefa.delete(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tarefas'] }),
-    onError: () => toast.error('Você não tem permissão para excluir esta tarefa'),
+    onError: () => toast.error('VocÃª nÃ£o tem permissÃ£o para excluir esta tarefa'),
   });
 
   const role = user?.user_metadata?.role || '';
@@ -292,7 +292,7 @@ export default function Tarefas() {
 
   const handleUpdateStatus = async (tarefa, newStatus) => {
     if (!canEditTarefa(tarefa)) {
-      toast.error('Somente o responsável pode editar esta tarefa');
+      toast.error('Somente o responsÃ¡vel pode editar esta tarefa');
       return;
     }
     if (newStatus === 'concluida') {
@@ -320,7 +320,7 @@ export default function Tarefas() {
       const updated = await updateMutation.mutateAsync({ id: tarefa.id, data: updates });
       if (!updated || updated.status !== updates.status) {
         queryClient.invalidateQueries({ queryKey: ['tarefas'] });
-        toast.error('Não foi possível alterar o status da tarefa');
+        toast.error('NÃ£o foi possÃ­vel alterar o status da tarefa');
         return;
       }
       if (updated?.id) {
@@ -360,7 +360,7 @@ export default function Tarefas() {
 
   const handleExecutarChecklist = async (tarefa) => {
     if (!tarefa.checklist_id) {
-      toast.error('Esta tarefa não possui checklist configurado');
+      toast.error('Esta tarefa nÃ£o possui checklist configurado');
       return;
     }
     try {
@@ -403,13 +403,13 @@ export default function Tarefas() {
   };
 
   const tipoLabels = {
-    producao: 'Produção',
+    producao: 'ProduÃ§Ã£o',
     carregamento: 'Carregamento',
-    movimentacao: 'Movimentação',
-    conferencia: 'Conferência',
+    movimentacao: 'MovimentaÃ§Ã£o',
+    conferencia: 'ConferÃªncia',
     retirada: 'Retirada',
     entrega: 'Entrega',
-    manutencao: 'Manutenção',
+    manutencao: 'ManutenÃ§Ã£o',
     outros: 'Outros',
   };
 
@@ -422,12 +422,12 @@ export default function Tarefas() {
 
   return (
     <>
-      {/* Automação de Tarefas */}
+      {/* AutomaÃ§Ã£o de Tarefas */}
 
       <div className="space-y-6">
         <PageHeader 
           title="Tarefas"
-          subtitle={`${stats.emExecucao} tarefas em execução`}
+          subtitle={`${stats.emExecucao} tarefas em execuÃ§Ã£o`}
           icon={ClipboardList}
           iconColor="text-indigo-500"
           actions={
@@ -449,7 +449,7 @@ export default function Tarefas() {
         </div>
         <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4">
           <p className="text-2xl font-bold text-amber-300">{stats.emExecucao}</p>
-          <p className="text-xs text-muted-foreground">Em Execucao</p>
+          <p className="text-xs text-muted-foreground">Em ExecuÃ§Ã£o</p>
         </div>
         <div className="bg-card/60 border border-primary/25 rounded-2xl p-4">
           <p className="text-2xl font-bold text-primary">{stats.aguardando}</p>
@@ -457,7 +457,7 @@ export default function Tarefas() {
         </div>
         <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4">
           <p className="text-2xl font-bold text-emerald-300">{stats.concluidas}</p>
-          <p className="text-xs text-muted-foreground">Concluidas</p>
+          <p className="text-xs text-muted-foreground">ConcluÃ­das</p>
         </div>
       </div>
 
@@ -480,9 +480,9 @@ export default function Tarefas() {
             <SelectItem value="todos">Todos Status</SelectItem>
             <SelectItem value="criada">Criada</SelectItem>
             <SelectItem value="aguardando_alocacao">Aguardando</SelectItem>
-            <SelectItem value="em_execucao">Em Execução</SelectItem>
+            <SelectItem value="em_execucao">Em ExecuÃ§Ã£o</SelectItem>
             <SelectItem value="pausada">Pausada</SelectItem>
-            <SelectItem value="concluida">Concluída</SelectItem>
+            <SelectItem value="concluida">ConcluÃ­da</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterTipo} onValueChange={setFilterTipo}>
@@ -491,10 +491,10 @@ export default function Tarefas() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos Tipos</SelectItem>
-            <SelectItem value="producao">Produção</SelectItem>
+            <SelectItem value="producao">ProduÃ§Ã£o</SelectItem>
             <SelectItem value="carregamento">Carregamento</SelectItem>
-            <SelectItem value="movimentacao">Movimentação</SelectItem>
-            <SelectItem value="conferencia">Conferência</SelectItem>
+            <SelectItem value="movimentacao">MovimentaÃ§Ã£o</SelectItem>
+            <SelectItem value="conferencia">ConferÃªncia</SelectItem>
             <SelectItem value="retirada">Retirada</SelectItem>
             <SelectItem value="entrega">Entrega</SelectItem>
           </SelectContent>
@@ -561,13 +561,13 @@ export default function Tarefas() {
                   {tarefa.data_inicio && (
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      Início: {format(new Date(tarefa.data_inicio), 'HH:mm')}
+                      InÃ­cio: {format(new Date(tarefa.data_inicio), 'HH:mm')}
                     </span>
                   )}
                   {tarefa.data_conclusao && (
                     <span className="flex items-center gap-1 text-green-400">
                       <CheckCircle className="w-4 h-4" />
-                      Concluída: {format(new Date(tarefa.data_conclusao), 'HH:mm')}
+                      ConcluÃ­da: {format(new Date(tarefa.data_conclusao), 'HH:mm')}
                     </span>
                   )}
                 </div>
@@ -580,7 +580,7 @@ export default function Tarefas() {
                     className="bg-blue-600 hover:bg-blue-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                    title={!canEdit ? 'Somente o responsÃ¡vel pode editar' : undefined}
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Iniciar
@@ -592,7 +592,7 @@ export default function Tarefas() {
                     className="bg-blue-600 hover:bg-blue-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                    title={!canEdit ? 'Somente o responsÃ¡vel pode editar' : undefined}
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Iniciar
@@ -604,7 +604,7 @@ export default function Tarefas() {
                     className="bg-purple-600 hover:bg-purple-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'pausada')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                    title={!canEdit ? 'Somente o responsÃ¡vel pode editar' : undefined}
                   >
                     <Pause className="w-4 h-4 mr-1" />
                     Pausar
@@ -628,7 +628,7 @@ export default function Tarefas() {
                     disabled={!canEdit || (tarefa.checklist_id && !checklistPreenchido)}
                     title={
                       !canEdit
-                        ? 'Somente o responsável pode editar'
+                        ? 'Somente o responsÃ¡vel pode editar'
                         : (tarefa.checklist_id && !checklistPreenchido)
                           ? 'Preencha o checklist para concluir'
                           : undefined
@@ -648,7 +648,7 @@ export default function Tarefas() {
                     <DropdownMenuContent align="end">
                       {tarefa.checklist_id && isManager && (
                         <DropdownMenuItem onClick={() => { setHistoricoTarefa(tarefa); setHistoricoOpen(true); }}>
-                          <History className="w-4 h-4 mr-2" /> Histórico de Checklists
+                          <History className="w-4 h-4 mr-2" /> HistÃ³rico de Checklists
                         </DropdownMenuItem>
                       )}
                       {canEdit && (
@@ -831,7 +831,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     });
   };
 
-  // Filtrar funcionários pela frente selecionada
+  // Filtrar funcionÃ¡rios pela frente selecionada
   const funcionariosFiltrados = formData.frente_trabalho_id
     ? funcionarios.filter(f => f.frentes_trabalho?.includes(formData.frente_trabalho_id) && f.status === 'disponivel')
     : funcionarios.filter(f => f.status === 'disponivel');
@@ -858,7 +858,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
 
         <div className="space-y-4 py-4">
           <div>
-            <Label>Título da Tarefa *</Label>
+            <Label>TÃ­tulo da Tarefa *</Label>
             <Input
               value={formData.titulo}
               onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
@@ -868,7 +868,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
           </div>
 
           <div>
-            <Label>Descrição</Label>
+            <Label>DescriÃ§Ã£o</Label>
             <Textarea
               value={formData.descricao}
               onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
@@ -885,16 +885,16 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="producao">Produção</SelectItem>
+                  <SelectItem value="producao">ProduÃ§Ã£o</SelectItem>
                   <SelectItem value="carregamento">Carregamento</SelectItem>
                   <SelectItem value="descarga">Descarga</SelectItem>
-                  <SelectItem value="movimentacao">Movimentação</SelectItem>
-                  <SelectItem value="conferencia">Conferência</SelectItem>
+                  <SelectItem value="movimentacao">MovimentaÃ§Ã£o</SelectItem>
+                  <SelectItem value="conferencia">ConferÃªncia</SelectItem>
                   <SelectItem value="retirada">Retirada</SelectItem>
                   <SelectItem value="troca">Troca</SelectItem>
-                  <SelectItem value="devolucao">Devolução</SelectItem>
+                  <SelectItem value="devolucao">DevoluÃ§Ã£o</SelectItem>
                   <SelectItem value="entrega">Entrega</SelectItem>
-                  <SelectItem value="manutencao">Manutenção</SelectItem>
+                  <SelectItem value="manutencao">ManutenÃ§Ã£o</SelectItem>
                   <SelectItem value="outros">Outros</SelectItem>
                 </SelectContent>
               </Select>
@@ -907,7 +907,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="baixa">Baixa</SelectItem>
-                  <SelectItem value="media">Média</SelectItem>
+                  <SelectItem value="media">MÃ©dia</SelectItem>
                   <SelectItem value="alta">Alta</SelectItem>
                   <SelectItem value="urgente">Urgente</SelectItem>
                 </SelectContent>
@@ -931,7 +931,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>Nº da Nota (opcional)</Label>
+              <Label>NÂº da Nota (opcional)</Label>
               <Input
                 value={formData.nota_numero}
                 onChange={(e) => setFormData({ ...formData, nota_numero: e.target.value })}
@@ -952,9 +952,9 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
           </div>
 
           <div>
-            <Label>Designar Funcionários</Label>
+            <Label>Designar FuncionÃ¡rios</Label>
             <p className="text-xs text-muted-foreground mb-2">
-              {funcionariosFiltrados.length} funcionários disponíveis 
+              {funcionariosFiltrados.length} funcionÃ¡rios disponÃ­veis 
               {formData.frente_trabalho_id && ' nesta frente'}
             </p>
             <div className="mt-2 flex flex-wrap gap-2 max-h-32 overflow-y-auto">
@@ -998,7 +998,7 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
           </div>
 
           <div>
-            <Label>Observações</Label>
+            <Label>ObservaÃ§Ãµes</Label>
             <Textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
@@ -1034,6 +1034,5 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     </>
   );
 }
-
 
 

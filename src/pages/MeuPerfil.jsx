@@ -219,7 +219,7 @@ export default function MeuPerfil() {
     setEditOpen(true);
   };
 
-  const displayName = funcionarioAtual?.nome || user?.user_metadata?.full_name || 'Usuario';
+  const displayName = funcionarioAtual?.nome || user?.user_metadata?.full_name || 'Usuário';
 
   return (
     <div className="space-y-6">
@@ -420,7 +420,7 @@ export default function MeuPerfil() {
           <p className="text-2xl font-bold text-foreground">{statsTarefas.total}</p>
         </div>
         <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Em Execucao</p>
+          <p className="text-xs text-muted-foreground">Em Execução</p>
           <p className="text-2xl font-bold text-amber-400">{statsTarefas.emExecucao}</p>
         </div>
         <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
@@ -428,7 +428,7 @@ export default function MeuPerfil() {
           <p className="text-2xl font-bold text-blue-400">{statsTarefas.aguardando}</p>
         </div>
         <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Concluidas</p>
+          <p className="text-xs text-muted-foreground">Concluídas</p>
           <p className="text-2xl font-bold text-green-400">{statsTarefas.concluidas}</p>
         </div>
       </div>
@@ -519,7 +519,7 @@ export default function MeuPerfil() {
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-card border-border text-foreground max-w-lg">
+        <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
           <DialogHeader>
             <DialogTitle>Editar Perfil</DialogTitle>
           </DialogHeader>
@@ -573,7 +573,7 @@ export default function MeuPerfil() {
               onClick={() => {
                 const parsedBirthdate = parseBirthdateInput(editForm.data_nascimento);
                 if (parsedBirthdate === undefined) {
-                  toast.error('Data de nascimento invalida. Use DD/MM/AAAA ou AAAA-MM-DD.');
+                  toast.error('Data de nascimento inválida. Use DD/MM/AAAA ou AAAA-MM-DD.');
                   return;
                 }
                 const nomeValue = editForm.nome?.trim() || funcionarioAtual?.nome || null;

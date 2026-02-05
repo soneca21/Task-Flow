@@ -497,6 +497,41 @@ export default function Configuracoes() {
     entrada_veiculo: 'Entrada de Veículo',
   };
 
+  const automacaoNotaStatusLabels = {
+    em_expedicao: 'Em expedição',
+    em_producao: 'Em produção',
+    pendente: 'Pendente',
+    aprovada: 'Aprovada',
+  };
+
+  const automacaoCategoriaLabels = {
+    producao: 'Produção',
+    logistica: 'Logística',
+    movimentacao_carga: 'Movimentação de Carga',
+    apoio_operacional: 'Apoio Operacional',
+  };
+
+  const automacaoTarefaTipoLabels = {
+    producao: 'Produção',
+    carregamento: 'Carregamento',
+    movimentacao: 'Movimentação',
+    conferencia: 'Conferência',
+    retirada: 'Retirada',
+  };
+
+  const automacaoPrioridadeLabels = {
+    baixa: 'Baixa',
+    media: 'Média',
+    alta: 'Alta',
+    urgente: 'Urgente',
+  };
+
+  const automacaoStatusLabels = {
+    em_execucao: 'Em execução',
+    aguardando_alocacao: 'Aguardando alocação',
+    criada: 'Criada',
+  };
+
   return (
     <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
       <PageHeader 
@@ -746,14 +781,80 @@ export default function Configuracoes() {
           {/* Automações */}
           <TabsContent value="automacoes" className="mt-2">
           <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
-            <div>
-              <h2 className="text-xl font-semibold text-foreground mb-2">Gestão de Automações</h2>
-              <p className="text-sm text-muted-foreground">Configure regras automáticas do sistema</p>
+            <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-foreground mb-2">Gestão de Automações</h2>
+                <p className="text-sm text-muted-foreground">Configure regras automáticas do sistema</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="px-2 py-1 rounded-full border border-border bg-card/70">Auto-salvo</span>
+                <span>Alterações são aplicadas imediatamente</span>
+              </div>
+            </div>
+
+            <div className="bg-card/60 border border-border rounded-xl p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Resumo das Regras</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Visão rápida das escolhas ativas</p>
+                </div>
+                <span className="text-xs px-2 py-1 rounded-full bg-primary/15 text-primary">Ativo</span>
+              </div>
+              <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                {[
+                  {
+                    label: 'Gatilho da Nota',
+                    value: automacaoNotaStatusLabels[getConfigValue('automacao_nota_trigger_status', 'em_expedicao')]
+                      || getConfigValue('automacao_nota_trigger_status', 'em_expedicao'),
+                  },
+                  {
+                    label: 'Status Produção',
+                    value: automacaoNotaStatusLabels[getConfigValue('automacao_nota_status_producao', 'em_producao')]
+                      || getConfigValue('automacao_nota_status_producao', 'em_producao'),
+                  },
+                  {
+                    label: 'Categoria Frente',
+                    value: automacaoCategoriaLabels[getConfigValue('automacao_frente_categoria_producao', 'producao')]
+                      || getConfigValue('automacao_frente_categoria_producao', 'producao'),
+                  },
+                  {
+                    label: 'Tipo de Tarefa',
+                    value: automacaoTarefaTipoLabels[getConfigValue('automacao_tarefa_tipo_default', 'producao')]
+                      || getConfigValue('automacao_tarefa_tipo_default', 'producao'),
+                  },
+                  {
+                    label: 'Prioridade Padrão',
+                    value: automacaoPrioridadeLabels[getConfigValue('automacao_tarefa_prioridade_default', 'media')]
+                      || getConfigValue('automacao_tarefa_prioridade_default', 'media'),
+                  },
+                  {
+                    label: 'Status Inicial',
+                    value: automacaoStatusLabels[getConfigValue('automacao_tarefa_status_execucao', 'em_execucao')]
+                      || getConfigValue('automacao_tarefa_status_execucao', 'em_execucao'),
+                  },
+                  {
+                    label: 'Qtd. Urgente',
+                    value: getConfigNumber('automacao_quantidade_urgente', 2),
+                  },
+                  {
+                    label: 'Auto-distribuição',
+                    value: getConfig('automacao_auto_distribuicao_score_sem_disponiveis', 'true') ? 'Ativa' : 'Desativada',
+                  },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-lg border border-border bg-card/70 px-3 py-2">
+                    <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                    <p className="text-sm font-medium text-foreground mt-1">{item.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-foreground">Gatilhos de Nota</h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Gatilhos de Nota</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Define quando uma nota inicia a automação</p>
+                </div>
                 <div>
                   <Label>Status que ativa a automação</Label>
                   <Select
@@ -809,7 +910,10 @@ export default function Configuracoes() {
               </div>
 
               <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-foreground">Tarefas Automáticas</h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Tarefas Automáticas</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Parâmetros padrão para criação de tarefas</p>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Tipo padrão</Label>
@@ -895,7 +999,10 @@ export default function Configuracoes() {
               </div>
 
               <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-foreground">Quantidade por Prioridade</h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Quantidade por Prioridade</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Define a quantidade de tarefas por nível</p>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Urgente</Label>
@@ -919,7 +1026,10 @@ export default function Configuracoes() {
               </div>
 
               <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-foreground">Mapeamento Nota ? Tarefa</h3>
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground">Mapeamento Nota → Tarefa</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Define o tipo de tarefa criado para cada nota</p>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Entrega</Label>
@@ -1314,7 +1424,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border text-foreground max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle>{checklist?.id ? 'Editar Checklist' : 'Novo Checklist'}</DialogTitle>
         </DialogHeader>

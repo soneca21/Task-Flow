@@ -161,7 +161,7 @@ export default function Dashboard() {
 
   const handleQuickCreate = () => {
     if (!taskForm.titulo || !taskForm.frente_trabalho_id) {
-      toast.error('Preencha título e frente de trabalho');
+      toast.error('Preencha tÃ­tulo e frente de trabalho');
       return;
     }
     const frente = frentes.find(f => f.id === taskForm.frente_trabalho_id);
@@ -218,18 +218,18 @@ export default function Dashboard() {
           iconColor="text-blue-500"
         />
 
-      {/* Status Rápido */}
+      {/* Status RÃ¡pido */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard
           title="Nova Tarefa"
           value="Criar"
-          subtitle="Criação rápida"
+          subtitle="CriaÃ§Ã£o rÃ¡pida"
           icon={ClipboardCheck}
           color="blue"
           onClick={openQuickTask}
         />
         <StatCard
-          title="Produção"
+          title="ProduÃ§Ã£o"
           value={tarefasProducao.length}
           subtitle="Ordens ativas"
           icon={Factory}
@@ -237,7 +237,7 @@ export default function Dashboard() {
           linkTo="Producao"
         />
         <StatCard
-          title="Veículos no Pátio"
+          title="VeÃ­culos no PÃ¡tio"
           value={veiculosPatio.length}
           subtitle="Aguardando atendimento"
           icon={Truck}
@@ -245,17 +245,17 @@ export default function Dashboard() {
           linkTo="Logistica"
         />
         <StatCard
-          title="Expedição"
+          title="ExpediÃ§Ã£o"
           value={notasPendentes.length}
-          subtitle="Notas em expedição"
+          subtitle="Notas em expediÃ§Ã£o"
           icon={Package}
           color="purple"
           linkTo="Expedicao"
         />
         <StatCard
-          title="Pendências"
+          title="PendÃªncias"
           value={pendenciasCriticas.length}
-          subtitle="Alertas críticos"
+          subtitle="Alertas crÃ­ticos"
           icon={AlertTriangle}
           color="red"
           linkTo="Pendencias"
@@ -263,21 +263,21 @@ export default function Dashboard() {
         <StatCard
           title="Equipe"
           value={funcionariosAtivos.length}
-          subtitle="Funcionários ativos"
+          subtitle="FuncionÃ¡rios ativos"
           icon={Users}
           color="orange"
           linkTo="GestaoEquipe"
         />
       </div>
 
-      {/* Detalhes Rápidos */}
+      {/* Detalhes RÃ¡pidos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Tarefas Recentes */}
         <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <ClipboardCheck className="w-5 h-5 text-blue-400" />
-              Tarefas em Execução
+              Tarefas em ExecuÃ§Ã£o
             </h3>
             <span className="text-xs text-muted-foreground">{tarefas.filter(t => t.status === 'em_execucao').length} ativas</span>
           </div>
@@ -303,12 +303,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Veículos */}
+        {/* VeÃ­culos */}
         <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <Truck className="w-5 h-5 text-green-400" />
-              Veículos no Pátio
+              VeÃ­culos no PÃ¡tio
             </h3>
             <span className="text-xs text-muted-foreground">{veiculosPatio.length} veiculos</span>
           </div>
@@ -323,22 +323,22 @@ export default function Dashboard() {
                   veiculo.status === 'carregando' ? 'bg-amber-500/20 text-amber-400' :
                   'bg-green-500/20 text-green-400'
                 }`}>
-                  {veiculo.status === 'carregando' ? 'Carregando' : 'No Pátio'}
+                  {veiculo.status === 'carregando' ? 'Carregando' : 'No PÃ¡tio'}
                 </span>
               </div>
             ))}
             {veiculosPatio.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">Nenhum veiculo no patio</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum veÃ­culo no pÃ¡tio</p>
             )}
           </div>
         </div>
 
-        {/* Pendências Críticas */}
+        {/* PendÃªncias CrÃ­ticas */}
         <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
-              Alertas Críticos
+              Alertas CrÃ­ticos
             </h3>
             <span className="text-xs text-muted-foreground">{pendenciasCriticas.length} alertas</span>
           </div>
@@ -358,17 +358,17 @@ export default function Dashboard() {
               </div>
             ))}
             {pendenciasCriticas.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta critico</p>
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhum alerta crÃ­tico</p>
             )}
           </div>
         </div>
       </div>
 
       <Dialog open={quickTaskOpen} onOpenChange={setQuickTaskOpen}>
-        <DialogContent className="bg-popover border-border text-foreground">
+        <DialogContent className="bg-popover border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
           <DialogHeader className="pr-12">
             <div className="flex items-center gap-3">
-              <DialogTitle>Criar Tarefa Rápida</DialogTitle>
+              <DialogTitle>Criar Tarefa RÃ¡pida</DialogTitle>
               {(templates?.length || 0) > 0 && (
                 <Button
                   type="button"
@@ -384,7 +384,7 @@ export default function Dashboard() {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Titulo</label>
+              <label className="text-sm text-muted-foreground">TÃ­tulo</label>
               <Input
                 value={taskForm.titulo}
                 onChange={(e) => setTaskForm((p) => ({ ...p, titulo: e.target.value }))}
@@ -430,16 +430,16 @@ export default function Dashboard() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="producao">Produção</SelectItem>
+                    <SelectItem value="producao">ProduÃ§Ã£o</SelectItem>
                     <SelectItem value="entrega">Entrega</SelectItem>
                     <SelectItem value="retirada">Retirada</SelectItem>
                     <SelectItem value="carregamento">Carregamento</SelectItem>
                     <SelectItem value="descarga">Descarga</SelectItem>
-                    <SelectItem value="movimentacao">Movimentação</SelectItem>
-                    <SelectItem value="conferencia">Conferência</SelectItem>
+                    <SelectItem value="movimentacao">MovimentaÃ§Ã£o</SelectItem>
+                    <SelectItem value="conferencia">ConferÃªncia</SelectItem>
                     <SelectItem value="troca">Troca</SelectItem>
-                    <SelectItem value="devolucao">Devolução</SelectItem>
-                    <SelectItem value="manutencao">Manutenção</SelectItem>
+                    <SelectItem value="devolucao">DevoluÃ§Ã£o</SelectItem>
+                    <SelectItem value="manutencao">ManutenÃ§Ã£o</SelectItem>
                     <SelectItem value="outros">Outros</SelectItem>
                   </SelectContent>
                 </Select>
@@ -455,7 +455,7 @@ export default function Dashboard() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="baixa">Baixa</SelectItem>
-                    <SelectItem value="media">Média</SelectItem>
+                    <SelectItem value="media">MÃ©dia</SelectItem>
                     <SelectItem value="alta">Alta</SelectItem>
                     <SelectItem value="urgente">Urgente</SelectItem>
                   </SelectContent>
@@ -464,11 +464,11 @@ export default function Dashboard() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Descricao (opcional)</label>
+              <label className="text-sm text-muted-foreground">DescriÃ§Ã£o (opcional)</label>
               <Textarea
                 value={taskForm.descricao}
                 onChange={(e) => setTaskForm((p) => ({ ...p, descricao: e.target.value }))}
-                placeholder="Detalhes rápidos..."
+                placeholder="Detalhes rÃ¡pidos..."
                 className="bg-card border-border"
                 rows={3}
               />
@@ -514,7 +514,4 @@ export default function Dashboard() {
     </>
   );
 }
-
-
-
 

@@ -357,7 +357,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border text-foreground max-w-lg sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-lg !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle>{pendencia ? 'Editar Pendência' : 'Nova Pendência'}</DialogTitle>
         </DialogHeader>

@@ -161,7 +161,7 @@ export default function Producao() {
   const handleUpdateStatus = async (tarefa, newStatus) => {
     const canEdit = isAdmin || (funcionarioAtual && tarefa.funcionarios_designados?.includes(funcionarioAtual.id));
     if (!canEdit) {
-      toast.error('Somente o respons�vel pode editar esta tarefa');
+      toast.error('Somente o responsável pode editar esta tarefa');
       return;
     }
     if (newStatus === 'concluida') {
@@ -193,7 +193,7 @@ export default function Producao() {
       if (!updated || updated.status !== updates.status) {
         queryClient.invalidateQueries({ queryKey: ['tarefas-producao'] });
         queryClient.invalidateQueries({ queryKey: ['tarefas'] });
-        toast.error('N�o foi poss�vel alterar o status da tarefa');
+        toast.error('Não foi possível alterar o status da tarefa');
         return;
       }
       if (updated?.id) {
@@ -244,7 +244,7 @@ export default function Producao() {
 
   const handleExecutarChecklist = async (tarefa) => {
     if (!tarefa.checklist_id) {
-      toast.error('Esta tarefa n�o possui checklist configurado');
+      toast.error('Esta tarefa não possui checklist configurado');
       return;
     }
     try {
@@ -265,8 +265,8 @@ export default function Producao() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Produ��o"
-        subtitle={`${stats.emExecucao} ordens em execu��o`}
+        title="Produção"
+        subtitle={`${stats.emExecucao} ordens em execução`}
         icon={Factory}
         iconColor="text-amber-500"
       />
@@ -279,7 +279,7 @@ export default function Producao() {
         </div>
         <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4">
           <p className="text-2xl font-bold text-amber-300">{stats.emExecucao}</p>
-          <p className="text-xs text-muted-foreground">Em Execucao</p>
+          <p className="text-xs text-muted-foreground">Em Execução</p>
         </div>
         <div className="bg-card/60 border border-primary/25 rounded-2xl p-4">
           <p className="text-2xl font-bold text-primary">{stats.aguardando}</p>
@@ -287,7 +287,7 @@ export default function Producao() {
         </div>
         <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4">
           <p className="text-2xl font-bold text-emerald-300">{stats.concluidas}</p>
-          <p className="text-xs text-muted-foreground">Concluidas Hoje</p>
+          <p className="text-xs text-muted-foreground">Concluídas Hoje</p>
         </div>
       </div>
 
@@ -296,7 +296,7 @@ export default function Producao() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
-            placeholder="Buscar por t�tulo ou nota..."
+            placeholder="Buscar por título ou nota..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 bg-card/60 border-border text-foreground h-12"
@@ -310,9 +310,9 @@ export default function Producao() {
             <SelectItem value="todos">Todos os Status</SelectItem>
             <SelectItem value="criada">Criada</SelectItem>
             <SelectItem value="aguardando_alocacao">Aguardando</SelectItem>
-            <SelectItem value="em_execucao">Em Execu��o</SelectItem>
+            <SelectItem value="em_execucao">Em Execução</SelectItem>
             <SelectItem value="pausada">Pausada</SelectItem>
-            <SelectItem value="concluida">Conclu�da</SelectItem>
+            <SelectItem value="concluida">Concluída</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterFrente} onValueChange={setFilterFrente}>
@@ -370,7 +370,7 @@ export default function Producao() {
                   {tarefa.data_inicio && (
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      In�cio: {format(new Date(tarefa.data_inicio), 'HH:mm')}
+                      Início: {format(new Date(tarefa.data_inicio), 'HH:mm')}
                     </span>
                   )}
                 </div>
@@ -383,7 +383,7 @@ export default function Producao() {
                     className="bg-blue-600 hover:bg-blue-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o respons�vel pode editar' : undefined}
+                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Iniciar
@@ -395,7 +395,7 @@ export default function Producao() {
                     className="bg-blue-600 hover:bg-blue-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o respons�vel pode editar' : undefined}
+                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Iniciar
@@ -407,7 +407,7 @@ export default function Producao() {
                     className="bg-purple-600 hover:bg-purple-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'pausada')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o respons�vel pode editar' : undefined}
+                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
                   >
                     <Pause className="w-4 h-4 mr-1" />
                     Pausar
@@ -431,7 +431,7 @@ export default function Producao() {
                     disabled={!canEdit || (tarefa.checklist_id && !checklistPreenchido)}
                     title={
                       !canEdit
-                        ? 'Somente o respons�vel pode editar'
+                        ? 'Somente o responsável pode editar'
                         : (tarefa.checklist_id && !checklistPreenchido)
                           ? 'Preencha o checklist para concluir'
                           : undefined
@@ -449,7 +449,7 @@ export default function Producao() {
                     onClick={() => { setHistoricoTarefa(tarefa); setHistoricoOpen(true); }}
                   >
                     <History className="w-4 h-4 mr-1" />
-                    Hist�rico
+                    Histórico
                   </Button>
                 )}
               </div>
