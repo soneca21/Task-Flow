@@ -1,4 +1,4 @@
-ï»¿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
@@ -161,7 +161,7 @@ export default function Dashboard() {
 
   const handleQuickCreate = () => {
     if (!taskForm.titulo || !taskForm.frente_trabalho_id) {
-      toast.error('Preencha tÃ­tulo e frente de trabalho');
+      toast.error('Preencha título e frente de trabalho');
       return;
     }
     const frente = frentes.find(f => f.id === taskForm.frente_trabalho_id);
@@ -215,20 +215,21 @@ export default function Dashboard() {
           title="Dashboard Operacional"
           subtitle={`${format(new Date(), "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}`}
           icon={LayoutDashboard}
+          iconColor="text-blue-500"
         />
 
-      {/* Status RÃ¡pido */}
+      {/* Status Rápido */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <StatCard
           title="Nova Tarefa"
           value="Criar"
-          subtitle="CriaÃ§Ã£o rÃ¡pida"
+          subtitle="Criação rápida"
           icon={ClipboardCheck}
           color="blue"
           onClick={openQuickTask}
         />
         <StatCard
-          title="ProduÃ§Ã£o"
+          title="Produção"
           value={tarefasProducao.length}
           subtitle="Ordens ativas"
           icon={Factory}
@@ -236,7 +237,7 @@ export default function Dashboard() {
           linkTo="Producao"
         />
         <StatCard
-          title="VeÃ­culos no PÃ¡tio"
+          title="Veículos no Pátio"
           value={veiculosPatio.length}
           subtitle="Aguardando atendimento"
           icon={Truck}
@@ -244,17 +245,17 @@ export default function Dashboard() {
           linkTo="Logistica"
         />
         <StatCard
-          title="ExpediÃ§Ã£o"
+          title="Expedição"
           value={notasPendentes.length}
-          subtitle="Notas em expediÃ§Ã£o"
+          subtitle="Notas em expedição"
           icon={Package}
           color="purple"
           linkTo="Expedicao"
         />
         <StatCard
-          title="PendÃªncias"
+          title="Pendências"
           value={pendenciasCriticas.length}
-          subtitle="Alertas crÃ­ticos"
+          subtitle="Alertas críticos"
           icon={AlertTriangle}
           color="red"
           linkTo="Pendencias"
@@ -262,21 +263,21 @@ export default function Dashboard() {
         <StatCard
           title="Equipe"
           value={funcionariosAtivos.length}
-          subtitle="FuncionÃ¡rios ativos"
+          subtitle="Funcionários ativos"
           icon={Users}
           color="orange"
           linkTo="GestaoEquipe"
         />
       </div>
 
-      {/* Detalhes RÃ¡pidos */}
+      {/* Detalhes Rápidos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {/* Tarefas Recentes */}
         <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <ClipboardCheck className="w-5 h-5 text-blue-400" />
-              Tarefas em ExecuÃ§Ã£o
+              Tarefas em Execução
             </h3>
             <span className="text-xs text-muted-foreground">{tarefas.filter(t => t.status === 'em_execucao').length} ativas</span>
           </div>
@@ -302,12 +303,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* VeÃ­culos */}
+        {/* Veículos */}
         <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <Truck className="w-5 h-5 text-green-400" />
-              VeÃ­culos no PÃ¡tio
+              Veículos no Pátio
             </h3>
             <span className="text-xs text-muted-foreground">{veiculosPatio.length} veiculos</span>
           </div>
@@ -322,7 +323,7 @@ export default function Dashboard() {
                   veiculo.status === 'carregando' ? 'bg-amber-500/20 text-amber-400' :
                   'bg-green-500/20 text-green-400'
                 }`}>
-                  {veiculo.status === 'carregando' ? 'Carregando' : 'No PÃ¡tio'}
+                  {veiculo.status === 'carregando' ? 'Carregando' : 'No Pátio'}
                 </span>
               </div>
             ))}
@@ -332,12 +333,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* PendÃªncias CrÃ­ticas */}
+        {/* Pendências Críticas */}
         <div className="bg-card/55 border border-border rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-red-400" />
-              Alertas CrÃ­ticos
+              Alertas Críticos
             </h3>
             <span className="text-xs text-muted-foreground">{pendenciasCriticas.length} alertas</span>
           </div>
@@ -367,7 +368,7 @@ export default function Dashboard() {
         <DialogContent className="bg-popover border-border text-foreground">
           <DialogHeader className="pr-12">
             <div className="flex items-center gap-3">
-              <DialogTitle>Criar Tarefa RÃ¡pida</DialogTitle>
+              <DialogTitle>Criar Tarefa Rápida</DialogTitle>
               {(templates?.length || 0) > 0 && (
                 <Button
                   type="button"
@@ -429,16 +430,16 @@ export default function Dashboard() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="producao">ProduÃ§Ã£o</SelectItem>
+                    <SelectItem value="producao">Produção</SelectItem>
                     <SelectItem value="entrega">Entrega</SelectItem>
                     <SelectItem value="retirada">Retirada</SelectItem>
                     <SelectItem value="carregamento">Carregamento</SelectItem>
                     <SelectItem value="descarga">Descarga</SelectItem>
-                    <SelectItem value="movimentacao">MovimentaÃ§Ã£o</SelectItem>
-                    <SelectItem value="conferencia">ConferÃªncia</SelectItem>
+                    <SelectItem value="movimentacao">Movimentação</SelectItem>
+                    <SelectItem value="conferencia">Conferência</SelectItem>
                     <SelectItem value="troca">Troca</SelectItem>
-                    <SelectItem value="devolucao">DevoluÃ§Ã£o</SelectItem>
-                    <SelectItem value="manutencao">ManutenÃ§Ã£o</SelectItem>
+                    <SelectItem value="devolucao">Devolução</SelectItem>
+                    <SelectItem value="manutencao">Manutenção</SelectItem>
                     <SelectItem value="outros">Outros</SelectItem>
                   </SelectContent>
                 </Select>
@@ -454,7 +455,7 @@ export default function Dashboard() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="baixa">Baixa</SelectItem>
-                    <SelectItem value="media">MÃ©dia</SelectItem>
+                    <SelectItem value="media">Média</SelectItem>
                     <SelectItem value="alta">Alta</SelectItem>
                     <SelectItem value="urgente">Urgente</SelectItem>
                   </SelectContent>
@@ -467,7 +468,7 @@ export default function Dashboard() {
               <Textarea
                 value={taskForm.descricao}
                 onChange={(e) => setTaskForm((p) => ({ ...p, descricao: e.target.value }))}
-                placeholder="Detalhes rÃ¡pidos..."
+                placeholder="Detalhes rápidos..."
                 className="bg-card border-border"
                 rows={3}
               />

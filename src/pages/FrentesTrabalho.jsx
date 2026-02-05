@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -183,6 +183,7 @@ export default function FrentesTrabalho() {
         title="Frentes de Trabalho"
         subtitle="Gerencie os setores e estações de trabalho"
         icon={Warehouse}
+        iconColor="text-lime-500"
         actions={
           <Button 
             onClick={() => { setEditingFrente(null); setDialogOpen(true); }}
@@ -199,25 +200,25 @@ export default function FrentesTrabalho() {
         {groupedFrentes.map(categoria => (
           <div key={categoria.value} className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "p-2 rounded-lg",
-                categoria.color === 'blue' && "bg-blue-500/20",
-                categoria.color === 'slate' && "bg-slate-500/20",
-                categoria.color === 'green' && "bg-green-500/20",
-                categoria.color === 'amber' && "bg-amber-500/20",
-                categoria.color === 'cyan' && "bg-cyan-500/20",
-              )}>
+                <div className={cn(
+                  "p-2 rounded-lg",
+                  categoria.color === 'blue' && "bg-blue-500/20",
+                  categoria.color === 'slate' && "bg-muted/50",
+                  categoria.color === 'green' && "bg-green-500/20",
+                  categoria.color === 'amber' && "bg-amber-500/20",
+                  categoria.color === 'cyan' && "bg-cyan-500/20",
+                )}>
                 <categoria.icon className={cn(
                   "w-5 h-5",
                   categoria.color === 'blue' && "text-blue-400",
-                  categoria.color === 'slate' && "text-slate-400",
+                  categoria.color === 'slate' && "text-muted-foreground",
                   categoria.color === 'green' && "text-green-400",
                   categoria.color === 'amber' && "text-amber-400",
                   categoria.color === 'cyan' && "text-cyan-400",
                 )} />
               </div>
-              <h2 className="text-lg font-semibold text-white">{categoria.label}</h2>
-              <Badge variant="secondary" className="bg-slate-800 text-slate-400">
+              <h2 className="text-lg font-semibold text-foreground">{categoria.label}</h2>
+              <Badge variant="secondary" className="bg-card text-muted-foreground">
                 {categoria.frentes.length} frentes
                 {categoria.extraCount !== null ? ` • ${categoria.extraCount} veículos no pátio` : ''}
               </Badge>
@@ -230,7 +231,7 @@ export default function FrentesTrabalho() {
                   return (
                     <div 
                       key={frente.id}
-                      className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition-all"
+                      className="bg-card/60 border border-border rounded-xl p-4 hover:border-border transition-all"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
@@ -239,15 +240,15 @@ export default function FrentesTrabalho() {
                             style={{ backgroundColor: frente.cor || '#3b82f6' }}
                           />
                           <div>
-                            <h3 className="font-semibold text-white">{frente.nome}</h3>
+                            <h3 className="font-semibold text-foreground">{frente.nome}</h3>
                             {frente.descricao && (
-                              <p className="text-xs text-slate-500 mt-1 line-clamp-2">{frente.descricao}</p>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{frente.descricao}</p>
                             )}
                           </div>
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white h-8 w-8">
+                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground h-8 w-8">
                               <MoreVertical className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -265,8 +266,8 @@ export default function FrentesTrabalho() {
                         </DropdownMenu>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-slate-800">
-                        <div className="flex items-center gap-2 text-sm text-slate-400">
+                      <div className="mt-4 pt-3 border-t border-border">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Users className="w-4 h-4" />
                           <span>{funcionariosFrente.length} funcionários</span>
                         </div>
@@ -275,14 +276,14 @@ export default function FrentesTrabalho() {
                             {funcionariosFrente.slice(0, 5).map(func => (
                               <div 
                                 key={func.id}
-                                className="w-8 h-8 rounded-full bg-slate-700 border-2 border-slate-900 flex items-center justify-center text-xs font-medium text-white"
+                                className="w-8 h-8 rounded-full bg-card border-2 border-border flex items-center justify-center text-xs font-medium text-foreground"
                                 title={func.nome}
                               >
                                 {func.nome?.[0]?.toUpperCase()}
                               </div>
                             ))}
                             {funcionariosFrente.length > 5 && (
-                              <div className="w-8 h-8 rounded-full bg-slate-600 border-2 border-slate-900 flex items-center justify-center text-xs font-medium text-white">
+                              <div className="w-8 h-8 rounded-full bg-muted border-2 border-border flex items-center justify-center text-xs font-medium text-foreground">
                                 +{funcionariosFrente.length - 5}
                               </div>
                             )}
@@ -294,8 +295,8 @@ export default function FrentesTrabalho() {
                 })}
               </div>
             ) : (
-              <div className="bg-slate-900/30 border border-dashed border-slate-800 rounded-xl p-6 text-center">
-                <p className="text-slate-500 text-sm">Nenhuma frente cadastrada nesta categoria</p>
+              <div className="bg-card/40 border border-dashed border-border rounded-xl p-6 text-center">
+                <p className="text-muted-foreground text-sm">Nenhuma frente cadastrada nesta categoria</p>
                 <Button 
                   variant="ghost" 
                   size="sm" 
@@ -360,7 +361,7 @@ function FrenteDialog({ open, onOpenChange, frente, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg">
         <DialogHeader>
           <DialogTitle>{frente?.id ? 'Editar Frente' : 'Nova Frente de Trabalho'}</DialogTitle>
         </DialogHeader>
@@ -371,7 +372,7 @@ function FrenteDialog({ open, onOpenChange, frente, onSave, isLoading }) {
             <Input
               value={formData.nome}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Ex: Perfiladeira Telha Galvalume"
             />
           </div>
@@ -379,7 +380,7 @@ function FrenteDialog({ open, onOpenChange, frente, onSave, isLoading }) {
           <div>
             <Label>Categoria *</Label>
             <Select value={formData.categoria} onValueChange={(v) => setFormData({ ...formData, categoria: v })}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -395,7 +396,7 @@ function FrenteDialog({ open, onOpenChange, frente, onSave, isLoading }) {
             <Textarea
               value={formData.descricao}
               onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Descrição opcional da frente de trabalho"
               rows={3}
             />
@@ -426,13 +427,13 @@ function FrenteDialog({ open, onOpenChange, frente, onSave, isLoading }) {
               id="ativo"
               checked={formData.ativo}
               onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-              className="rounded border-slate-700"
+              className="rounded border-border"
             />
             <Label htmlFor="ativo">Frente Ativa</Label>
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

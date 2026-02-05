@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -503,31 +503,32 @@ export default function Configuracoes() {
         title="Configurações do Sistema"
         subtitle="Gerencie checklists, regras e auditoria"
         icon={Settings}
+        iconColor="text-muted-foreground"
       />
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-slate-900/50 border border-slate-800 p-2 grid grid-cols-2 gap-2 rounded-xl mb-4 w-full h-auto">
-            <TabsTrigger value="checklists" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
+          <TabsList className="bg-card/60 border border-border p-2 grid grid-cols-2 gap-2 rounded-xl mb-4 w-full h-auto">
+            <TabsTrigger value="checklists" className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <ClipboardCheck className="w-4 h-4 mr-2" />
               Checklists
             </TabsTrigger>
-            <TabsTrigger value="templates" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
+            <TabsTrigger value="templates" className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Layers className="w-4 h-4 mr-2" />
               Templates
             </TabsTrigger>
-            <TabsTrigger value="automacoes" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
+            <TabsTrigger value="automacoes" className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Sliders className="w-4 h-4 mr-2" />
               Automações
             </TabsTrigger>
-            <TabsTrigger value="seguranca" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
+            <TabsTrigger value="seguranca" className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Shield className="w-4 h-4 mr-2" />
               Segurança
             </TabsTrigger>
-            <TabsTrigger value="notificacoes" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
+            <TabsTrigger value="notificacoes" className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <Bell className="w-4 h-4 mr-2" />
               Notificações
             </TabsTrigger>
-            <TabsTrigger value="auditoria" className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
+            <TabsTrigger value="auditoria" className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal">
               <History className="w-4 h-4 mr-2" />
               Auditoria
             </TabsTrigger>
@@ -537,15 +538,15 @@ export default function Configuracoes() {
           <TabsContent value="checklists" className="mt-2">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
-                <h2 className="text-xl font-semibold text-white">Editor de Checklists</h2>
-                <p className="text-sm text-slate-400">Crie e modifique checklists obrigatórios</p>
+                <h2 className="text-xl font-semibold text-foreground">Editor de Checklists</h2>
+                <p className="text-sm text-muted-foreground">Crie e modifique checklists obrigatórios</p>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={handleSeedChecklists}
                   disabled={seedingChecklists}
-                  className="border-slate-700 text-slate-200 w-full sm:w-auto"
+                  className="border-border text-foreground w-full sm:w-auto"
                 >
                   {seedingChecklists ? 'Adicionando...' : 'Adicionar Checklists Padrão'}
                 </Button>
@@ -564,14 +565,14 @@ export default function Configuracoes() {
               <div 
                 key={checklist.id}
                 className={cn(
-                  "bg-slate-900/50 border rounded-xl p-5",
-                  checklist.ativo ? "border-slate-800" : "border-red-900/30 opacity-60"
+                  "bg-card/60 border rounded-xl p-5",
+                  checklist.ativo ? "border-border" : "border-red-900/30 opacity-60"
                 )}
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-white">{fixMojibakePtBr(checklist.nome)}</h3>
-                    <p className="text-sm text-slate-400 mt-1">
+                    <h3 className="font-semibold text-foreground">{fixMojibakePtBr(checklist.nome)}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
                       {tipoChecklistLabels[checklist.tipo] || checklist.tipo}
                     </p>
                   </div>
@@ -579,7 +580,7 @@ export default function Configuracoes() {
                     <Button 
                       variant="ghost" 
                       size="icon" 
-                      className="h-8 w-8 text-slate-400 hover:text-white"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => { setEditingChecklist(checklist); setChecklistDialog(true); }}
                     >
                       <Edit2 className="w-4 h-4" />
@@ -595,16 +596,16 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-slate-800">
-                  <p className="text-xs text-slate-500 mb-2">{checklist.itens?.length || 0} itens</p>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <p className="text-xs text-muted-foreground mb-2">{checklist.itens?.length || 0} itens</p>
                   {checklist.itens?.slice(0, 3).map((item, i) => (
-                    <div key={i} className="text-sm text-slate-400 flex items-center gap-2 py-1">
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-600" />
+                    <div key={i} className="text-sm text-muted-foreground flex items-center gap-2 py-1">
+                      <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
                       <span className="truncate">{fixMojibakePtBr(item.pergunta)}</span>
                     </div>
                   ))}
                   {(checklist.itens?.length || 0) > 3 && (
-                    <p className="text-xs text-slate-500 mt-2">+{checklist.itens.length - 3} mais itens</p>
+                    <p className="text-xs text-muted-foreground mt-2">+{checklist.itens.length - 3} mais itens</p>
                   )}
                 </div>
 
@@ -619,9 +620,9 @@ export default function Configuracoes() {
           </div>
 
           {checklists.length === 0 && (
-            <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-              <ClipboardCheck className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-500">Nenhum checklist cadastrado</p>
+            <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
+              <ClipboardCheck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">Nenhum checklist cadastrado</p>
             </div>
           )}
           </TabsContent>
@@ -630,15 +631,15 @@ export default function Configuracoes() {
           <TabsContent value="templates" className="mt-2">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
-                <h2 className="text-xl font-semibold text-white">Templates de Tarefas</h2>
-                <p className="text-sm text-slate-400">Crie modelos para abrir tarefas rapidamente (com ou sem checklist)</p>
+                <h2 className="text-xl font-semibold text-foreground">Templates de Tarefas</h2>
+                <p className="text-sm text-muted-foreground">Crie modelos para abrir tarefas rapidamente (com ou sem checklist)</p>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   onClick={handleSeedTemplates}
                   disabled={!isAdmin || seedingTemplates}
-                  className="border-slate-700 text-slate-200 w-full sm:w-auto"
+                  className="border-border text-foreground w-full sm:w-auto"
                 >
                   {seedingTemplates ? 'Adicionando...' : 'Adicionar Templates Padrão'}
                 </Button>
@@ -658,20 +659,20 @@ export default function Configuracoes() {
                 <div
                   key={tpl.id}
                   className={cn(
-                    "bg-slate-900/50 border rounded-2xl p-5 transition-all hover:border-slate-600",
-                    tpl.ativo ? "border-slate-800" : "border-red-900/30 opacity-60"
+                    "bg-card/60 border rounded-2xl p-5 transition-all hover:border-border",
+                    tpl.ativo ? "border-border" : "border-red-900/30 opacity-60"
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <h3 className="font-semibold text-white">{fixMojibakePtBr(tpl.nome)}</h3>
-                      <p className="text-xs text-slate-500 mt-1">{fixMojibakePtBr(tpl.descricao) || 'Sem descrição'}</p>
+                      <h3 className="font-semibold text-foreground">{fixMojibakePtBr(tpl.nome)}</h3>
+                      <p className="text-xs text-muted-foreground mt-1">{fixMojibakePtBr(tpl.descricao) || 'Sem descrição'}</p>
                       <div className="flex flex-wrap gap-2 mt-3">
-                        <span className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        <span className="text-xs px-2 py-1 rounded-full bg-card text-muted-foreground border border-border">
                           {tpl.tipo || 'tipo'}
                         </span>
                         {tpl.frente_trabalho_nome && (
-                          <span className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                          <span className="text-xs px-2 py-1 rounded-full bg-card text-muted-foreground border border-border">
                             {fixMojibakePtBr(tpl.frente_trabalho_nome)}
                           </span>
                         )}
@@ -683,7 +684,7 @@ export default function Configuracoes() {
                             Checklist
                           </span>
                         ) : (
-                          <span className="text-xs px-2 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                          <span className="text-xs px-2 py-1 rounded-full bg-card text-muted-foreground border border-border">
                             Sem checklist
                           </span>
                         )}
@@ -693,7 +694,7 @@ export default function Configuracoes() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="text-slate-400 hover:text-white"
+                        className="text-muted-foreground hover:text-foreground"
                         disabled={!isAdmin}
                         onClick={() => { setEditingTemplate(tpl); setTemplateDialog(true); }}
                       >
@@ -712,15 +713,15 @@ export default function Configuracoes() {
                   </div>
 
                   {tpl.observacoes && (
-                    <p className="text-xs text-slate-400 mt-3">{fixMojibakePtBr(tpl.observacoes)}</p>
+                    <p className="text-xs text-muted-foreground mt-3">{fixMojibakePtBr(tpl.observacoes)}</p>
                   )}
                 </div>
               ))}
 
               {templates.length === 0 && (
-                <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl md:col-span-2 lg:col-span-3">
-                  <Layers className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                  <p className="text-slate-500">Nenhum template cadastrado</p>
+                <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl md:col-span-2 lg:col-span-3">
+                  <Layers className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Nenhum template cadastrado</p>
                 </div>
               )}
             </div>
@@ -746,20 +747,20 @@ export default function Configuracoes() {
           <TabsContent value="automacoes" className="mt-2">
           <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Gestão de Automações</h2>
-              <p className="text-sm text-slate-400">Configure regras automáticas do sistema</p>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Gestão de Automações</h2>
+              <p className="text-sm text-muted-foreground">Configure regras automáticas do sistema</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-slate-200">Gatilhos de Nota</h3>
+              <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Gatilhos de Nota</h3>
                 <div>
                   <Label>Status que ativa a automação</Label>
                   <Select
                     value={getConfigValue('automacao_nota_trigger_status', 'em_expedicao')}
                     onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_nota_trigger_status', valor: v, tipo: 'texto', categoria: 'automacao' })}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                    <SelectTrigger className="bg-card border-border mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -777,7 +778,7 @@ export default function Configuracoes() {
                     value={getConfigValue('automacao_nota_status_producao', 'em_producao')}
                     onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_nota_status_producao', valor: v, tipo: 'texto', categoria: 'automacao' })}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                    <SelectTrigger className="bg-card border-border mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -794,7 +795,7 @@ export default function Configuracoes() {
                     value={getConfigValue('automacao_frente_categoria_producao', 'producao')}
                     onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_frente_categoria_producao', valor: v, tipo: 'texto', categoria: 'automacao' })}
                   >
-                    <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                    <SelectTrigger className="bg-card border-border mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -807,8 +808,8 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-slate-200">Tarefas Automáticas</h3>
+              <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Tarefas Automáticas</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Tipo padrão</Label>
@@ -816,7 +817,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tarefa_tipo_default', 'producao')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tarefa_tipo_default', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -834,7 +835,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tarefa_prioridade_default', 'media')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tarefa_prioridade_default', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -854,7 +855,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tarefa_status_execucao', 'em_execucao')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tarefa_status_execucao', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -870,7 +871,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tarefa_status_aguardando', 'aguardando_alocacao')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tarefa_status_aguardando', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -881,10 +882,10 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between rounded-lg border border-slate-800 p-3 bg-slate-900/50">
+                <div className="flex items-center justify-between rounded-lg border border-border p-3 bg-card/60">
                   <div>
-                    <p className="text-sm font-medium text-white">Auto-distribuir por score se ninguém disponível</p>
-                    <p className="text-xs text-slate-400">Distribui mesmo sem disponibilidade</p>
+                    <p className="text-sm font-medium text-foreground">Auto-distribuir por score se ninguém disponível</p>
+                    <p className="text-xs text-muted-foreground">Distribui mesmo sem disponibilidade</p>
                   </div>
                   <Switch
                     checked={getConfig('automacao_auto_distribuicao_score_sem_disponiveis', 'true')}
@@ -893,8 +894,8 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-slate-200">Quantidade por Prioridade</h3>
+              <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Quantidade por Prioridade</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Urgente</Label>
@@ -902,7 +903,7 @@ export default function Configuracoes() {
                       type="number"
                       value={getConfigNumber('automacao_quantidade_urgente', 2)}
                       onChange={(e) => updateConfigMutation.mutate({ chave: 'automacao_quantidade_urgente', valor: e.target.value || '0', tipo: 'numero', categoria: 'automacao' })}
-                      className="bg-slate-800 border-slate-700 mt-2"
+                      className="bg-card border-border mt-2"
                     />
                   </div>
                   <div>
@@ -911,14 +912,14 @@ export default function Configuracoes() {
                       type="number"
                       value={getConfigNumber('automacao_quantidade_default', 1)}
                       onChange={(e) => updateConfigMutation.mutate({ chave: 'automacao_quantidade_default', valor: e.target.value || '0', tipo: 'numero', categoria: 'automacao' })}
-                      className="bg-slate-800 border-slate-700 mt-2"
+                      className="bg-card border-border mt-2"
                     />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 space-y-4">
-                <h3 className="text-sm font-semibold text-slate-200">Mapeamento Nota ? Tarefa</h3>
+              <div className="bg-card/60 border border-border rounded-xl p-5 space-y-4">
+                <h3 className="text-sm font-semibold text-foreground">Mapeamento Nota ? Tarefa</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <Label>Entrega</Label>
@@ -926,7 +927,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tipo_nota_entrega', 'entrega')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tipo_nota_entrega', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -942,7 +943,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tipo_nota_retirada_balcao', 'retirada')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tipo_nota_retirada_balcao', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -958,7 +959,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tipo_nota_retirada_terceiro', 'retirada')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tipo_nota_retirada_terceiro', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -974,7 +975,7 @@ export default function Configuracoes() {
                       value={getConfigValue('automacao_tipo_nota_transferencia', 'movimentacao')}
                       onValueChange={(v) => updateConfigMutation.mutate({ chave: 'automacao_tipo_nota_transferencia', valor: v, tipo: 'texto', categoria: 'automacao' })}
                     >
-                      <SelectTrigger className="bg-slate-800 border-slate-700 mt-2">
+                      <SelectTrigger className="bg-card border-border mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -994,20 +995,20 @@ export default function Configuracoes() {
         <TabsContent value="seguranca" className="mt-2">
           <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Bloqueios de Segurança</h2>
-              <p className="text-sm text-slate-400">Configure regras automáticas de segurança</p>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Bloqueios de Segurança</h2>
+              <p className="text-sm text-muted-foreground">Configure regras automáticas de segurança</p>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-red-500/20">
                       <Lock className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Bloquear Saída sem Checklist</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="font-semibold text-foreground">Bloquear Saída sem Checklist</h3>
+                      <p className="text-sm text-muted-foreground">
                         Impede a saída do caminhão se o checklist de conferência não estiver 100% preenchido
                       </p>
                     </div>
@@ -1019,15 +1020,15 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-amber-500/20">
                       <Shield className="w-5 h-5 text-amber-400" />
                     </div>
                     <div>
-                        <h3 className="font-semibold text-white">Validação por Líder Obrigatória</h3>
-                      <p className="text-sm text-slate-400">
+                        <h3 className="font-semibold text-foreground">Validação por Líder Obrigatória</h3>
+                      <p className="text-sm text-muted-foreground">
                         Requer aprovação de um líder antes de liberar carregamento
                       </p>
                     </div>
@@ -1039,15 +1040,15 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+                <div className="bg-card/60 border border-border rounded-xl p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-3 rounded-lg bg-blue-500/20">
                         <FileText className="w-5 h-5 text-blue-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-white">Foto Obrigatória na Conferência</h3>
-                        <p className="text-sm text-slate-400">
+                        <h3 className="font-semibold text-foreground">Foto Obrigatória na Conferência</h3>
+                        <p className="text-sm text-muted-foreground">
                           Exige anexo de foto em cada item do checklist de conferência
                         </p>
                       </div>
@@ -1059,15 +1060,15 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-                <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+                <div className="bg-card/60 border border-border rounded-xl p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <div className="p-3 rounded-lg bg-amber-500/20">
                         <Camera className="w-5 h-5 text-amber-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-white">Foto Obrigatória em Todos os Checklists</h3>
-                        <p className="text-sm text-slate-400">
+                        <h3 className="font-semibold text-foreground">Foto Obrigatória em Todos os Checklists</h3>
+                        <p className="text-sm text-muted-foreground">
                           Obriga foto em todos os itens, independentemente do tipo de checklist
                         </p>
                       </div>
@@ -1079,15 +1080,15 @@ export default function Configuracoes() {
                   </div>
                 </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-green-500/20">
                       <Bell className="w-5 h-5 text-green-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Notificar Pendências Críticas</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="font-semibold text-foreground">Notificar Pendências Críticas</h3>
+                      <p className="text-sm text-muted-foreground">
                         Envia notificação imediata quando uma pendência crítica é criada
                       </p>
                     </div>
@@ -1106,20 +1107,20 @@ export default function Configuracoes() {
         <TabsContent value="notificacoes" className="mt-2">
           <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Notificações em Tempo Real</h2>
-              <p className="text-sm text-slate-400">Configure alertas personalizados para eventos do sistema</p>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Notificações em Tempo Real</h2>
+              <p className="text-sm text-muted-foreground">Configure alertas personalizados para eventos do sistema</p>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-red-500/20">
                       <Bell className="w-5 h-5 text-red-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Tarefas Urgentes/Alta Prioridade</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="font-semibold text-foreground">Tarefas Urgentes/Alta Prioridade</h3>
+                      <p className="text-sm text-muted-foreground">
                         Receber alerta quando uma tarefa urgente ou de alta prioridade for criada
                       </p>
                     </div>
@@ -1131,15 +1132,15 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-amber-500/20">
                       <Bell className="w-5 h-5 text-amber-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Mudanças de Status Críticas</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="font-semibold text-foreground">Mudanças de Status Críticas</h3>
+                      <p className="text-sm text-muted-foreground">
                         Notificar quando tarefas críticas mudarem de status (pendências resolvidas, notas em atraso)
                       </p>
                     </div>
@@ -1151,15 +1152,15 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-orange-500/20">
                       <Shield className="w-5 h-5 text-orange-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Alertas de Segurança</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="font-semibold text-foreground">Alertas de Segurança</h3>
+                      <p className="text-sm text-muted-foreground">
                         Alerta imediato quando um item de segurança for reprovado no checklist
                       </p>
                     </div>
@@ -1171,15 +1172,15 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
+              <div className="bg-card/60 border border-border rounded-xl p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-lg bg-green-500/20">
                       <Bell className="w-5 h-5 text-green-400" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-white">Funcionário Disponível</h3>
-                      <p className="text-sm text-slate-400">
+                      <h3 className="font-semibold text-foreground">Funcionário Disponível</h3>
+                      <p className="text-sm text-muted-foreground">
                         Notificar quando um funcionário concluir suas tarefas e ficar disponível
                       </p>
                     </div>
@@ -1198,29 +1199,29 @@ export default function Configuracoes() {
         <TabsContent value="auditoria" className="mt-2">
           <div className="space-y-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
             <div>
-              <h2 className="text-xl font-semibold text-white mb-2">Log de Auditoria</h2>
-              <p className="text-sm text-slate-400">Histórico completo de ações no sistema</p>
+              <h2 className="text-xl font-semibold text-foreground mb-2">Log de Auditoria</h2>
+              <p className="text-sm text-muted-foreground">Histórico completo de ações no sistema</p>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
+            <div className="bg-card/60 border border-border rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-slate-800">
-                      <th className="text-left p-4 text-sm font-medium text-slate-400">Data/Hora</th>
-                      <th className="text-left p-4 text-sm font-medium text-slate-400">Usuário</th>
-                      <th className="text-left p-4 text-sm font-medium text-slate-400">Ação</th>
-                      <th className="text-left p-4 text-sm font-medium text-slate-400">Entidade</th>
-                      <th className="text-left p-4 text-sm font-medium text-slate-400">Descrição</th>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Data/Hora</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Usuário</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Ação</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Entidade</th>
+                      <th className="text-left p-4 text-sm font-medium text-muted-foreground">Descrição</th>
                     </tr>
                   </thead>
                   <tbody>
                     {logs.map(log => (
-                      <tr key={log.id} className="border-b border-slate-800/50 hover:bg-slate-800/30">
-                        <td className="p-4 text-sm text-slate-300">
+                      <tr key={log.id} className="border-b border-border/50 hover:bg-card/30">
+                        <td className="p-4 text-sm text-muted-foreground">
                           {log.created_date && format(new Date(log.created_date), 'dd/MM HH:mm')}
                         </td>
-                        <td className="p-4 text-sm text-slate-300">{log.created_by}</td>
+                        <td className="p-4 text-sm text-muted-foreground">{log.created_by}</td>
                         <td className="p-4">
                           <span className={cn(
                             "text-xs px-2 py-1 rounded-full",
@@ -1234,8 +1235,8 @@ export default function Configuracoes() {
                             {log.acao}
                           </span>
                         </td>
-                        <td className="p-4 text-sm text-slate-400">{log.entidade}</td>
-                        <td className="p-4 text-sm text-slate-300 max-w-xs truncate">{log.descricao}</td>
+                        <td className="p-4 text-sm text-muted-foreground">{log.entidade}</td>
+                        <td className="p-4 text-sm text-muted-foreground max-w-xs truncate">{log.descricao}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -1243,8 +1244,8 @@ export default function Configuracoes() {
               </div>
               {logs.length === 0 && (
                 <div className="p-8 text-center">
-                  <History className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-                  <p className="text-slate-500">Nenhum log registrado</p>
+                  <History className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Nenhum log registrado</p>
                 </div>
               )}
             </div>
@@ -1313,7 +1314,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-2xl sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{checklist?.id ? 'Editar Checklist' : 'Novo Checklist'}</DialogTitle>
         </DialogHeader>
@@ -1325,14 +1326,14 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
               <Input
                 value={formData.nome}
                 onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="Ex: Checklist de Carregamento"
               />
             </div>
             <div>
               <Label>Tipo *</Label>
               <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1368,15 +1369,15 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-800">
+          <div className="pt-4 border-t border-border">
             <Label>Itens do Checklist</Label>
             
             <div className="mt-3 space-y-2">
               {formData.itens.map((item, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg">
+                <div key={index} className="flex items-center gap-3 p-3 bg-card/70 rounded-lg">
                   <div className="flex-1">
-                    <p className="text-sm text-white">{item.pergunta}</p>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-sm text-foreground">{item.pergunta}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
                       {item.tipo_resposta === 'sim_nao' && 'Sim/Não'}
                       {item.tipo_resposta === 'texto' && 'Texto'}
                       {item.tipo_resposta === 'numero' && 'Número'}
@@ -1396,18 +1397,18 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
               ))}
             </div>
 
-            <div className="mt-4 p-4 bg-slate-800/30 rounded-lg border border-dashed border-slate-700">
+            <div className="mt-4 p-4 bg-card/30 rounded-lg border border-dashed border-border">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="md:col-span-2">
                   <Input
                     value={novoItem.pergunta}
                     onChange={(e) => setNovoItem({ ...novoItem, pergunta: e.target.value })}
-                    className="bg-slate-800 border-slate-700"
+                    className="bg-card border-border"
                     placeholder="Pergunta do item..."
                   />
                 </div>
                 <Select value={novoItem.tipo_resposta} onValueChange={(v) => setNovoItem({ ...novoItem, tipo_resposta: v })}>
-                  <SelectTrigger className="bg-slate-800 border-slate-700">
+                  <SelectTrigger className="bg-card border-border">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -1424,14 +1425,14 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
                     type="checkbox"
                     checked={novoItem.obrigatorio}
                     onChange={(e) => setNovoItem({ ...novoItem, obrigatorio: e.target.checked })}
-                    className="rounded border-slate-700"
+                    className="rounded border-border"
                   />
-                  <span className="text-sm text-slate-400">Obrigatório</span>
+                  <span className="text-sm text-muted-foreground">Obrigatório</span>
                 </div>
                 <Button 
                   size="sm" 
                   onClick={addItem}
-                  className="bg-slate-700 hover:bg-slate-600"
+                  className="bg-card hover:bg-accent/60"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Adicionar Item
@@ -1441,7 +1442,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
@@ -1537,7 +1538,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-2xl sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-2xl sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{template?.id ? 'Editar Template' : 'Novo Template'}</DialogTitle>
         </DialogHeader>
@@ -1549,7 +1550,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
               <Input
                 value={formData.nome}
                 onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="Ex: Atendimento no Pátio - Carga"
               />
             </div>
@@ -1560,7 +1561,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
             <Textarea
               value={formData.descricao}
               onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={2}
               placeholder="Uma descrição curta do que este template cria..."
             />
@@ -1570,7 +1571,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
             <div>
               <Label>Tipo *</Label>
               <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1591,7 +1592,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
             <div>
               <Label>Prioridade</Label>
               <Select value={formData.prioridade} onValueChange={(v) => setFormData({ ...formData, prioridade: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1607,7 +1608,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
           <div>
             <Label>Frente de Trabalho *</Label>
             <Select value={formData.frente_trabalho_id || undefined} onValueChange={handleFrenteChange}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue placeholder="Selecione a frente..." />
               </SelectTrigger>
               <SelectContent>
@@ -1629,7 +1630,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
                   setFormData({ ...formData, checklist_id: v === NO_CHECKLIST ? null : v })
                 }
               >
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -1656,7 +1657,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
                     quantidade_profissionais: parseInt(e.target.value, 10) || 1,
                   })
                 }
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
           </div>
@@ -1666,7 +1667,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
             <Textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={2}
               placeholder="Regras, lembretes ou instruções para o líder..."
             />
@@ -1678,7 +1679,7 @@ function TemplateDialog({ open, onOpenChange, template, frentes, checklists, onS
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

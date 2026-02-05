@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
+  .pwa-hide {
+    display: none !important;
+  }
+}
+
 @layer base {
   :root {
     /* Dark-only Material-ish palette (Obsidian + Petrol) */

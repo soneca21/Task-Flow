@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -46,10 +46,10 @@ const PATIO_STATUS = new Set(['no_patio', 'carregando']);
 const isPatioStatus = (status) => PATIO_STATUS.has(status);
 
 const statusLabels = {
-  disponivel: 'Disponível',
+  disponivel: 'Dispon�vel',
   em_rota: 'Em rota',
-  em_manutencao: 'Em manutenção',
-  no_patio: 'No pátio',
+  em_manutencao: 'Em manuten��o',
+  no_patio: 'No p�tio',
   carregando: 'Em atendimento',
 };
 
@@ -74,11 +74,11 @@ export default function Logistica() {
 
   const announceVeiculo = async (veiculo, acao = 'veiculo_no_patio') => {
     if (!veiculo || !isPatioStatus(veiculo.status)) return;
-    const placa = veiculo.placa || 'Veículo';
+    const placa = veiculo.placa || 'Ve�culo';
     const statusLabel = veiculo.status === 'carregando'
       ? 'em atendimento'
       : 'aguardando atendimento';
-    const descricao = `${placa} ${statusLabel} no pátio.`;
+    const descricao = `${placa} ${statusLabel} no p�tio.`;
 
     try {
       await api.entities.LogAuditoria.create({
@@ -91,7 +91,7 @@ export default function Logistica() {
       // Best-effort
     }
 
-    toast.info(`Veículo no pátio: ${placa}`);
+    toast.info(`Ve�culo no p�tio: ${placa}`);
   };
 
   const handleDialogChange = (open) => {
@@ -194,15 +194,16 @@ export default function Logistica() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Veículos no Pátio"
-        subtitle={`${patioTotal} veículos aguardando atendimento`}
+        title="Ve�culos no P�tio"
+        subtitle={`${patioTotal} ve�culos aguardando atendimento`}
         icon={Truck}
+        iconColor="text-green-500"
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               onClick={() => { setDialogMode('arrival'); setEditingVeiculo(null); setDialogOpen(true); }}
-              className="border-slate-700 text-slate-200 hover:bg-slate-800"
+              className="border-border text-foreground hover:bg-card"
             >
               <MapPin className="w-4 h-4 mr-2" />
               Registrar Chegada
@@ -212,63 +213,63 @@ export default function Logistica() {
               className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
             >
               <Plus className="w-5 h-5 mr-2" />
-              Cadastrar Veículo
+              Cadastrar Ve�culo
             </Button>
           </div>
         }
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-          <p className="text-2xl font-bold text-white">{stats.total}</p>
-          <p className="text-xs text-slate-500">Total de Veículos</p>
+        <div className="bg-card/60 border border-border rounded-xl p-4">
+          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+          <p className="text-xs text-muted-foreground">Total de Ve�culos</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-amber-400">{stats.aguardando}</p>
-          <p className="text-xs text-slate-500">Aguardando</p>
+          <p className="text-xs text-muted-foreground">Aguardando</p>
         </div>
-        <div className="bg-slate-900/50 border border-cyan-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-cyan-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-cyan-400">{stats.emAtendimento}</p>
-          <p className="text-xs text-slate-500">Em Atendimento</p>
+          <p className="text-xs text-muted-foreground">Em Atendimento</p>
         </div>
-        <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-blue-400">{stats.emRota}</p>
-          <p className="text-xs text-slate-500">Em Rota</p>
+          <p className="text-xs text-muted-foreground">Em Rota</p>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar por placa ou modelo..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-56 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="patio">No Pátio (Aguardando)</SelectItem>
+            <SelectItem value="patio">No P�tio (Aguardando)</SelectItem>
             <SelectItem value="todos">Todos os Status</SelectItem>
-            <SelectItem value="disponivel">Disponível</SelectItem>
+            <SelectItem value="disponivel">Dispon�vel</SelectItem>
             <SelectItem value="em_rota">Em Rota</SelectItem>
-            <SelectItem value="no_patio">No Pátio</SelectItem>
+            <SelectItem value="no_patio">No P�tio</SelectItem>
             <SelectItem value="carregando">Em Atendimento</SelectItem>
-            <SelectItem value="em_manutencao">Em Manutenção</SelectItem>
+            <SelectItem value="em_manutencao">Em Manuten��o</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterTipo} onValueChange={setFilterTipo}>
-          <SelectTrigger className="w-full lg:w-56 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Tipos</SelectItem>
-            <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
-            <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
+            <SelectItem value="caminhao_proprio">Caminh�o Pr�prio</SelectItem>
+            <SelectItem value="caminhao_terceiro">Caminh�o Terceiro</SelectItem>
             <SelectItem value="carro">Carro</SelectItem>
             <SelectItem value="moto">Moto</SelectItem>
             <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
@@ -285,8 +286,8 @@ export default function Logistica() {
             <div
               key={veiculo.id}
               className={cn(
-                "bg-slate-900/50 border rounded-xl p-4 transition-all hover:border-slate-700",
-                veiculo.ativo ? "border-slate-800" : "border-red-900/30 opacity-60"
+                "bg-card/60 border rounded-xl p-4 transition-all hover:border-border",
+                veiculo.ativo ? "border-border" : "border-red-900/30 opacity-60"
               )}
             >
               <div className="flex items-start justify-between">
@@ -305,13 +306,13 @@ export default function Logistica() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-bold text-white text-lg">{veiculo.placa}</h3>
-                    <p className="text-sm text-slate-400">{veiculo.modelo}</p>
+                    <h3 className="font-bold text-foreground text-lg">{veiculo.placa}</h3>
+                    <p className="text-sm text-muted-foreground">{veiculo.modelo}</p>
                   </div>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
                       <MoreVertical className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -323,7 +324,7 @@ export default function Logistica() {
                     )}
                     {isPatioStatus(veiculo.status) && (
                       <DropdownMenuItem onClick={() => handleAnnounce(veiculo)}>
-                        <Megaphone className="w-4 h-4 mr-2" /> Anunciar no Pátio
+                        <Megaphone className="w-4 h-4 mr-2" /> Anunciar no P�tio
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem onClick={() => { setEditingVeiculo(veiculo); setDialogMode('edit'); setDialogOpen(true); }}>
@@ -345,26 +346,26 @@ export default function Logistica() {
                 </span>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-800 space-y-2">
+              <div className="mt-4 pt-3 border-t border-border space-y-2">
                 {veiculo.km_atual && (
-                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Gauge className="w-4 h-4" />
                     <span>{veiculo.km_atual.toLocaleString()} km</span>
                   </div>
                 )}
                 {veiculo.capacidade_kg && (
-                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span className="text-xs">Capacidade: {veiculo.capacidade_kg.toLocaleString()} kg</span>
                   </div>
                 )}
                 {motorista && (
-                  <div className="flex items-center gap-2 text-sm text-slate-400">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <span className="text-xs">Motorista: {motorista.nome}</span>
                   </div>
                 )}
                 {veiculo.status === 'em_manutencao' && (
                   <div className="flex items-center gap-2 text-xs text-red-400">
-                    <Wrench className="w-4 h-4" /> Em manutenção
+                    <Wrench className="w-4 h-4" /> Em manuten��o
                   </div>
                 )}
               </div>
@@ -374,9 +375,9 @@ export default function Logistica() {
       </div>
 
       {filteredVeiculos.length === 0 && (
-        <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-          <Truck className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-500">Nenhum veículo aguardando atendimento</p>
+        <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
+          <Truck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">Nenhum ve�culo aguardando atendimento</p>
         </div>
       )}
 
@@ -434,14 +435,14 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
   }, [veiculo, open, isArrival]);
 
   const dialogTitle = veiculo
-    ? 'Editar Veículo'
+    ? 'Editar Ve�culo'
     : isArrival
       ? 'Registrar Chegada'
-      : 'Cadastrar Veículo';
+      : 'Cadastrar Ve�culo';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
@@ -453,7 +454,7 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
               <Input
                 value={formData.placa}
                 onChange={(e) => setFormData({ ...formData, placa: e.target.value.toUpperCase() })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="ABC-1234"
               />
             </div>
@@ -462,7 +463,7 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
               <Input
                 value={formData.modelo}
                 onChange={(e) => setFormData({ ...formData, modelo: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="Ex: VW Constellation"
               />
             </div>
@@ -472,12 +473,12 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
             <div>
               <Label>Tipo *</Label>
               <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
-                  <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
+                  <SelectItem value="caminhao_proprio">Caminh�o Pr�prio</SelectItem>
+                  <SelectItem value="caminhao_terceiro">Caminh�o Terceiro</SelectItem>
                   <SelectItem value="carro">Carro</SelectItem>
                   <SelectItem value="moto">Moto</SelectItem>
                   <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
@@ -492,15 +493,15 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
                 onValueChange={(v) => setFormData({ ...formData, status: v })}
                 disabled={isArrival}
               >
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="disponivel">Disponível</SelectItem>
+                  <SelectItem value="disponivel">Dispon�vel</SelectItem>
                   <SelectItem value="em_rota">Em Rota</SelectItem>
-                  <SelectItem value="no_patio">No Pátio</SelectItem>
+                  <SelectItem value="no_patio">No P�tio</SelectItem>
                   <SelectItem value="carregando">Em Atendimento</SelectItem>
-                  <SelectItem value="em_manutencao">Em Manutenção</SelectItem>
+                  <SelectItem value="em_manutencao">Em Manuten��o</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -513,7 +514,7 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
                 type="number"
                 value={formData.capacidade_kg}
                 onChange={(e) => setFormData({ ...formData, capacidade_kg: parseInt(e.target.value, 10) || '' })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
             <div>
@@ -522,7 +523,7 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
                 type="number"
                 value={formData.km_atual}
                 onChange={(e) => setFormData({ ...formData, km_atual: parseInt(e.target.value, 10) || '' })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
           </div>
@@ -533,7 +534,7 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
               value={formData.motorista_fixo_id || 'sem_motorista'}
               onValueChange={(v) => setFormData({ ...formData, motorista_fixo_id: v === 'sem_motorista' ? '' : v })}
             >
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent>
@@ -551,13 +552,13 @@ function VeiculoDialog({ open, onOpenChange, mode, veiculo, funcionarios, onSave
               id="ativo"
               checked={formData.ativo}
               onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-              className="rounded border-slate-700"
+              className="rounded border-border"
             />
-            <Label htmlFor="ativo">Veículo Ativo</Label>
+            <Label htmlFor="ativo">Ve�culo Ativo</Label>
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

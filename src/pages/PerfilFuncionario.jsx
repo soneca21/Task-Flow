@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -55,7 +55,7 @@ export default function PerfilFuncionario() {
   const score = funcionario?.tarefas_concluidas || 0;
   const scoreLevels = [
     { label: 'Bronze', min: 0, max: 9, color: 'text-amber-400', bar: 'bg-amber-500' },
-    { label: 'Prata', min: 10, max: 29, color: 'text-slate-200', bar: 'bg-slate-300' },
+    { label: 'Prata', min: 10, max: 29, color: 'text-foreground', bar: 'bg-muted' },
     { label: 'Ouro', min: 30, max: 59, color: 'text-yellow-300', bar: 'bg-yellow-400' },
     { label: 'Platina', min: 60, max: 119, color: 'text-cyan-200', bar: 'bg-cyan-300' },
     { label: 'Diamante', min: 120, max: Infinity, color: 'text-indigo-200', bar: 'bg-indigo-300' },
@@ -108,9 +108,9 @@ export default function PerfilFuncionario() {
       case 'ferias':
         return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
       case 'afastado':
-        return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+        return 'bg-muted/50 text-muted-foreground border-border';
       default:
-        return 'bg-slate-800 text-slate-300 border-slate-700';
+        return 'bg-card text-muted-foreground border-border';
     }
   };
 
@@ -121,8 +121,9 @@ export default function PerfilFuncionario() {
           title="Perfil do Funcionário"
           subtitle="Acesso restrito para Líder/Admin"
           icon={UserCircle}
+          iconColor="text-orange-500"
           actions={
-            <Button variant="outline" className="border-slate-700 text-slate-200" asChild>
+            <Button variant="outline" className="border-border text-foreground" asChild>
               <Link to={createPageUrl('GestaoEquipe')}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
@@ -130,7 +131,7 @@ export default function PerfilFuncionario() {
             </Button>
           }
         />
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 text-slate-400">
+        <div className="bg-card/60 border border-border rounded-2xl p-6 text-muted-foreground">
           Você não tem permissão para visualizar este perfil.
         </div>
       </div>
@@ -140,8 +141,8 @@ export default function PerfilFuncionario() {
   if (loadingFuncionario) {
     return (
       <div className="space-y-6">
-        <PageHeader title="Perfil do Funcionário" subtitle="Carregando dados..." icon={UserCircle} />
-        <div className="h-32 rounded-2xl border border-slate-800 bg-slate-900/50 animate-pulse" />
+        <PageHeader title="Perfil do Funcionário" subtitle="Carregando dados..." icon={UserCircle} iconColor="text-orange-500" />
+        <div className="h-32 rounded-2xl border border-border bg-card/60 animate-pulse" />
       </div>
     );
   }
@@ -153,8 +154,9 @@ export default function PerfilFuncionario() {
           title="Perfil do Funcionário"
           subtitle="Funcionário não encontrado"
           icon={UserCircle}
+          iconColor="text-orange-500"
           actions={
-            <Button variant="outline" className="border-slate-700 text-slate-200" asChild>
+            <Button variant="outline" className="border-border text-foreground" asChild>
               <Link to={createPageUrl('GestaoEquipe')}>
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar
@@ -162,7 +164,7 @@ export default function PerfilFuncionario() {
             </Button>
           }
         />
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 text-slate-400">
+        <div className="bg-card/60 border border-border rounded-2xl p-6 text-muted-foreground">
           Não foi possível localizar o funcionário solicitado.
         </div>
       </div>
@@ -177,8 +179,9 @@ export default function PerfilFuncionario() {
         title="Perfil do Funcionário"
         subtitle="Visão de liderança para análise"
         icon={UserCircle}
+        iconColor="text-orange-500"
         actions={
-          <Button variant="outline" className="border-slate-700 text-slate-200" asChild>
+          <Button variant="outline" className="border-border text-foreground" asChild>
             <Link to={createPageUrl('GestaoEquipe')}>
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar
@@ -188,7 +191,7 @@ export default function PerfilFuncionario() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
               <span className="text-amber-400 font-bold text-lg">
@@ -196,22 +199,22 @@ export default function PerfilFuncionario() {
               </span>
             </div>
             <div>
-              <p className="text-lg font-semibold text-white">{funcionario.nome || 'Funcionário'}</p>
-              <p className="text-sm text-slate-400">{funcionario.cargo || '-'}</p>
+              <p className="text-lg font-semibold text-foreground">{funcionario.nome || 'Funcionário'}</p>
+              <p className="text-sm text-muted-foreground">{funcionario.cargo || '-'}</p>
             </div>
           </div>
 
-          <div className="space-y-3 text-sm text-slate-300">
-            <p><span className="text-slate-500">Vínculo:</span> {funcionario.vinculo || '-'}</p>
-            <p><span className="text-slate-500">Nível:</span> {funcionario.nivel_acesso || '-'}</p>
-            <p><span className="text-slate-500">Capacidade:</span> {funcionario.capacidade_tarefas || 1} tarefa(s)</p>
-            <p><span className="text-slate-500">User ID:</span> {funcionario.user_id || 'Não vinculado'}</p>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p><span className="text-muted-foreground">Vínculo:</span> {funcionario.vinculo || '-'}</p>
+            <p><span className="text-muted-foreground">Nível:</span> {funcionario.nivel_acesso || '-'}</p>
+            <p><span className="text-muted-foreground">Capacidade:</span> {funcionario.capacidade_tarefas || 1} tarefa(s)</p>
+            <p><span className="text-muted-foreground">User ID:</span> {funcionario.user_id || 'Não vinculado'}</p>
             <p className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-slate-500" />
+              <Phone className="w-4 h-4 text-muted-foreground" />
               <span>{funcionario.telefone ? formatTelefoneBR(funcionario.telefone) : '-'}</span>
             </p>
             <p className="flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-slate-500" />
+              <CalendarDays className="w-4 h-4 text-muted-foreground" />
               <span>
                 {funcionario.data_nascimento
                   ? new Date(funcionario.data_nascimento).toLocaleDateString('pt-BR')
@@ -219,7 +222,7 @@ export default function PerfilFuncionario() {
               </span>
             </p>
             <p className="flex items-center justify-between gap-3">
-              <span className="text-slate-500">Status:</span>
+              <span className="text-muted-foreground">Status:</span>
               <span className={`text-xs px-2 py-1 rounded-full border ${statusPillClass(currentStatus)}`}>
                 {statusLabel[currentStatus] || currentStatus}
               </span>
@@ -227,18 +230,18 @@ export default function PerfilFuncionario() {
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-5 h-5 text-amber-400" />
-            <h3 className="text-sm font-semibold text-white">Score do Funcionário</h3>
+            <h3 className="text-sm font-semibold text-foreground">Score do Funcionário</h3>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-white">{score}</p>
+                <p className="text-2xl font-bold text-foreground">{score}</p>
                 <p className={`text-sm ${currentLevel.color}`}>{currentLevel.label}</p>
               </div>
-              <div className="text-right text-xs text-slate-400">
+              <div className="text-right text-xs text-muted-foreground">
                 <p>{statsTarefas.concluidas} concluídas</p>
                 {nextLevel ? (
                   <p>Próximo: {nextLevel.label} ({nextLevel.min})</p>
@@ -247,7 +250,7 @@ export default function PerfilFuncionario() {
                 )}
               </div>
             </div>
-            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-card rounded-full overflow-hidden">
               <div
                 className={`h-full ${currentLevel.bar} transition-all duration-300`}
                 style={{ width: `${progress}%` }}
@@ -256,51 +259,51 @@ export default function PerfilFuncionario() {
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-blue-400" />
-            <h3 className="text-sm font-semibold text-white">Resumo Operacional</h3>
+            <h3 className="text-sm font-semibold text-foreground">Resumo Operacional</h3>
           </div>
-          <div className="space-y-2 text-sm text-slate-300">
-            <p><span className="text-slate-500">Ativas:</span> {statsTarefas.total}</p>
-            <p><span className="text-slate-500">Em execução:</span> {statsTarefas.emExecucao}</p>
-            <p><span className="text-slate-500">Aguardando:</span> {statsTarefas.aguardando}</p>
-            <p><span className="text-slate-500">Concluídas:</span> {statsTarefas.concluidas}</p>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <p><span className="text-muted-foreground">Ativas:</span> {statsTarefas.total}</p>
+            <p><span className="text-muted-foreground">Em execução:</span> {statsTarefas.emExecucao}</p>
+            <p><span className="text-muted-foreground">Aguardando:</span> {statsTarefas.aguardando}</p>
+            <p><span className="text-muted-foreground">Concluídas:</span> {statsTarefas.concluidas}</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Tarefas Ativas</p>
-          <p className="text-2xl font-bold text-white">{statsTarefas.total}</p>
+        <div className="bg-card/60 border border-border rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Tarefas Ativas</p>
+          <p className="text-2xl font-bold text-foreground">{statsTarefas.total}</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Em Execução</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Em Execução</p>
           <p className="text-2xl font-bold text-amber-400">{statsTarefas.emExecucao}</p>
         </div>
-        <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Aguardando</p>
+        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Aguardando</p>
           <p className="text-2xl font-bold text-blue-400">{statsTarefas.aguardando}</p>
         </div>
-        <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Concluídas</p>
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Concluídas</p>
           <p className="text-2xl font-bold text-green-400">{statsTarefas.concluidas}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <ClipboardList className="w-5 h-5 text-indigo-400" />
-            <h3 className="text-sm font-semibold text-white">Tarefas Recentes</h3>
+            <h3 className="text-sm font-semibold text-foreground">Tarefas Recentes</h3>
           </div>
           <div className="space-y-3">
             {tarefasRecentes.map((tarefa) => (
-              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-card/70 rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">{tarefa.titulo}</p>
-                  <p className="text-xs text-slate-500">{tarefa.frente_trabalho_nome}</p>
+                  <p className="text-sm font-medium text-foreground">{tarefa.titulo}</p>
+                  <p className="text-xs text-muted-foreground">{tarefa.frente_trabalho_nome}</p>
                 </div>
                 <span className={cn(
                   'text-xs px-2 py-1 rounded-full',
@@ -308,62 +311,62 @@ export default function PerfilFuncionario() {
                     ? 'bg-green-500/20 text-green-300'
                     : tarefa.status === 'em_execucao'
                       ? 'bg-amber-500/20 text-amber-300'
-                      : 'bg-slate-700 text-slate-300'
+                      : 'bg-card text-muted-foreground'
                 )}>
                   {tarefa.status}
                 </span>
               </div>
             ))}
             {tarefasRecentes.length === 0 && (
-              <p className="text-sm text-slate-500">Nenhuma tarefa associada.</p>
+              <p className="text-sm text-muted-foreground">Nenhuma tarefa associada.</p>
             )}
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Frentes de Trabalho</h3>
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-foreground mb-4">Frentes de Trabalho</h3>
           {frentesFuncionario.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {frentesFuncionario.map((frente) => (
                 <span
                   key={frente.id}
-                  className="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700"
+                  className="text-xs px-3 py-1 rounded-full bg-card text-muted-foreground border border-border"
                 >
                   {frente.nome}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-500">Nenhuma frente vinculada.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma frente vinculada.</p>
           )}
         </div>
       </div>
 
-      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+      <div className="bg-card/60 border border-border rounded-2xl p-5">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h3 className="text-sm font-semibold text-white">Avaliações recentes</h3>
-          <div className="text-sm text-slate-300">
-            Média: <span className="text-white font-semibold">{mediaAvaliacao || '-'}</span>
+          <h3 className="text-sm font-semibold text-foreground">Avaliações recentes</h3>
+          <div className="text-sm text-muted-foreground">
+            Média: <span className="text-foreground font-semibold">{mediaAvaliacao || '-'}</span>
           </div>
         </div>
         <div className="space-y-3">
           {avaliacoesOrdenadas.slice(0, 5).map((avaliacao) => (
-            <div key={avaliacao.id} className="p-3 bg-slate-800/50 rounded-xl">
+            <div key={avaliacao.id} className="p-3 bg-card/70 rounded-xl">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-white">
+                <p className="text-sm text-foreground">
                   {avaliacao.periodo || 'Sem período'} — Nota {avaliacao.nota_geral}
                 </p>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-muted-foreground">
                   {avaliacao.avaliador_nome || 'Avaliador'}
                 </span>
               </div>
               {avaliacao.comentario && (
-                <p className="text-xs text-slate-400 mt-2">{avaliacao.comentario}</p>
+                <p className="text-xs text-muted-foreground mt-2">{avaliacao.comentario}</p>
               )}
               {avaliacao.tags?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {avaliacao.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-1 rounded-full bg-slate-700 text-slate-200">
+                    <span key={tag} className="text-xs px-2 py-1 rounded-full bg-card text-foreground">
                       {tag}
                     </span>
                   ))}
@@ -372,7 +375,7 @@ export default function PerfilFuncionario() {
             </div>
           ))}
           {avaliacoesOrdenadas.length === 0 && (
-            <p className="text-sm text-slate-500">Nenhuma avaliação registrada.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma avaliação registrada.</p>
           )}
         </div>
       </div>

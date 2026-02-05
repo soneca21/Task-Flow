@@ -58,7 +58,7 @@ import {
 const STATUS_LABELS = {
   [AGENDAMENTO_STATUS.AGENDADO]: 'Agendado',
   [AGENDAMENTO_STATUS.EM_ATENDIMENTO]: 'Em atendimento',
-  [AGENDAMENTO_STATUS.CONCLUIDO]: 'ConcluÌdo',
+  [AGENDAMENTO_STATUS.CONCLUIDO]: 'Conclu√≠do',
   [AGENDAMENTO_STATUS.CANCELADO]: 'Cancelado',
 };
 
@@ -74,7 +74,7 @@ const TIPO_LABELS = {
   [AGENDAMENTO_TIPO.DESCARGA]: 'Descarga',
   [AGENDAMENTO_TIPO.RETIRADA]: 'Retirada',
   [AGENDAMENTO_TIPO.TROCA]: 'Troca',
-  [AGENDAMENTO_TIPO.DEVOLUCAO]: 'DevoluÁ„o',
+  [AGENDAMENTO_TIPO.DEVOLUCAO]: 'Devolu√ß√£o',
 };
 
 export default function Rotas() {
@@ -130,11 +130,11 @@ export default function Rotas() {
 
   const handleSave = (formData) => {
     if (!isManager) {
-      toast.error('Apenas lÌder/admin pode criar ou editar agendamentos.');
+      toast.error('Apenas l√≠der/admin pode criar ou editar agendamentos.');
       return;
     }
     if (!formData.data || !formData.hora) {
-      toast.error('Informe data e hor·rio.');
+      toast.error('Informe data e hor√°rio.');
       return;
     }
     if (!formData.tipo) {
@@ -142,7 +142,7 @@ export default function Rotas() {
       return;
     }
     if (!formData.veiculo_id || formData.veiculo_id === 'sem_veiculo') {
-      toast.error('Selecione o veÌculo.');
+      toast.error('Selecione o ve√≠culo.');
       return;
     }
     if (!formData.motorista_id || formData.motorista_id === 'sem_motorista') {
@@ -150,13 +150,13 @@ export default function Rotas() {
       return;
     }
     if (formData.necessita_movimentacao && (!formData.equipamento_preferido || formData.equipamento_preferido === 'nenhum')) {
-      toast.error('Selecione o equipamento preferido para movimentaÁ„o.');
+      toast.error('Selecione o equipamento preferido para movimenta√ß√£o.');
       return;
     }
 
     if (editingAgendamento) {
       if (editingAgendamento.status === AGENDAMENTO_STATUS.EM_ATENDIMENTO) {
-        toast.error('N„o È possÌvel editar um agendamento em atendimento.');
+        toast.error('N√£o √© poss√≠vel editar um agendamento em atendimento.');
         return;
       }
       updateMutation.mutate({ id: editingAgendamento.id, data: formData });
@@ -170,7 +170,7 @@ export default function Rotas() {
 
   const handleDisparar = async (agendamento) => {
     if (!isManager) {
-      toast.error('Apenas lÌder/admin pode liberar o atendimento.');
+      toast.error('Apenas l√≠der/admin pode liberar o atendimento.');
       return;
     }
     try {
@@ -188,7 +188,7 @@ export default function Rotas() {
 
   const handleConcluir = async (agendamento) => {
     if (!isManager) {
-      toast.error('Apenas lÌder/admin pode concluir o atendimento.');
+      toast.error('Apenas l√≠der/admin pode concluir o atendimento.');
       return;
     }
     try {
@@ -200,7 +200,7 @@ export default function Rotas() {
       }
       queryClient.invalidateQueries({ queryKey: ['agendamentos'] });
       queryClient.invalidateQueries({ queryKey: ['veiculos'] });
-      toast.success('Agendamento concluÌdo.');
+      toast.success('Agendamento conclu√≠do.');
     } catch (error) {
       console.error(error);
       toast.error('Erro ao concluir agendamento.');
@@ -209,7 +209,7 @@ export default function Rotas() {
 
   const handleCancel = async (agendamento) => {
     if (!isManager) {
-      toast.error('Apenas lÌder/admin pode cancelar agendamentos.');
+      toast.error('Apenas l√≠der/admin pode cancelar agendamentos.');
       return;
     }
     try {
@@ -246,6 +246,7 @@ export default function Rotas() {
         title="Agendamentos"
         subtitle={`${agendamentos.length} agendamentos para ${format(new Date(filterData), "dd 'de' MMMM", { locale: ptBR })}`}
         icon={CalendarClock}
+        iconColor="text-cyan-500"
         actions={
           <Button
             onClick={() => { setEditingAgendamento(null); setDialogOpen(true); }}
@@ -259,52 +260,52 @@ export default function Rotas() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-          <p className="text-2xl font-bold text-white">{stats.total}</p>
-          <p className="text-xs text-slate-500">Total</p>
+        <div className="bg-card/60 border border-border rounded-xl p-4">
+          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
+          <p className="text-xs text-muted-foreground">Total</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-amber-400">{stats.agendados}</p>
-          <p className="text-xs text-slate-500">Agendados</p>
+          <p className="text-xs text-muted-foreground">Agendados</p>
         </div>
-        <div className="bg-slate-900/50 border border-cyan-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-cyan-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-cyan-400">{stats.emAtendimento}</p>
-          <p className="text-xs text-slate-500">Em atendimento</p>
+          <p className="text-xs text-muted-foreground">Em atendimento</p>
         </div>
-        <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-green-400">{stats.concluidos}</p>
-          <p className="text-xs text-slate-500">ConcluÌdos</p>
+          <p className="text-xs text-muted-foreground">Conclu√≠dos</p>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar por placa ou motorista..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <div className="relative">
-          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             type="date"
             value={filterData}
             onChange={(e) => setFilterData(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12 w-full lg:w-48"
+            className="pl-10 bg-card/60 border-border text-foreground h-12 w-full lg:w-48"
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-52 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-52 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos os Status</SelectItem>
             <SelectItem value={AGENDAMENTO_STATUS.AGENDADO}>Agendado</SelectItem>
             <SelectItem value={AGENDAMENTO_STATUS.EM_ATENDIMENTO}>Em atendimento</SelectItem>
-            <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>ConcluÌdo</SelectItem>
+            <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>Conclu√≠do</SelectItem>
             <SelectItem value={AGENDAMENTO_STATUS.CANCELADO}>Cancelado</SelectItem>
           </SelectContent>
         </Select>
@@ -317,12 +318,12 @@ export default function Rotas() {
           return (
             <div
               key={agendamento.id}
-              className="bg-slate-900/50 border border-slate-800 rounded-xl p-5 transition-all hover:border-slate-700"
+              className="bg-card/60 border border-border rounded-xl p-5 transition-all hover:border-border"
             >
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-white text-xl">{formatAgendamentoLabel(agendamento)}</h3>
+                    <h3 className="font-bold text-foreground text-xl">{formatAgendamentoLabel(agendamento)}</h3>
                     <span className={cn('text-xs px-2 py-1 rounded-full border', STATUS_COLORS[agendamento.status])}>
                       {STATUS_LABELS[agendamento.status] || agendamento.status}
                     </span>
@@ -333,25 +334,25 @@ export default function Rotas() {
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       {agendamento.hora || '--:--'}
                     </span>
                     <span className="flex items-center gap-1">
                       <Truck className="w-4 h-4" />
-                      {agendamento.veiculo_placa || 'VeÌculo n„o informado'}
+                      {agendamento.veiculo_placa || 'Ve√≠culo n√£o informado'}
                     </span>
                     <span className="flex items-center gap-1">
                       <User className="w-4 h-4" />
-                      {agendamento.motorista_nome || 'Motorista n„o informado'}
+                      {agendamento.motorista_nome || 'Motorista n√£o informado'}
                     </span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-slate-800 border border-slate-700">
-                      {TIPO_LABELS[agendamento.tipo] || 'OperaÁ„o'}
+                    <span className="text-xs px-2 py-1 rounded-full bg-card border border-border">
+                      {TIPO_LABELS[agendamento.tipo] || 'Opera√ß√£o'}
                     </span>
                   </div>
                   {agendamento.observacoes && (
-                    <p className="mt-3 text-sm text-slate-500">{agendamento.observacoes}</p>
+                    <p className="mt-3 text-sm text-muted-foreground">{agendamento.observacoes}</p>
                   )}
                 </div>
 
@@ -380,7 +381,7 @@ export default function Rotas() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="border-slate-700 text-slate-200"
+                      className="border-border text-foreground"
                       onClick={() => handleCancel(agendamento)}
                       disabled={!isManager}
                     >
@@ -390,7 +391,7 @@ export default function Rotas() {
                   )}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                      <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                         <MoreVertical className="w-5 h-5" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -424,9 +425,9 @@ export default function Rotas() {
         })}
 
         {filteredAgendamentos.length === 0 && (
-          <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-            <CalendarClock className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-500">Nenhum agendamento encontrado para esta data</p>
+          <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
+            <CalendarClock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhum agendamento encontrado para esta data</p>
           </div>
         )}
       </div>
@@ -512,7 +513,7 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{agendamento ? 'Editar Agendamento' : 'Novo Agendamento'}</DialogTitle>
         </DialogHeader>
@@ -525,24 +526,24 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
                 type="date"
                 value={formData.data}
                 onChange={(e) => setFormData({ ...formData, data: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
             <div>
-              <Label>Hor·rio *</Label>
+              <Label>Hor√°rio *</Label>
               <Input
                 type="time"
                 value={formData.hora}
                 onChange={(e) => setFormData({ ...formData, hora: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
           </div>
 
           <div>
-            <Label>Tipo de OperaÁ„o *</Label>
+            <Label>Tipo de Opera√ß√£o *</Label>
             <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -550,15 +551,15 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
                 <SelectItem value={AGENDAMENTO_TIPO.DESCARGA}>Descarga</SelectItem>
                 <SelectItem value={AGENDAMENTO_TIPO.RETIRADA}>Retirada</SelectItem>
                 <SelectItem value={AGENDAMENTO_TIPO.TROCA}>Troca</SelectItem>
-                <SelectItem value={AGENDAMENTO_TIPO.DEVOLUCAO}>DevoluÁ„o</SelectItem>
+                <SelectItem value={AGENDAMENTO_TIPO.DEVOLUCAO}>Devolu√ß√£o</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="flex items-center justify-between gap-3 bg-slate-800/40 border border-slate-700 rounded-xl px-4 py-3">
+          <div className="flex items-center justify-between gap-3 bg-card/70 border border-border rounded-xl px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-white">Necessita movimentaÁ„o?</p>
-              <p className="text-xs text-slate-400">Defina se precisa de ponte rolante, pÛrtico ou empilhadeira.</p>
+              <p className="text-sm font-medium text-foreground">Necessita movimenta√ß√£o?</p>
+              <p className="text-xs text-muted-foreground">Defina se precisa de ponte rolante, p√≥rtico ou empilhadeira.</p>
             </div>
             <Switch
               checked={!!formData.necessita_movimentacao}
@@ -573,12 +574,12 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
                 value={formData.equipamento_preferido}
                 onValueChange={(v) => setFormData({ ...formData, equipamento_preferido: v })}
               >
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ponte_rolante">Ponte rolante</SelectItem>
-                  <SelectItem value="portico">PÛrtico</SelectItem>
+                  <SelectItem value="portico">P√≥rtico</SelectItem>
                   <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
                 </SelectContent>
               </Select>
@@ -587,13 +588,13 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>VeÌculo</Label>
+              <Label>Ve√≠culo</Label>
               <Select value={formData.veiculo_id || 'sem_veiculo'} onValueChange={handleVeiculoChange}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sem_veiculo">N„o informado</SelectItem>
+                  <SelectItem value="sem_veiculo">N√£o informado</SelectItem>
                   {veiculos.map((v) => (
                     <SelectItem key={v.id} value={v.id}>{v.placa} - {v.modelo}</SelectItem>
                   ))}
@@ -603,11 +604,11 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
             <div>
               <Label>Motorista</Label>
               <Select value={formData.motorista_id || 'sem_motorista'} onValueChange={handleMotoristaChange}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sem_motorista">N„o informado</SelectItem>
+                  <SelectItem value="sem_motorista">N√£o informado</SelectItem>
                   {funcionarios.map((f) => (
                     <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
                   ))}
@@ -619,30 +620,30 @@ function AgendamentoDialog({ open, onOpenChange, agendamento, veiculos, funciona
           <div>
             <Label>Status</Label>
             <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={AGENDAMENTO_STATUS.AGENDADO}>Agendado</SelectItem>
                 <SelectItem value={AGENDAMENTO_STATUS.EM_ATENDIMENTO}>Em atendimento</SelectItem>
-                <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>ConcluÌdo</SelectItem>
+                <SelectItem value={AGENDAMENTO_STATUS.CONCLUIDO}>Conclu√≠do</SelectItem>
                 <SelectItem value={AGENDAMENTO_STATUS.CANCELADO}>Cancelado</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <Label>ObservaÁıes</Label>
+            <Label>Observa√ß√µes</Label>
             <Textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={3}
             />
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

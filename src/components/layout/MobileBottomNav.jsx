@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LayoutDashboard, ClipboardList, Factory } from 'lucide-react';
 import { createPageUrl } from '@/utils';
@@ -11,10 +11,34 @@ const items = [
 ];
 
 export default function MobileBottomNav({ currentPageName }) {
+  const [isPwa, setIsPwa] = useState(false);
+
+  useEffect(() => {
+    const mediaStandalone = window.matchMedia?.('(display-mode: standalone)');
+    const mediaFullscreen = window.matchMedia?.('(display-mode: fullscreen)');
+    const mediaMinimal = window.matchMedia?.('(display-mode: minimal-ui)');
+    const check = () => setIsPwa(Boolean(
+      window.navigator?.standalone ||
+      mediaStandalone?.matches ||
+      mediaFullscreen?.matches ||
+      mediaMinimal?.matches
+    ));
+    check();
+    const onChange = () => check();
+    mediaStandalone?.addEventListener?.('change', onChange);
+    mediaFullscreen?.addEventListener?.('change', onChange);
+    mediaMinimal?.addEventListener?.('change', onChange);
+    return () => {
+      mediaStandalone?.removeEventListener?.('change', onChange);
+      mediaFullscreen?.removeEventListener?.('change', onChange);
+      mediaMinimal?.removeEventListener?.('change', onChange);
+    };
+  }, []);
+
   return (
     <nav
       className={cn(
-        "lg:hidden fixed bottom-0 left-0 right-0 z-50",
+        "lg:hidden fixed bottom-0 left-0 right-0 z-50 pwa-hide",
         "border-t border-border bg-background/80 backdrop-blur-xl",
         "pb-[env(safe-area-inset-bottom)]"
       )}
@@ -46,4 +70,3 @@ export default function MobileBottomNav({ currentPageName }) {
     </nav>
   );
 }
-

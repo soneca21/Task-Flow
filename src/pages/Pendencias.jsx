@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -101,11 +101,11 @@ export default function Pendencias() {
     aberta: 'bg-red-500/20 text-red-400 border-red-500/30',
     em_analise: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     resolvida: 'bg-green-500/20 text-green-400 border-green-500/30',
-    cancelada: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+    cancelada: 'bg-muted/50 text-muted-foreground border-border',
   };
 
   const prioridadeColors = {
-    baixa: 'bg-slate-500/20 text-slate-400',
+    baixa: 'bg-muted/50 text-muted-foreground',
     media: 'bg-blue-500/20 text-blue-400',
     alta: 'bg-amber-500/20 text-amber-400',
     critica: 'bg-red-500/20 text-red-400',
@@ -134,6 +134,7 @@ export default function Pendencias() {
         title="Pendências"
         subtitle={`${stats.abertas + stats.emAnalise} pendências ativas`}
         icon={AlertTriangle}
+        iconColor="text-red-500"
         actions={
           <Button 
             onClick={() => { setEditingPendencia(null); setDialogOpen(true); }}
@@ -147,37 +148,37 @@ export default function Pendencias() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-red-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-red-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-red-400">{stats.abertas}</p>
-          <p className="text-xs text-slate-500">Abertas</p>
+          <p className="text-xs text-muted-foreground">Abertas</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-amber-400">{stats.emAnalise}</p>
-          <p className="text-xs text-slate-500">Em Análise</p>
+          <p className="text-xs text-muted-foreground">Em Análise</p>
         </div>
-        <div className="bg-slate-900/50 border border-red-500/50 rounded-xl p-4">
+        <div className="bg-card/60 border border-red-500/50 rounded-xl p-4">
           <p className="text-2xl font-bold text-red-500">{stats.criticas}</p>
-          <p className="text-xs text-slate-500">Críticas</p>
+          <p className="text-xs text-muted-foreground">Críticas</p>
         </div>
-        <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-green-400">{stats.resolvidas}</p>
-          <p className="text-xs text-slate-500">Resolvidas</p>
+          <p className="text-xs text-muted-foreground">Resolvidas</p>
         </div>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar pendência..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -189,7 +190,7 @@ export default function Pendencias() {
           </SelectContent>
         </Select>
         <Select value={filterPrioridade} onValueChange={setFilterPrioridade}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Prioridade" />
           </SelectTrigger>
           <SelectContent>
@@ -208,14 +209,14 @@ export default function Pendencias() {
           <div 
             key={pendencia.id}
             className={cn(
-              "bg-slate-900/50 border rounded-xl p-4 lg:p-5 transition-all hover:border-slate-700",
-              pendencia.prioridade === 'critica' ? "border-red-500/50" : "border-slate-800"
+              "bg-card/60 border rounded-xl p-4 lg:p-5 transition-all hover:border-border",
+              pendencia.prioridade === 'critica' ? "border-red-500/50" : "border-border"
             )}
           >
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-semibold text-white">{pendencia.titulo}</h3>
+                  <h3 className="font-semibold text-foreground">{pendencia.titulo}</h3>
                   <span className={cn("text-xs px-2 py-1 rounded-full border", statusColors[pendencia.status])}>
                     {pendencia.status?.replace('_', ' ')}
                   </span>
@@ -224,11 +225,11 @@ export default function Pendencias() {
                   </span>
                 </div>
                 {pendencia.descricao && (
-                  <p className="text-sm text-slate-400 mb-2 line-clamp-2">{pendencia.descricao}</p>
+                  <p className="text-sm text-muted-foreground mb-2 line-clamp-2">{pendencia.descricao}</p>
                 )}
-                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   <span>{tipoLabels[pendencia.tipo]}</span>
-                  <span className="text-xs bg-slate-800 px-2 py-1 rounded">Origem: {pendencia.origem}</span>
+                  <span className="text-xs bg-card px-2 py-1 rounded">Origem: {pendencia.origem}</span>
                   {pendencia.responsavel_nome && (
                     <span className="flex items-center gap-1">
                       <User className="w-4 h-4" />
@@ -266,7 +267,7 @@ export default function Pendencias() {
                 )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                       <MoreVertical className="w-5 h-5" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -288,9 +289,9 @@ export default function Pendencias() {
         ))}
 
         {filteredPendencias.length === 0 && (
-          <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-            <AlertTriangle className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-500">Nenhuma pendência encontrada</p>
+          <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
+            <AlertTriangle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhuma pendência encontrada</p>
           </div>
         )}
       </div>
@@ -356,7 +357,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{pendencia ? 'Editar Pendência' : 'Nova Pendência'}</DialogTitle>
         </DialogHeader>
@@ -367,7 +368,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
             <Input
               value={formData.titulo}
               onChange={(e) => setFormData({ ...formData, titulo: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Descreva a pendência"
             />
           </div>
@@ -377,7 +378,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
             <Textarea
               value={formData.descricao}
               onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={3}
             />
           </div>
@@ -386,7 +387,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
             <div>
               <Label>Tipo *</Label>
               <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -403,7 +404,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
             <div>
               <Label>Origem *</Label>
               <Select value={formData.origem} onValueChange={(v) => setFormData({ ...formData, origem: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -422,7 +423,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
             <div>
               <Label>Prioridade</Label>
               <Select value={formData.prioridade} onValueChange={(v) => setFormData({ ...formData, prioridade: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -436,7 +437,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
             <div>
               <Label>Status</Label>
               <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -452,7 +453,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
           <div>
             <Label>Responsável</Label>
             <Select value={formData.responsavel_id} onValueChange={handleResponsavelChange}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent>
@@ -469,7 +470,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
               <Textarea
                 value={formData.resolucao}
                 onChange={(e) => setFormData({ ...formData, resolucao: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 rows={2}
                 placeholder="Descreva como foi resolvido"
               />
@@ -477,7 +478,7 @@ function PendenciaDialog({ open, onOpenChange, pendencia, funcionarios, onSave, 
           )}
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -100,8 +100,8 @@ export default function Expedicao() {
   });
 
   const statusColors = {
-    pendente: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-    em_expedicao: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+    pendente: 'bg-muted/50 text-muted-foreground border-border',
+    em_expedicao: 'bg-muted/50 text-muted-foreground border-border',
     em_producao: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     aguardando_carregamento: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
     carregando: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
@@ -133,6 +133,7 @@ export default function Expedicao() {
           title="Expedição"
           subtitle={`${notas.length} notas cadastradas`}
           icon={Package}
+          iconColor="text-purple-500"
           actions={
           <Button 
             onClick={() => { setEditingNota(null); setDialogOpen(true); }}
@@ -146,37 +147,37 @@ export default function Expedicao() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-slate-400">{stats.pendentes}</p>
-          <p className="text-xs text-slate-500">Em Expedição</p>
+        <div className="bg-card/60 border border-border rounded-xl p-4">
+          <p className="text-2xl font-bold text-muted-foreground">{stats.pendentes}</p>
+          <p className="text-xs text-muted-foreground">Em Expedição</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-amber-400">{stats.emProducao}</p>
-          <p className="text-xs text-slate-500">Em Produção</p>
+          <p className="text-xs text-muted-foreground">Em Produção</p>
         </div>
-        <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-blue-400">{stats.aguardando}</p>
-          <p className="text-xs text-slate-500">Aguardando Carregamento</p>
+          <p className="text-xs text-muted-foreground">Aguardando Carregamento</p>
         </div>
-        <div className="bg-slate-900/50 border border-purple-500/30 rounded-xl p-4">
+        <div className="bg-card/60 border border-purple-500/30 rounded-xl p-4">
           <p className="text-2xl font-bold text-purple-400">{stats.emRota}</p>
-          <p className="text-xs text-slate-500">Em Rota</p>
+          <p className="text-xs text-muted-foreground">Em Rota</p>
         </div>
       </div>
 
       {/* Filtros */}
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar por número ou cliente..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -191,7 +192,7 @@ export default function Expedicao() {
           </SelectContent>
         </Select>
         <Select value={filterTipo} onValueChange={setFilterTipo}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
@@ -210,14 +211,14 @@ export default function Expedicao() {
           <div 
             key={nota.id}
             className={cn(
-              "bg-slate-900/50 border rounded-xl p-4 lg:p-5 transition-all hover:border-slate-700",
-              nota.prioridade === 'urgente' ? "border-red-500/30" : "border-slate-800"
+              "bg-card/60 border rounded-xl p-4 lg:p-5 transition-all hover:border-border",
+              nota.prioridade === 'urgente' ? "border-red-500/30" : "border-border"
             )}
           >
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="font-semibold text-white text-lg">#{nota.numero}</h3>
+                  <h3 className="font-semibold text-foreground text-lg">#{nota.numero}</h3>
                   <span className={cn("text-xs px-2 py-1 rounded-full border", statusColors[nota.status])}>
                     {nota.status?.replace('_', ' ')}
                   </span>
@@ -227,7 +228,7 @@ export default function Expedicao() {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-400">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <User className="w-4 h-4" />
                     {nota.cliente}
@@ -246,7 +247,7 @@ export default function Expedicao() {
                     </span>
                   )}
                   {nota.frente_destino_nome && (
-                    <span className="text-xs px-2 py-1 rounded bg-slate-800">
+                    <span className="text-xs px-2 py-1 rounded bg-card">
                       Frente: {nota.frente_destino_nome}
                     </span>
                   )}
@@ -256,7 +257,7 @@ export default function Expedicao() {
               <div className="flex items-center gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                    <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                       <MoreVertical className="w-5 h-5" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -278,9 +279,9 @@ export default function Expedicao() {
         ))}
 
         {filteredNotas.length === 0 && (
-          <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-            <Package className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-500">Nenhuma nota encontrada</p>
+          <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
+            <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground">Nenhuma nota encontrada</p>
           </div>
         )}
       </div>
@@ -357,7 +358,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{nota ? 'Editar Nota' : 'Nova Nota'}</DialogTitle>
         </DialogHeader>
@@ -369,14 +370,14 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
               <Input
                 value={formData.numero}
                 onChange={(e) => setFormData({ ...formData, numero: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="Ex: NF-12345"
               />
             </div>
             <div>
               <Label>Prioridade</Label>
               <Select value={formData.prioridade} onValueChange={(v) => setFormData({ ...formData, prioridade: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -392,7 +393,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
             <Input
               value={formData.cliente}
               onChange={(e) => setFormData({ ...formData, cliente: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Nome do cliente"
             />
           </div>
@@ -401,7 +402,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
             <div>
               <Label>Tipo *</Label>
               <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -415,7 +416,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
             <div>
               <Label>Status</Label>
               <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -434,7 +435,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
           <div>
             <Label>Frente de Trabalho de Destino</Label>
             <Select value={formData.frente_destino_id} onValueChange={handleFrenteChange}>
-              <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+              <SelectTrigger className="bg-card border-border mt-1">
                 <SelectValue placeholder="Selecione a frente..." />
               </SelectTrigger>
               <SelectContent>
@@ -451,7 +452,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
               <Input
                 value={formData.cidade}
                 onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
             <div>
@@ -460,7 +461,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
                 type="date"
                 value={formData.data_prevista}
                 onChange={(e) => setFormData({ ...formData, data_prevista: e.target.value })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
           </div>
@@ -470,7 +471,7 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
             <Textarea
               value={formData.endereco_entrega}
               onChange={(e) => setFormData({ ...formData, endereco_entrega: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={2}
             />
           </div>
@@ -480,13 +481,13 @@ function NotaDialog({ open, onOpenChange, nota, frentes, onSave, isLoading }) {
             <Textarea
               value={formData.observacoes}
               onChange={(e) => setFormData({ ...formData, observacoes: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               rows={2}
             />
           </div>
         </div>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
@@ -161,7 +161,7 @@ export default function Producao() {
   const handleUpdateStatus = async (tarefa, newStatus) => {
     const canEdit = isAdmin || (funcionarioAtual && tarefa.funcionarios_designados?.includes(funcionarioAtual.id));
     if (!canEdit) {
-      toast.error('Somente o responsável pode editar esta tarefa');
+      toast.error('Somente o respons�vel pode editar esta tarefa');
       return;
     }
     if (newStatus === 'concluida') {
@@ -193,7 +193,7 @@ export default function Producao() {
       if (!updated || updated.status !== updates.status) {
         queryClient.invalidateQueries({ queryKey: ['tarefas-producao'] });
         queryClient.invalidateQueries({ queryKey: ['tarefas'] });
-        toast.error('Não foi possível alterar o status da tarefa');
+        toast.error('N�o foi poss�vel alterar o status da tarefa');
         return;
       }
       if (updated?.id) {
@@ -244,7 +244,7 @@ export default function Producao() {
 
   const handleExecutarChecklist = async (tarefa) => {
     if (!tarefa.checklist_id) {
-      toast.error('Esta tarefa não possui checklist configurado');
+      toast.error('Esta tarefa n�o possui checklist configurado');
       return;
     }
     try {
@@ -265,9 +265,10 @@ export default function Producao() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Produção"
-        subtitle={`${stats.emExecucao} ordens em execução`}
+        title="Produ��o"
+        subtitle={`${stats.emExecucao} ordens em execu��o`}
         icon={Factory}
+        iconColor="text-amber-500"
       />
 
       {/* Stats */}
@@ -295,7 +296,7 @@ export default function Producao() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
-            placeholder="Buscar por título ou nota..."
+            placeholder="Buscar por t�tulo ou nota..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 bg-card/60 border-border text-foreground h-12"
@@ -309,9 +310,9 @@ export default function Producao() {
             <SelectItem value="todos">Todos os Status</SelectItem>
             <SelectItem value="criada">Criada</SelectItem>
             <SelectItem value="aguardando_alocacao">Aguardando</SelectItem>
-            <SelectItem value="em_execucao">Em Execução</SelectItem>
+            <SelectItem value="em_execucao">Em Execu��o</SelectItem>
             <SelectItem value="pausada">Pausada</SelectItem>
-            <SelectItem value="concluida">Concluída</SelectItem>
+            <SelectItem value="concluida">Conclu�da</SelectItem>
           </SelectContent>
         </Select>
         <Select value={filterFrente} onValueChange={setFilterFrente}>
@@ -354,11 +355,11 @@ export default function Producao() {
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                   {tarefa.nota_numero && (
                     <span className="flex items-center gap-1">
-                      📋 Nota: {tarefa.nota_numero}
+                      ?? Nota: {tarefa.nota_numero}
                     </span>
                   )}
                     <span className="flex items-center gap-1">
-                      🏭 {tarefa.frente_trabalho_nome || 'Sem frente'}
+                      ?? {tarefa.frente_trabalho_nome || 'Sem frente'}
                     </span>
                   {tarefa.funcionarios_nomes?.length > 0 && (
                     <span className="flex items-center gap-1">
@@ -369,7 +370,7 @@ export default function Producao() {
                   {tarefa.data_inicio && (
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      Início: {format(new Date(tarefa.data_inicio), 'HH:mm')}
+                      In�cio: {format(new Date(tarefa.data_inicio), 'HH:mm')}
                     </span>
                   )}
                 </div>
@@ -379,10 +380,10 @@ export default function Producao() {
                 {(tarefa.status === 'criada' || tarefa.status === 'aguardando_alocacao') && (
                   <Button 
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-1"
+                    className="bg-blue-600 hover:bg-blue-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                    title={!canEdit ? 'Somente o respons�vel pode editar' : undefined}
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Iniciar
@@ -391,10 +392,10 @@ export default function Producao() {
                 {tarefa.status === 'pausada' && (
                   <Button 
                     size="sm"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-1"
+                    className="bg-blue-600 hover:bg-blue-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'em_execucao')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                    title={!canEdit ? 'Somente o respons�vel pode editar' : undefined}
                   >
                     <Play className="w-4 h-4 mr-1" />
                     Iniciar
@@ -403,11 +404,10 @@ export default function Producao() {
                 {tarefa.status === 'em_execucao' && (
                   <Button 
                     size="sm"
-                    variant="outline"
-                    className="border-primary/30 text-primary hover:bg-primary/10 touch-btn order-1"
+                    className="bg-purple-600 hover:bg-purple-700 text-foreground touch-btn order-1"
                     onClick={() => handleUpdateStatus(tarefa, 'pausada')}
                     disabled={!canEdit}
-                    title={!canEdit ? 'Somente o responsável pode editar' : undefined}
+                    title={!canEdit ? 'Somente o respons�vel pode editar' : undefined}
                   >
                     <Pause className="w-4 h-4 mr-1" />
                     Pausar
@@ -416,7 +416,7 @@ export default function Producao() {
                 {tarefa.checklist_id && (
                   <Button
                     size="sm"
-                    className="bg-secondary hover:bg-secondary/80 text-secondary-foreground touch-btn order-2"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground touch-btn order-2 shadow-lg"
                     onClick={() => handleExecutarChecklist(tarefa)}
                   >
                     <FileCheck className="w-4 h-4 mr-1" />
@@ -431,7 +431,7 @@ export default function Producao() {
                     disabled={!canEdit || (tarefa.checklist_id && !checklistPreenchido)}
                     title={
                       !canEdit
-                        ? 'Somente o responsável pode editar'
+                        ? 'Somente o respons�vel pode editar'
                         : (tarefa.checklist_id && !checklistPreenchido)
                           ? 'Preencha o checklist para concluir'
                           : undefined
@@ -449,7 +449,7 @@ export default function Producao() {
                     onClick={() => { setHistoricoTarefa(tarefa); setHistoricoOpen(true); }}
                   >
                     <History className="w-4 h-4 mr-1" />
-                    Histórico
+                    Hist�rico
                   </Button>
                 )}
               </div>
@@ -500,4 +500,3 @@ export default function Producao() {
     </div>
   );
 }
-

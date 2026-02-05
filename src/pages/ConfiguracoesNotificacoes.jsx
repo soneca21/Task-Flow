@@ -1,4 +1,4 @@
-ï»¿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Bell, Save } from 'lucide-react';
@@ -53,7 +53,7 @@ export default function ConfiguracoesNotificacoes() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['configuracoes-notificacoes'] });
       queryClient.invalidateQueries({ queryKey: ['configuracoes'] });
-      toast.success('ConfiguraÃ§Ãµes salvas!');
+      toast.success('Configurações salvas!');
     },
   });
 
@@ -64,19 +64,20 @@ export default function ConfiguracoesNotificacoes() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="ConfiguraÃ§Ãµes de NotificaÃ§Ãµes"
-        subtitle="Configure alertas e notificaÃ§Ãµes em tempo real"
+        title="Configurações de Notificações"
+        subtitle="Configure alertas e notificações em tempo real"
         icon={Bell}
+        iconColor="text-muted-foreground"
       />
 
       <div className="max-w-3xl space-y-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-          <h3 className="font-semibold text-white mb-4">NotificaÃ§Ãµes de Tarefas</h3>
+        <div className="bg-card/60 border border-border rounded-xl p-5">
+          <h3 className="font-semibold text-foreground mb-4">Notificações de Tarefas</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-card/70 rounded-lg">
               <div>
-                <Label className="text-white font-medium">Tarefas Urgentes/Alta Prioridade</Label>
-                <p className="text-sm text-slate-400 mt-1">
+                <Label className="text-foreground font-medium">Tarefas Urgentes/Alta Prioridade</Label>
+                <p className="text-sm text-muted-foreground mt-1">
                   Receber alerta quando uma tarefa urgente ou de alta prioridade for criada
                 </p>
               </div>
@@ -86,11 +87,11 @@ export default function ConfiguracoesNotificacoes() {
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-card/70 rounded-lg">
               <div>
-                <Label className="text-white font-medium">MudanÃ§as de Status CrÃ­ticas</Label>
-                <p className="text-sm text-slate-400 mt-1">
-                  Notificar quando tarefas crÃ­ticas mudarem de status (pausadas, concluÃ­das, etc)
+                <Label className="text-foreground font-medium">Mudanças de Status Críticas</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Notificar quando tarefas críticas mudarem de status (pausadas, concluídas, etc)
                 </p>
               </div>
               <Switch
@@ -101,14 +102,14 @@ export default function ConfiguracoesNotificacoes() {
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-          <h3 className="font-semibold text-white mb-4">Alertas de SeguranÃ§a</h3>
+        <div className="bg-card/60 border border-border rounded-xl p-5">
+          <h3 className="font-semibold text-foreground mb-4">Alertas de Segurança</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-card/70 rounded-lg">
               <div>
-                <Label className="text-white font-medium">Checklist de SeguranÃ§a Falhado</Label>
-                <p className="text-sm text-slate-400 mt-1">
-                  Alerta imediato quando um item de seguranÃ§a for reprovado no checklist
+                <Label className="text-foreground font-medium">Checklist de Segurança Falhado</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Alerta imediato quando um item de segurança for reprovado no checklist
                 </p>
               </div>
               <Switch
@@ -119,14 +120,14 @@ export default function ConfiguracoesNotificacoes() {
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-          <h3 className="font-semibold text-white mb-4">NotificaÃ§Ãµes de Equipe</h3>
+        <div className="bg-card/60 border border-border rounded-xl p-5">
+          <h3 className="font-semibold text-foreground mb-4">Notificações de Equipe</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div className="flex items-center justify-between p-4 bg-card/70 rounded-lg">
               <div>
-                <Label className="text-white font-medium">FuncionÃ¡rio DisponÃ­vel</Label>
-                <p className="text-sm text-slate-400 mt-1">
-                  Notificar quando um funcionÃ¡rio concluir suas tarefas e ficar disponÃ­vel
+                <Label className="text-foreground font-medium">Funcionário Disponível</Label>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Notificar quando um funcionário concluir suas tarefas e ficar disponível
                 </p>
               </div>
               <Switch
@@ -148,7 +149,7 @@ export default function ConfiguracoesNotificacoes() {
             ) : (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Salvar ConfiguraÃ§Ãµes
+                Salvar Configurações
               </>
             )}
           </Button>

@@ -1,4 +1,4 @@
-﻿import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
 import PageHeader from '@/components/ui/PageHeader';
@@ -105,7 +105,7 @@ export default function MeuPerfil() {
   const score = funcionarioAtual?.tarefas_concluidas || 0;
   const scoreLevels = [
     { label: 'Bronze', min: 0, max: 9, color: 'text-amber-400', bar: 'bg-amber-500' },
-    { label: 'Prata', min: 10, max: 29, color: 'text-slate-200', bar: 'bg-slate-300' },
+    { label: 'Prata', min: 10, max: 29, color: 'text-foreground', bar: 'bg-muted' },
     { label: 'Ouro', min: 30, max: 59, color: 'text-yellow-300', bar: 'bg-yellow-400' },
     { label: 'Platina', min: 60, max: 119, color: 'text-cyan-200', bar: 'bg-cyan-300' },
     { label: 'Diamante', min: 120, max: Infinity, color: 'text-indigo-200', bar: 'bg-indigo-300' },
@@ -158,9 +158,9 @@ export default function MeuPerfil() {
       case 'ferias':
         return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
       case 'afastado':
-        return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+        return 'bg-muted/50 text-muted-foreground border-border';
       default:
-        return 'bg-slate-800 text-slate-300 border-slate-700';
+        return 'bg-card text-muted-foreground border-border';
     }
   };
 
@@ -227,12 +227,13 @@ export default function MeuPerfil() {
         title="Meu Perfil"
         subtitle="Dados da conta e permissões"
         icon={UserCircle}
+        iconColor="text-amber-500"
         actions={
           <div className="flex items-center gap-2">
             <Button
               type="button"
               variant="outline"
-              className="border-slate-700 text-slate-200 hover:bg-slate-800"
+              className="border-border text-foreground hover:bg-card"
               onClick={openEdit}
               disabled={!funcionarioAtual}
             >
@@ -256,7 +257,7 @@ export default function MeuPerfil() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
               <span className="text-amber-400 font-bold text-lg">
@@ -264,18 +265,18 @@ export default function MeuPerfil() {
               </span>
             </div>
             <div>
-              <p className="text-lg font-semibold text-white">
+              <p className="text-lg font-semibold text-foreground">
                 {displayName}
               </p>
-              <p className="text-sm text-slate-400">{user?.email || '-'}</p>
+              <p className="text-sm text-muted-foreground">{user?.email || '-'}</p>
             </div>
           </div>
 
           <div className="space-y-3">
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">User ID</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">User ID</p>
               <div className="mt-1 flex items-center gap-2">
-                <code className="text-xs bg-slate-950 border border-slate-800 rounded px-2 py-1 text-slate-300 break-all">
+                <code className="text-xs bg-background border border-border rounded px-2 py-1 text-muted-foreground break-all">
                   {user?.id || 'Não disponível'}
                 </code>
                 <Button
@@ -284,7 +285,7 @@ export default function MeuPerfil() {
                   variant="ghost"
                   onClick={handleCopyUserId}
                   disabled={!user?.id || isCopying}
-                  className="text-slate-300 hover:text-white hover:bg-slate-800"
+                  className="text-muted-foreground hover:text-foreground hover:bg-card"
                 >
                   <Copy className="w-4 h-4" />
                 </Button>
@@ -292,8 +293,8 @@ export default function MeuPerfil() {
             </div>
 
             <div>
-              <p className="text-xs text-slate-500 uppercase tracking-wider">Perfil</p>
-              <p className="text-sm text-slate-300 mt-1">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider">Perfil</p>
+              <p className="text-sm text-muted-foreground mt-1">
                 {roleLabel === 'admin'
                   ? 'Administrador'
                   : roleLabel === 'lider'
@@ -306,18 +307,18 @@ export default function MeuPerfil() {
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Trophy className="w-5 h-5 text-amber-400" />
-            <h3 className="text-sm font-semibold text-white">Score do Funcionário</h3>
+            <h3 className="text-sm font-semibold text-foreground">Score do Funcionário</h3>
           </div>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-white">{score}</p>
+                <p className="text-2xl font-bold text-foreground">{score}</p>
                 <p className={`text-sm ${currentLevel.color}`}>{currentLevel.label}</p>
               </div>
-              <div className="text-right text-xs text-slate-400">
+              <div className="text-right text-xs text-muted-foreground">
                 <p>{statsTarefas.concluidas} concluídas</p>
                 {nextLevel ? (
                   <p>Próximo: {nextLevel.label} ({nextLevel.min})</p>
@@ -326,7 +327,7 @@ export default function MeuPerfil() {
                 )}
               </div>
             </div>
-            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-card rounded-full overflow-hidden">
               <div
                 className={`h-full ${currentLevel.bar} transition-all duration-300`}
                 style={{ width: `${progress}%` }}
@@ -335,29 +336,29 @@ export default function MeuPerfil() {
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <Activity className="w-5 h-5 text-blue-400" />
-            <h3 className="text-sm font-semibold text-white">Status Operacional</h3>
+            <h3 className="text-sm font-semibold text-foreground">Status Operacional</h3>
           </div>
           {funcionarioAtual ? (
-            <div className="space-y-2 text-sm text-slate-300">
-              <p><span className="text-slate-500">Nome:</span> {funcionarioAtual.nome}</p>
-              <p><span className="text-slate-500">Cargo:</span> {funcionarioAtual.cargo || '-'}</p>
-              <p><span className="text-slate-500">Vínculo:</span> {funcionarioAtual.vinculo || '-'}</p>
-              <p><span className="text-slate-500">Nível:</span> {funcionarioAtual.nivel_acesso || '-'}</p>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p><span className="text-muted-foreground">Nome:</span> {funcionarioAtual.nome}</p>
+              <p><span className="text-muted-foreground">Cargo:</span> {funcionarioAtual.cargo || '-'}</p>
+              <p><span className="text-muted-foreground">Vínculo:</span> {funcionarioAtual.vinculo || '-'}</p>
+              <p><span className="text-muted-foreground">Nível:</span> {funcionarioAtual.nivel_acesso || '-'}</p>
               <p className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-slate-500" />
+                <Phone className="w-4 h-4 text-muted-foreground" />
                 <span>{funcionarioAtual.telefone || '-'}</span>
               </p>
               <p className="flex items-center justify-between gap-3">
-                <span className="text-slate-500">Status:</span>
+                <span className="text-muted-foreground">Status:</span>
                 <span className={`text-xs px-2 py-1 rounded-full border ${statusPillClass(currentStatus)}`}>
                   {statusLabel[currentStatus] || currentStatus}
                 </span>
               </p>
               <p className="flex items-center gap-2">
-                <CalendarDays className="w-4 h-4 text-slate-500" />
+                <CalendarDays className="w-4 h-4 text-muted-foreground" />
                 <span>
                   {funcionarioAtual.data_nascimento
                     ? new Date(funcionarioAtual.data_nascimento).toLocaleDateString('pt-BR')
@@ -366,13 +367,13 @@ export default function MeuPerfil() {
               </p>
 
               <div className="pt-2">
-                <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Ações rápidas</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Ações rápidas</p>
                 <div className="flex flex-wrap gap-2">
                   <Button
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="border-slate-700 text-slate-200 hover:bg-slate-800"
+                    className="border-border text-foreground hover:bg-card"
                     onClick={() => updateFuncionarioMutation.mutate({ status: 'disponivel' })}
                     disabled={updateFuncionarioMutation.isPending}
                   >
@@ -392,7 +393,7 @@ export default function MeuPerfil() {
                     type="button"
                     size="sm"
                     variant="outline"
-                    className="border-slate-500/40 text-slate-200 hover:bg-slate-800"
+                    className="border-border text-foreground hover:bg-card"
                     onClick={() => updateFuncionarioMutation.mutate({ status: 'afastado' })}
                     disabled={updateFuncionarioMutation.isPending}
                   >
@@ -400,110 +401,110 @@ export default function MeuPerfil() {
                   </Button>
                 </div>
                 {!isManager && (
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     Você pode marcar férias/afastamento. Líder/Admin também pode ajustar pela Gestão de Equipe.
                   </p>
                 )}
               </div>
-              <p><span className="text-slate-500">Capacidade:</span> {funcionarioAtual.capacidade_tarefas || 1} tarefa(s)</p>
+              <p><span className="text-muted-foreground">Capacidade:</span> {funcionarioAtual.capacidade_tarefas || 1} tarefa(s)</p>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">Nenhum funcionário vinculado.</p>
+            <p className="text-sm text-muted-foreground">Nenhum funcionário vinculado.</p>
           )}
         </div>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Tarefas Ativas</p>
-          <p className="text-2xl font-bold text-white">{statsTarefas.total}</p>
+        <div className="bg-card/60 border border-border rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Tarefas Ativas</p>
+          <p className="text-2xl font-bold text-foreground">{statsTarefas.total}</p>
         </div>
-        <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Em Execucao</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Em Execucao</p>
           <p className="text-2xl font-bold text-amber-400">{statsTarefas.emExecucao}</p>
         </div>
-        <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Aguardando</p>
+        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Aguardando</p>
           <p className="text-2xl font-bold text-blue-400">{statsTarefas.aguardando}</p>
         </div>
-        <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-4">
-          <p className="text-xs text-slate-500">Concluidas</p>
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
+          <p className="text-xs text-muted-foreground">Concluidas</p>
           <p className="text-2xl font-bold text-green-400">{statsTarefas.concluidas}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <ClipboardList className="w-5 h-5 text-indigo-400" />
-            <h3 className="text-sm font-semibold text-white">Tarefas Recentes</h3>
+            <h3 className="text-sm font-semibold text-foreground">Tarefas Recentes</h3>
           </div>
           <div className="space-y-3">
             {tarefasRecentes.map((tarefa) => (
-              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-xl">
+              <div key={tarefa.id} className="flex items-center justify-between p-3 bg-card/70 rounded-xl">
                 <div>
-                  <p className="text-sm font-medium text-white">{tarefa.titulo}</p>
-                  <p className="text-xs text-slate-500">{tarefa.frente_trabalho_nome}</p>
+                  <p className="text-sm font-medium text-foreground">{tarefa.titulo}</p>
+                  <p className="text-xs text-muted-foreground">{tarefa.frente_trabalho_nome}</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   tarefa.status === 'concluida' ? 'bg-green-500/20 text-green-300' :
                   tarefa.status === 'em_execucao' ? 'bg-amber-500/20 text-amber-300' :
-                  'bg-slate-700 text-slate-300'
+                  'bg-card text-muted-foreground'
                 }`}>
                   {tarefa.status}
                 </span>
               </div>
             ))}
             {tarefasRecentes.length === 0 && (
-              <p className="text-sm text-slate-500">Nenhuma tarefa associada.</p>
+              <p className="text-sm text-muted-foreground">Nenhuma tarefa associada.</p>
             )}
           </div>
         </div>
 
-        <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
-          <h3 className="text-sm font-semibold text-white mb-4">Frentes de Trabalho</h3>
+        <div className="bg-card/60 border border-border rounded-2xl p-5">
+          <h3 className="text-sm font-semibold text-foreground mb-4">Frentes de Trabalho</h3>
           {frentesFuncionario.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {frentesFuncionario.map((frente) => (
                 <span
                   key={frente.id}
-                  className="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700"
+                  className="text-xs px-3 py-1 rounded-full bg-card text-muted-foreground border border-border"
                 >
                   {frente.nome}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-slate-500">Nenhuma frente vinculada.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma frente vinculada.</p>
           )}
         </div>
       </div>
 
-      <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-5">
+      <div className="bg-card/60 border border-border rounded-2xl p-5">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h3 className="text-sm font-semibold text-white">Avaliações recentes</h3>
-          <div className="text-sm text-slate-300">
-            Média: <span className="text-white font-semibold">{mediaAvaliacao || '-'}</span>
+          <h3 className="text-sm font-semibold text-foreground">Avaliações recentes</h3>
+          <div className="text-sm text-muted-foreground">
+            Média: <span className="text-foreground font-semibold">{mediaAvaliacao || '-'}</span>
           </div>
         </div>
         <div className="space-y-3">
           {avaliacoesOrdenadas.slice(0, 5).map((avaliacao) => (
-            <div key={avaliacao.id} className="p-3 bg-slate-800/50 rounded-xl">
+            <div key={avaliacao.id} className="p-3 bg-card/70 rounded-xl">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-white">
+                <p className="text-sm text-foreground">
                   {avaliacao.periodo || 'Sem período'} — Nota {avaliacao.nota_geral}
                 </p>
-                <span className="text-xs text-slate-400">
+                <span className="text-xs text-muted-foreground">
                   {avaliacao.avaliador_nome || 'Avaliador'}
                 </span>
               </div>
               {avaliacao.comentario && (
-                <p className="text-xs text-slate-400 mt-2">{avaliacao.comentario}</p>
+                <p className="text-xs text-muted-foreground mt-2">{avaliacao.comentario}</p>
               )}
               {avaliacao.tags?.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {avaliacao.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2 py-1 rounded-full bg-slate-700 text-slate-200">
+                    <span key={tag} className="text-xs px-2 py-1 rounded-full bg-card text-foreground">
                       {tag}
                     </span>
                   ))}
@@ -512,13 +513,13 @@ export default function MeuPerfil() {
             </div>
           ))}
           {avaliacoesOrdenadas.length === 0 && (
-            <p className="text-sm text-slate-500">Nenhuma avaliação registrada.</p>
+            <p className="text-sm text-muted-foreground">Nenhuma avaliação registrada.</p>
           )}
         </div>
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg">
+        <DialogContent className="bg-card border-border text-foreground max-w-lg">
           <DialogHeader>
             <DialogTitle>Editar Perfil</DialogTitle>
           </DialogHeader>
@@ -529,7 +530,7 @@ export default function MeuPerfil() {
               <Input
                 value={editForm.nome}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, nome: e.target.value }))}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="Seu nome"
                 autoComplete="name"
               />
@@ -540,7 +541,7 @@ export default function MeuPerfil() {
               <Input
                 value={editForm.telefone}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, telefone: formatTelefoneBR(e.target.value) }))}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
                 placeholder="(00) 00000-0000"
                 inputMode="numeric"
                 autoComplete="tel"
@@ -550,20 +551,20 @@ export default function MeuPerfil() {
             <div>
               <Label>Data de Nascimento</Label>
               <div className="relative mt-1">
-                <CalendarDays className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <CalendarDays className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 <Input
                   value={editForm.data_nascimento || ''}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, data_nascimento: e.target.value }))}
-                  className="pl-10 bg-slate-800 border-slate-700"
+                  className="pl-10 bg-card border-border"
                   placeholder="DD/MM/AAAA ou AAAA-MM-DD"
                   inputMode="numeric"
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-1">Usamos apenas para identificação interna (aniversário).</p>
+              <p className="text-xs text-muted-foreground mt-1">Usamos apenas para identificação interna (aniversário).</p>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t border-slate-800">
+          <div className="flex gap-3 pt-4 border-t border-border">
             <Button variant="outline" className="flex-1" onClick={() => setEditOpen(false)}>
               Cancelar
             </Button>

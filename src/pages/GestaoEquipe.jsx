@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -121,12 +121,12 @@ export default function GestaoEquipe() {
     ocupado: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
     indisponivel: 'bg-red-500/20 text-red-400 border-red-500/30',
     ferias: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    afastado: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+    afastado: 'bg-muted/50 text-muted-foreground border-border',
   };
 
   const nivelColors = {
     colaborador: 'bg-emerald-500/20 text-emerald-400',
-    operador: 'bg-slate-500/20 text-slate-400',
+    operador: 'bg-muted/50 text-muted-foreground',
     lider: 'bg-blue-500/20 text-blue-400',
     admin: 'bg-purple-500/20 text-purple-400',
   };
@@ -143,6 +143,7 @@ export default function GestaoEquipe() {
         title="Gestão de Equipe"
         subtitle={`${funcionarios.filter(f => f.ativo).length} funcionários ativos`}
         icon={Users}
+        iconColor="text-orange-500"
         actions={
           <Button 
             onClick={() => { setEditingFuncionario(null); setDialogMode('create'); setDialogOpen(true); }}
@@ -156,51 +157,51 @@ export default function GestaoEquipe() {
 
       {/* Stats Rápidos */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-blue-500/20">
               <Home className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{daCasa.length}</p>
-              <p className="text-xs text-slate-500">Da Casa</p>
+              <p className="text-2xl font-bold text-foreground">{daCasa.length}</p>
+              <p className="text-xs text-muted-foreground">Da Casa</p>
             </div>
           </div>
         </div>
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-orange-500/20">
               <Truck className="w-5 h-5 text-orange-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">{terceirizados.length}</p>
-              <p className="text-xs text-slate-500">Terceirizados</p>
+              <p className="text-2xl font-bold text-foreground">{terceirizados.length}</p>
+              <p className="text-xs text-muted-foreground">Terceirizados</p>
             </div>
           </div>
         </div>
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-green-500/20">
               <UserCheck className="w-5 h-5 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-foreground">
                 {funcionarios.filter(f => f.status === 'disponivel').length}
               </p>
-              <p className="text-xs text-slate-500">Disponíveis</p>
+              <p className="text-xs text-muted-foreground">Disponíveis</p>
             </div>
           </div>
         </div>
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-amber-500/20">
               <UserX className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-2xl font-bold text-foreground">
                 {funcionarios.filter(f => f.status === 'ocupado').length}
               </p>
-              <p className="text-xs text-slate-500">Ocupados</p>
+              <p className="text-xs text-muted-foreground">Ocupados</p>
             </div>
           </div>
         </div>
@@ -209,16 +210,16 @@ export default function GestaoEquipe() {
       {/* Filtros */}
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <Input
             placeholder="Buscar por nome ou cargo..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-slate-900/50 border-slate-700 text-white h-12"
+            className="pl-10 bg-card/60 border-border text-foreground h-12"
           />
         </div>
         <Select value={filterVinculo} onValueChange={setFilterVinculo}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Vínculo" />
           </SelectTrigger>
           <SelectContent>
@@ -228,7 +229,7 @@ export default function GestaoEquipe() {
           </SelectContent>
         </Select>
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-48 bg-slate-900/50 border-slate-700 text-white h-12">
+          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -248,8 +249,8 @@ export default function GestaoEquipe() {
           <div 
             key={funcionario.id} 
             className={cn(
-              "bg-slate-900/50 border rounded-2xl p-5 transition-all hover:border-slate-600",
-              funcionario.ativo ? "border-slate-800" : "border-red-900/30 opacity-60"
+              "bg-card/60 border rounded-2xl p-5 transition-all hover:border-border",
+              funcionario.ativo ? "border-border" : "border-red-900/30 opacity-60"
             )}
           >
             <div className="flex items-start justify-between">
@@ -263,8 +264,8 @@ export default function GestaoEquipe() {
                   {funcionario.nome?.[0]?.toUpperCase() || 'F'}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white text-lg">{funcionario.nome}</h3>
-                  <p className="text-sm text-slate-400">{funcionario.cargo}</p>
+                  <h3 className="font-semibold text-foreground text-lg">{funcionario.nome}</h3>
+                  <p className="text-sm text-muted-foreground">{funcionario.cargo}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className={cn(
                       "text-xs px-2 py-1 rounded-full",
@@ -290,7 +291,7 @@ export default function GestaoEquipe() {
               </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
+                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                     <MoreVertical className="w-5 h-5" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -311,22 +312,22 @@ export default function GestaoEquipe() {
               </DropdownMenu>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-slate-800">
+            <div className="mt-4 pt-4 border-t border-border">
               <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-slate-500" />
+                <Shield className="w-4 h-4 text-muted-foreground" />
                 <span className={cn("text-xs px-2 py-1 rounded-full", nivelColors[funcionario.nivel_acesso] || nivelColors.colaborador)}>
                   {nivelLabels[funcionario.nivel_acesso] || 'Colaborador'}
                 </span>
               </div>
               {funcionario.user_id && (
-                <div className="flex items-center gap-1 text-xs text-slate-500">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Link2 className="w-3 h-3" />
                   {String(funcionario.user_id).slice(0, 8)}...
                 </div>
               )}
               {funcionario.telefone && (
-                <a href={`tel:${funcionario.telefone}`} className="flex items-center gap-1 text-xs text-slate-400 hover:text-white">
+                <a href={`tel:${funcionario.telefone}`} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
                   <Phone className="w-3 h-3" />
                   {funcionario.telefone}
                 </a>
@@ -337,13 +338,13 @@ export default function GestaoEquipe() {
                   {funcionario.frentes_trabalho.slice(0, 3).map((frenteId, i) => {
                     const frente = frentes.find(f => f.id === frenteId);
                     return frente ? (
-                      <span key={i} className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400">
+                      <span key={i} className="text-xs px-2 py-1 rounded bg-card text-muted-foreground">
                         {frente.nome}
                       </span>
                     ) : null;
                   })}
                   {funcionario.frentes_trabalho.length > 3 && (
-                    <span className="text-xs px-2 py-1 rounded bg-slate-800 text-slate-400">
+                    <span className="text-xs px-2 py-1 rounded bg-card text-muted-foreground">
                       +{funcionario.frentes_trabalho.length - 3}
                     </span>
                   )}
@@ -356,8 +357,8 @@ export default function GestaoEquipe() {
 
       {filteredFuncionarios.length === 0 && (
         <div className="text-center py-12">
-          <Users className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-500">Nenhum funcionário encontrado</p>
+          <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <p className="text-muted-foreground">Nenhum funcionário encontrado</p>
         </div>
       )}
 
@@ -435,7 +436,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-lg sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card border-border text-foreground max-w-lg sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isView ? 'Perfil do Funcionário' : (funcionario ? 'Editar Funcionário' : 'Novo Funcionário')}</DialogTitle>
         </DialogHeader>
@@ -446,10 +447,10 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             <Input
               value={formData.user_id}
               onChange={(e) => setFormData({ ...formData, user_id: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Cole o auth.uid do usuário"
             />
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Use para vincular a conta do colaborador ao cadastro.
             </p>
           </div>
@@ -458,7 +459,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             <Input
               value={formData.nome}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Nome do funcionário"
             />
           </div>
@@ -467,7 +468,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             <div>
               <Label>Vínculo *</Label>
               <Select value={formData.vinculo} onValueChange={(v) => setFormData({ ...formData, vinculo: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -479,7 +480,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             <div>
               <Label>Nível de Acesso *</Label>
               <Select value={formData.nivel_acesso} onValueChange={(v) => setFormData({ ...formData, nivel_acesso: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -498,7 +499,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
               list="cargo-funcionario-options"
               value={formData.cargo}
               onChange={(e) => setFormData({ ...formData, cargo: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="Ex: Operador de Perfiladeira"
             />
             <datalist id="cargo-funcionario-options">
@@ -512,7 +513,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             <div>
               <Label>Status</Label>
               <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                <SelectTrigger className="bg-slate-800 border-slate-700 mt-1">
+                <SelectTrigger className="bg-card border-border mt-1">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -532,7 +533,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
                 max={10}
                 value={formData.capacidade_tarefas}
                 onChange={(e) => setFormData({ ...formData, capacidade_tarefas: parseInt(e.target.value) || 1 })}
-                className="bg-slate-800 border-slate-700 mt-1"
+                className="bg-card border-border mt-1"
               />
             </div>
           </div>
@@ -542,7 +543,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
             <Input
               value={formData.telefone}
               onChange={(e) => setFormData({ ...formData, telefone: formatTelefoneBR(e.target.value) })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
               placeholder="(00) 00000-0000"
               inputMode="numeric"
               autoComplete="tel"
@@ -555,7 +556,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
               type="date"
               value={formData.data_nascimento || ''}
               onChange={(e) => setFormData({ ...formData, data_nascimento: e.target.value })}
-              className="bg-slate-800 border-slate-700 mt-1"
+              className="bg-card border-border mt-1"
             />
           </div>
 
@@ -571,7 +572,7 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
                     "px-3 py-2 rounded-lg text-sm transition-all",
                     formData.frentes_trabalho.includes(frente.id)
                       ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                      : "bg-slate-800 text-slate-400 border border-slate-700 hover:border-slate-600"
+                      : "bg-card text-muted-foreground border border-border hover:border-border"
                   )}
                 >
                   {frente.nome}
@@ -586,13 +587,13 @@ function FuncionarioDialog({ open, onOpenChange, funcionario, frentes, cargoOpti
               id="ativo"
               checked={formData.ativo}
               onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-              className="rounded border-slate-700"
+              className="rounded border-border"
             />
             <Label htmlFor="ativo">Funcionário Ativo</Label>
           </div>
         </fieldset>
 
-        <div className="flex gap-3 pt-4 border-t border-slate-800">
+        <div className="flex gap-3 pt-4 border-t border-border">
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             {isView ? 'Fechar' : 'Cancelar'}
           </Button>

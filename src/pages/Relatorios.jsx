@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { api } from '@/api/dataClient';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -171,41 +171,42 @@ export default function Relatorios() {
         title="Relatórios Gerenciais"
         subtitle="Análise de performance e eficiência operacional"
         icon={FileText}
+        iconColor="text-teal-500"
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-slate-900/50 border border-slate-800 p-2 grid grid-cols-2 gap-2 rounded-xl w-full h-auto">
+        <TabsList className="bg-card/60 border border-border p-2 grid grid-cols-2 gap-2 rounded-xl w-full h-auto">
           <TabsTrigger
             value="equipe"
-            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+            className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
           >
             <Users className="w-4 h-4 mr-2" />
             Performance Equipe
           </TabsTrigger>
           <TabsTrigger
             value="checklists"
-            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+            className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
           >
             <Camera className="w-4 h-4 mr-2" />
             Fotos de Checklists
           </TabsTrigger>
           <TabsTrigger
             value="eficiencia"
-            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+            className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
           >
             <Clock className="w-4 h-4 mr-2" />
             Eficiência
           </TabsTrigger>
           <TabsTrigger
             value="veiculos"
-            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+            className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
           >
             <Truck className="w-4 h-4 mr-2" />
             Veículos
           </TabsTrigger>
           <TabsTrigger
             value="pendencias"
-            className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-slate-800/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
+            className="rounded-lg border border-border bg-card/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-card/70 data-[state=active]:border-amber-500/40 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-300 w-full justify-center whitespace-normal min-h-[44px]"
           >
             <AlertTriangle className="w-4 h-4 mr-2" />
             Pendências
@@ -216,14 +217,14 @@ export default function Relatorios() {
         <TabsContent value="equipe" className="mt-2 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">Performance da Equipe</h2>
-              <p className="text-sm text-slate-400">Tarefas concluídas por funcionário</p>
+              <h2 className="text-xl font-semibold text-foreground">Performance da Equipe</h2>
+              <p className="text-sm text-muted-foreground">Tarefas concluídas por funcionário</p>
             </div>
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => exportToCSV(performanceEquipe, 'performance_equipe')}
-              className="border-slate-700 text-slate-300"
+              className="border-border text-muted-foreground"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV
@@ -231,8 +232,8 @@ export default function Relatorios() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Tarefas Concluídas</h3>
+            <div className="bg-card/60 border border-border rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Tarefas Concluídas</h3>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={performanceEquipe} layout="vertical">
@@ -249,29 +250,29 @@ export default function Relatorios() {
               </div>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Top Performers</h3>
+            <div className="bg-card/60 border border-border rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Top Performers</h3>
               <div className="space-y-4">
                 {performanceEquipe.slice(0, 5).map((func, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                  <div key={i} className="flex items-center justify-between p-3 bg-card/70 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
                         i === 0 ? "bg-amber-500/20 text-amber-400" :
-                        i === 1 ? "bg-slate-400/20 text-slate-300" :
+                        i === 1 ? "bg-muted/50 text-muted-foreground" :
                         i === 2 ? "bg-orange-500/20 text-orange-400" :
-                        "bg-slate-700 text-slate-400"
+                        "bg-card text-muted-foreground"
                       )}>
                         {i + 1}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{func.nome}</p>
-                        <p className="text-xs text-slate-500">{func.total} tarefas total</p>
+                        <p className="font-medium text-foreground">{func.nome}</p>
+                        <p className="text-xs text-muted-foreground">{func.total} tarefas total</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-lg font-bold text-amber-400">{func.concluidas}</p>
-                      <p className="text-xs text-slate-500">concluídas</p>
+                      <p className="text-xs text-muted-foreground">concluídas</p>
                     </div>
                   </div>
                 ))}
@@ -284,14 +285,14 @@ export default function Relatorios() {
         <TabsContent value="eficiencia" className="mt-2 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">Eficiência Operacional</h2>
-              <p className="text-sm text-slate-400">Tarefas criadas vs concluídas nos últimos 7 dias</p>
+              <h2 className="text-xl font-semibold text-foreground">Eficiência Operacional</h2>
+              <p className="text-sm text-muted-foreground">Tarefas criadas vs concluídas nos últimos 7 dias</p>
             </div>
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => exportToCSV(tarefasPorDia, 'eficiencia_operacional')}
-              className="border-slate-700 text-slate-300"
+              className="border-border text-muted-foreground"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV
@@ -299,26 +300,26 @@ export default function Relatorios() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Total de Tarefas</p>
-              <p className="text-3xl font-bold text-white mt-1">{tarefas.length}</p>
+            <div className="bg-card/60 border border-border rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Total de Tarefas</p>
+              <p className="text-3xl font-bold text-foreground mt-1">{tarefas.length}</p>
             </div>
-            <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Taxa de Conclusão</p>
+            <div className="bg-card/60 border border-green-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Taxa de Conclusão</p>
               <p className="text-3xl font-bold text-green-400 mt-1">
                 {tarefas.length > 0 ? Math.round((tarefas.filter(t => t.status === 'concluida').length / tarefas.length) * 100) : 0}%
               </p>
             </div>
-            <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Em Execução</p>
+            <div className="bg-card/60 border border-amber-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Em Execução</p>
               <p className="text-3xl font-bold text-amber-400 mt-1">
                 {tarefas.filter(t => t.status === 'em_execucao').length}
               </p>
             </div>
           </div>
 
-          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Tarefas por Dia</h3>
+          <div className="bg-card/60 border border-border rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Tarefas por Dia</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={tarefasPorDia}>
@@ -342,14 +343,14 @@ export default function Relatorios() {
         <TabsContent value="veiculos" className="mt-2 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">Utilização de Veículos</h2>
-              <p className="text-sm text-slate-400">Viagens realizadas por veículo</p>
+              <h2 className="text-xl font-semibold text-foreground">Utilização de Veículos</h2>
+              <p className="text-sm text-muted-foreground">Viagens realizadas por veículo</p>
             </div>
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => exportToCSV(utilizacaoVeiculos, 'utilizacao_veiculos')}
-              className="border-slate-700 text-slate-300"
+              className="border-border text-muted-foreground"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV
@@ -357,24 +358,24 @@ export default function Relatorios() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Total de Veículos</p>
-              <p className="text-3xl font-bold text-white mt-1">{veiculos.length}</p>
+            <div className="bg-card/60 border border-border rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Total de Veículos</p>
+              <p className="text-3xl font-bold text-foreground mt-1">{veiculos.length}</p>
             </div>
-            <div className="bg-slate-900/50 border border-blue-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Rotas Realizadas</p>
+            <div className="bg-card/60 border border-blue-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Rotas Realizadas</p>
               <p className="text-3xl font-bold text-blue-400 mt-1">{rotas.length}</p>
             </div>
-            <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Disponíveis Agora</p>
+            <div className="bg-card/60 border border-green-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Disponíveis Agora</p>
               <p className="text-3xl font-bold text-green-400 mt-1">
                 {veiculos.filter(v => v.status === 'disponivel').length}
               </p>
             </div>
           </div>
 
-          <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-white mb-4">Viagens por Veículo</h3>
+          <div className="bg-card/60 border border-border rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Viagens por Veículo</h3>
             <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={utilizacaoVeiculos}>
@@ -396,14 +397,14 @@ export default function Relatorios() {
         <TabsContent value="pendencias" className="mt-2 space-y-6">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">Análise de Pendências</h2>
-              <p className="text-sm text-slate-400">Tipos de pendência mais recorrentes</p>
+              <h2 className="text-xl font-semibold text-foreground">Análise de Pendências</h2>
+              <p className="text-sm text-muted-foreground">Tipos de pendência mais recorrentes</p>
             </div>
             <Button 
               variant="outline" 
               size="sm"
               onClick={() => exportToCSV(pendenciasPorTipo, 'analise_pendencias')}
-              className="border-slate-700 text-slate-300"
+              className="border-border text-muted-foreground"
             >
               <Download className="w-4 h-4 mr-2" />
               Exportar CSV
@@ -411,20 +412,20 @@ export default function Relatorios() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="bg-slate-900/50 border border-red-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Pendências Abertas</p>
+            <div className="bg-card/60 border border-red-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Pendências Abertas</p>
               <p className="text-3xl font-bold text-red-400 mt-1">
                 {pendencias.filter(p => p.status === 'aberta').length}
               </p>
             </div>
-            <div className="bg-slate-900/50 border border-amber-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Em Análise</p>
+            <div className="bg-card/60 border border-amber-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Em Análise</p>
               <p className="text-3xl font-bold text-amber-400 mt-1">
                 {pendencias.filter(p => p.status === 'em_analise').length}
               </p>
             </div>
-            <div className="bg-slate-900/50 border border-green-500/30 rounded-xl p-5">
-              <p className="text-sm text-slate-400">Resolvidas</p>
+            <div className="bg-card/60 border border-green-500/30 rounded-xl p-5">
+              <p className="text-sm text-muted-foreground">Resolvidas</p>
               <p className="text-3xl font-bold text-green-400 mt-1">
                 {pendencias.filter(p => p.status === 'resolvida').length}
               </p>
@@ -432,8 +433,8 @@ export default function Relatorios() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Pendências por Tipo</h3>
+            <div className="bg-card/60 border border-border rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Pendências por Tipo</h3>
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -459,19 +460,19 @@ export default function Relatorios() {
               </div>
             </div>
 
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Detalhamento</h3>
+            <div className="bg-card/60 border border-border rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Detalhamento</h3>
               <div className="space-y-3">
                 {pendenciasPorTipo.map((tipo, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                  <div key={i} className="flex items-center justify-between p-3 bg-card/70 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div 
                         className="w-4 h-4 rounded"
                         style={{ backgroundColor: COLORS[i % COLORS.length] }}
                       />
-                      <span className="text-white">{tipo.name}</span>
+                      <span className="text-foreground">{tipo.name}</span>
                     </div>
-                    <span className="font-bold text-white">{tipo.value}</span>
+                    <span className="font-bold text-foreground">{tipo.value}</span>
                   </div>
                 ))}
               </div>
@@ -483,21 +484,21 @@ export default function Relatorios() {
         <TabsContent value="checklists" className="mt-2 space-y-6">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div>
-              <h2 className="text-xl font-semibold text-white">Fotos de Checklists</h2>
-              <p className="text-sm text-slate-400">Anexos registrados durante a execução das tarefas</p>
+              <h2 className="text-xl font-semibold text-foreground">Fotos de Checklists</h2>
+              <p className="text-sm text-muted-foreground">Anexos registrados durante a execução das tarefas</p>
             </div>
             <div className="flex items-center gap-3">
               <Input
                 placeholder="Buscar por tarefa, frente ou item..."
                 value={searchChecklist}
                 onChange={(e) => setSearchChecklist(e.target.value)}
-                className="bg-slate-900/50 border-slate-700 text-white h-10 w-full lg:w-64"
+                className="bg-card/60 border-border text-foreground h-10 w-full lg:w-64"
               />
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => exportToCSV(fotosChecklistFiltradas, 'fotos_checklists')}
-                className="border-slate-700 text-slate-300"
+                className="border-border text-muted-foreground"
               >
                 <Download className="w-4 h-4 mr-2" />
                 Exportar CSV
@@ -507,18 +508,18 @@ export default function Relatorios() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {fotosChecklistFiltradas.map((foto, index) => (
-              <div key={`${foto.foto_url}-${index}`} className="bg-slate-900/50 border border-slate-800 rounded-xl overflow-hidden">
-                <div className="h-40 bg-slate-800">
+              <div key={`${foto.foto_url}-${index}`} className="bg-card/60 border border-border rounded-xl overflow-hidden">
+                <div className="h-40 bg-card">
                   <img src={foto.foto_url} alt={foto.item} className="w-full h-full object-cover" />
                 </div>
                 <div className="p-4 space-y-2">
-                  <p className="text-sm font-semibold text-white">{foto.tarefa}</p>
-                  <p className="text-xs text-slate-400">{foto.item}</p>
+                  <p className="text-sm font-semibold text-foreground">{foto.tarefa}</p>
+                  <p className="text-xs text-muted-foreground">{foto.item}</p>
                   {foto.frente && (
-                    <p className="text-xs text-slate-500">Frente: {foto.frente}</p>
+                    <p className="text-xs text-muted-foreground">Frente: {foto.frente}</p>
                   )}
                   {foto.data_hora && !isNaN(new Date(foto.data_hora).getTime()) && (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-muted-foreground">
                       {format(new Date(foto.data_hora), "dd/MM/yyyy HH:mm", { locale: ptBR })}
                     </p>
                   )}
@@ -528,9 +529,9 @@ export default function Relatorios() {
           </div>
 
           {fotosChecklistFiltradas.length === 0 && (
-            <div className="text-center py-12 bg-slate-900/30 border border-dashed border-slate-800 rounded-xl">
-              <Camera className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-500">Nenhuma foto encontrada</p>
+            <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
+              <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">Nenhuma foto encontrada</p>
             </div>
           )}
         </TabsContent>
