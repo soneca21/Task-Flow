@@ -255,7 +255,7 @@ export default function Producao() {
       const tarefaRef = tarefaAtualizada || tarefa;
       setExecutandoChecklist(tarefaRef);
       setChecklistExecucao(checklist);
-      setChecklistReadOnly(tarefaRef.status === 'concluida' || !canEditTarefa(tarefaRef));
+      setChecklistReadOnly(!canEditTarefa(tarefaRef));
     } catch (error) {
       console.error(error);
       toast.error('Erro ao carregar checklist');

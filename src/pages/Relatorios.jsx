@@ -24,6 +24,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -51,6 +58,7 @@ export default function Relatorios() {
   const [dataInicio, setDataInicio] = useState(format(subDays(new Date(), 7), 'yyyy-MM-dd'));
   const [dataFim, setDataFim] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [searchChecklist, setSearchChecklist] = useState('');
+  const [selectedChecklist, setSelectedChecklist] = useState(null);
 
   const { data: tarefas = [] } = useQuery({
     queryKey: ['tarefas-relatorios'],
@@ -139,6 +147,34 @@ export default function Relatorios() {
         data_hora: item.data_hora,
       }))
   ));
+  const checklistsComFotos = tarefasComChecklist
+    .map((t) => {
+      const fotos = (t.checklist_preenchido || [])
+        .filter((item) => item.foto_url)
+        .map((item) => ({
+          item: item.item,
+          foto_url: item.foto_url,
+          data_hora: item.data_hora,
+        }));
+      if (fotos.length === 0) return null;
+
+      const datasValidas = fotos
+        .map((f) => (f.data_hora && !isNaN(new Date(f.data_hora).getTime()) ? new Date(f.data_hora) : null))
+        .filter(Boolean);
+      const dataUltimaFoto = datasValidas.length
+        ? new Date(Math.max(...datasValidas.map((d) => d.getTime())))
+        : null;
+
+      return {
+        tarefa_id: t.id,
+        tarefa: t.titulo,
+        frente: t.frente_trabalho_nome,
+        fotos,
+        total: fotos.length,
+        data_ultima_foto: dataUltimaFoto,
+      };
+    })
+    .filter(Boolean);
 
   const fotosChecklistFiltradas = fotosChecklist.filter((foto) => {
     const term = searchChecklist.toLowerCase();
@@ -147,6 +183,15 @@ export default function Relatorios() {
       foto.item?.toLowerCase().includes(term) ||
       foto.frente?.toLowerCase().includes(term)
     );
+  });
+  const checklistsFiltrados = checklistsComFotos.filter((checklist) => {
+    const term = searchChecklist.toLowerCase();
+    if (!term) return true;
+    const matchChecklist =
+      checklist.tarefa?.toLowerCase().includes(term) ||
+      checklist.frente?.toLowerCase().includes(term);
+    if (matchChecklist) return true;
+    return checklist.fotos?.some((foto) => foto.item?.toLowerCase().includes(term));
   });
 
   const exportToCSV = (data, filename) => {
@@ -507,34 +552,76 @@ export default function Relatorios() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {fotosChecklistFiltradas.map((foto, index) => (
-              <div key={`${foto.foto_url}-${index}`} className="bg-card/60 border border-border rounded-xl overflow-hidden">
+            {checklistsFiltrados.map((checklist) => (
+              <button
+                key={checklist.tarefa_id}
+                type="button"
+                onClick={() => setSelectedChecklist(checklist)}
+                className="bg-card/60 border border-border rounded-xl overflow-hidden text-left transition hover:border-amber-500/40 hover:bg-card/70"
+              >
                 <div className="h-40 bg-card">
-                  <img src={foto.foto_url} alt={foto.item} className="w-full h-full object-cover" />
+                  <img
+                    src={checklist.fotos[0]?.foto_url}
+                    alt={checklist.fotos[0]?.item || 'Foto do checklist'}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="p-4 space-y-2">
-                  <p className="text-sm font-semibold text-foreground">{foto.tarefa}</p>
-                  <p className="text-xs text-muted-foreground">{foto.item}</p>
-                  {foto.frente && (
-                    <p className="text-xs text-muted-foreground">Frente: {foto.frente}</p>
+                  <p className="text-sm font-semibold text-foreground">{checklist.tarefa}</p>
+                  <p className="text-xs text-muted-foreground">{checklist.total} fotos</p>
+                  {checklist.frente && (
+                    <p className="text-xs text-muted-foreground">Frente: {checklist.frente}</p>
                   )}
-                  {foto.data_hora && !isNaN(new Date(foto.data_hora).getTime()) && (
+                  {checklist.data_ultima_foto && (
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(foto.data_hora), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                      {format(checklist.data_ultima_foto, "dd/MM/yyyy HH:mm", { locale: ptBR })}
                     </p>
                   )}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
 
-          {fotosChecklistFiltradas.length === 0 && (
+          {checklistsFiltrados.length === 0 && (
             <div className="text-center py-12 bg-card/40 border border-dashed border-border rounded-xl">
               <Camera className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-muted-foreground">Nenhuma foto encontrada</p>
             </div>
           )}
         </TabsContent>
+        <Dialog
+          open={!!selectedChecklist}
+          onOpenChange={(open) => {
+            if (!open) setSelectedChecklist(null);
+          }}
+        >
+          <DialogContent className="max-w-5xl">
+            <DialogHeader>
+              <DialogTitle>Fotos do Checklist</DialogTitle>
+              <DialogDescription>
+                {selectedChecklist?.tarefa}
+                {selectedChecklist?.frente ? ` • Frente: ${selectedChecklist.frente}` : ''}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedChecklist?.fotos?.map((foto, index) => (
+                <div key={`${foto.foto_url}-${index}`} className="bg-card/60 border border-border rounded-xl overflow-hidden">
+                  <div className="h-40 bg-card">
+                    <img src={foto.foto_url} alt={foto.item || 'Foto do checklist'} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="p-3 space-y-1">
+                    <p className="text-xs font-semibold text-foreground">{foto.item}</p>
+                    {foto.data_hora && !isNaN(new Date(foto.data_hora).getTime()) && (
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(foto.data_hora), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
       </Tabs>
     </div>
   );

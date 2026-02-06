@@ -81,7 +81,7 @@ export default function Logistica() {
     const descricao = `${placa} ${statusLabel} no pátio.`;
 
     try {
-      await api.entities.LogAuditoria.create({
+      await api.audit.log({
         acao,
         entidade: 'Veiculo',
         entidade_id: veiculo.id,

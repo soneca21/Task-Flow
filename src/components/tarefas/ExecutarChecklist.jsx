@@ -289,7 +289,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         });
 
         // Log de auditoria
-        await api.entities.LogAuditoria.create({
+        await api.audit.log({
           acao: 'salvar_checklist',
           entidade: 'Tarefa',
           entidade_id: tarefa.id,
@@ -403,7 +403,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                       {item.tipo_resposta !== 'foto_obrigatoria' && exigeFotoEmTodosItens && ' • Foto obrigatória'}
                     </p>
                   </div>
-                  {!readOnly && (
+                  {!readOnly && item.tipo_resposta !== 'foto_obrigatoria' && (
                     <div className="flex items-center gap-1">
                       <Button
                         type="button"

@@ -220,6 +220,7 @@ export default function Dashboard() {
 
       {/* Status Rápido */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        {/* Nova Tarefa */}
         <StatCard
           title="Nova Tarefa"
           value="Criar"
@@ -228,31 +229,7 @@ export default function Dashboard() {
           color="blue"
           onClick={openQuickTask}
         />
-        <StatCard
-          title="Produção"
-          value={tarefasProducao.length}
-          subtitle="Ordens ativas"
-          icon={Factory}
-          color="amber"
-          linkTo="Producao"
-        />
-        <StatCard
-          title="Veículos no Pátio"
-          value={veiculosPatio.length}
-          subtitle="Aguardando atendimento"
-          icon={Truck}
-          color="green"
-          linkTo="Logistica"
-        />
-        <StatCard
-          title="Expedição"
-          value={notasPendentes.length}
-          subtitle="Notas em expedição"
-          icon={Package}
-          color="purple"
-          linkTo="Expedicao"
-        />
-        {/* Tarefas - substitui Pendências */}
+        {/* Tarefas */}
         <StatCard
           title="Tarefas"
           value={tarefas.length}
@@ -261,6 +238,34 @@ export default function Dashboard() {
           color="blue"
           linkTo="Tarefas"
         />
+        {/* Expedição */}
+        <StatCard
+          title="Expedição"
+          value={notasPendentes.length}
+          subtitle="Notas em expedição"
+          icon={Package}
+          color="purple"
+          linkTo="Expedicao"
+        />
+        {/* Produção */}
+        <StatCard
+          title="Produção"
+          value={tarefasProducao.length}
+          subtitle="Ordens ativas"
+          icon={Factory}
+          color="amber"
+          linkTo="Producao"
+        />
+        {/* Veículos no Pátio */}
+        <StatCard
+          title="Veículos no Pátio"
+          value={veiculosPatio.length}
+          subtitle="Aguardando atendimento"
+          icon={Truck}
+          color="green"
+          linkTo="Logistica"
+        />
+        {/* Equipe */}
         <StatCard
           title="Equipe"
           value={funcionariosAtivos.length}

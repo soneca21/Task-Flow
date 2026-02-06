@@ -1314,7 +1314,7 @@ export default function Configuracoes() {
             </div>
 
             <div className="bg-card/60 border border-border rounded-xl overflow-hidden">
-              <div className="overflow-x-auto">
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-border">
@@ -1331,7 +1331,9 @@ export default function Configuracoes() {
                         <td className="p-4 text-sm text-muted-foreground">
                           {log.created_date && format(new Date(log.created_date), 'dd/MM HH:mm')}
                         </td>
-                        <td className="p-4 text-sm text-muted-foreground">{log.created_by}</td>
+                        <td className="p-4 text-sm text-muted-foreground">
+                          {log.created_by_nome || log.created_by || 'Sistema'}
+                        </td>
                         <td className="p-4">
                           <span className={cn(
                             "text-xs px-2 py-1 rounded-full",
@@ -1351,6 +1353,41 @@ export default function Configuracoes() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+              <div className="md:hidden">
+                <div className="divide-y divide-border/50">
+                  {logs.map((log) => (
+                    <div key={log.id} className="p-4 space-y-2">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">
+                            {log.entidade || 'Registro'}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {log.created_date && format(new Date(log.created_date), 'dd/MM HH:mm')}
+                          </p>
+                        </div>
+                        <span className={cn(
+                          "text-xs px-2 py-1 rounded-full shrink-0",
+                          log.acao === 'criar' && "bg-green-500/20 text-green-400",
+                          log.acao === 'editar' && "bg-blue-500/20 text-blue-400",
+                          log.acao === 'excluir' && "bg-red-500/20 text-red-400",
+                          log.acao === 'aprovar' && "bg-amber-500/20 text-amber-400",
+                          (log.acao === 'validar_checklist' || log.acao === 'salvar_checklist') && "bg-purple-500/20 text-purple-400",
+                          log.acao === 'liberar_veiculo' && "bg-cyan-500/20 text-cyan-400",
+                        )}>
+                          {log.acao}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {log.created_by_nome || log.created_by || 'Sistema'}
+                      </p>
+                      {log.descricao && (
+                        <p className="text-sm text-foreground/90">{log.descricao}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
               {logs.length === 0 && (
                 <div className="p-8 text-center">

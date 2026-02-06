@@ -86,7 +86,7 @@ export default function FrentesTrabalho() {
   const createMutation = useMutation({
     mutationFn: async (data) => {
       const frente = await api.entities.FrenteTrabalho.create(data);
-      await api.entities.LogAuditoria.create({
+      await api.audit.log({
         acao: 'criar',
         entidade: 'FrenteTrabalho',
         entidade_id: frente.id,
@@ -113,7 +113,7 @@ export default function FrentesTrabalho() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }) => {
       const frente = await api.entities.FrenteTrabalho.update(id, data);
-      await api.entities.LogAuditoria.create({
+      await api.audit.log({
         acao: 'editar',
         entidade: 'FrenteTrabalho',
         entidade_id: id,
@@ -141,7 +141,7 @@ export default function FrentesTrabalho() {
     mutationFn: async (id) => {
       const frente = frentes.find(f => f.id === id);
       await api.entities.FrenteTrabalho.delete(id);
-      await api.entities.LogAuditoria.create({
+      await api.audit.log({
         acao: 'excluir',
         entidade: 'FrenteTrabalho',
         entidade_id: id,

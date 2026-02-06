@@ -216,6 +216,8 @@ create table if not exists configuracao_sistema (
 create table if not exists log_auditoria (
   id uuid primary key default gen_random_uuid(),
   created_date timestamptz not null default now(),
+  created_by uuid,
+  created_by_nome text,
   acao text,
   entidade text,
   entidade_id text,

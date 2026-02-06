@@ -5,7 +5,7 @@
 --
 -- After running, the user must log out and log in again to refresh the JWT.
 
-do $$
+/* do $$
 declare
   target_user uuid := '00000000-0000-0000-0000-000000000000';
 begin
@@ -20,6 +20,6 @@ begin
 
   update public.funcionario
      set nivel_acesso = 'admin'
-   where user_id = target_user;
-end $$;
+  where user_id = target_user;
+end $$; */
 

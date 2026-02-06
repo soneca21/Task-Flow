@@ -219,6 +219,45 @@ const appLogs = {
   },
 };
 
+const audit = {
+  async log({ acao, entidade, entidade_id, descricao, actor } = {}) {
+    try {
+      let createdBy = actor?.user_id || null;
+      let createdByNome = actor?.nome || null;
+
+      if (!createdBy || !createdByNome) {
+        const { data: authData } = await supabase.auth.getUser();
+        const user = authData?.user || null;
+        createdBy = createdBy || user?.id || null;
+        createdByNome = createdByNome || user?.user_metadata?.full_name || user?.email || null;
+
+        if (createdBy && !actor?.nome) {
+          const { data: funcionarios } = await supabase
+            .from('funcionario')
+            .select('nome')
+            .eq('user_id', createdBy)
+            .limit(1);
+          if (funcionarios?.[0]?.nome) {
+            createdByNome = funcionarios[0].nome;
+          }
+        }
+      }
+
+      const payload = {
+        acao,
+        entidade,
+        entidade_id,
+        descricao,
+        created_by: createdBy,
+        created_by_nome: createdByNome,
+      };
+      await supabase.from('log_auditoria').insert(payload);
+    } catch {
+      // Best-effort logging
+    }
+  },
+};
+
 const integrations = {
   Core: {
     async UploadFile({ file }) {
@@ -241,5 +280,6 @@ export const api = {
   auth,
   entities,
   appLogs,
+  audit,
   integrations,
 };

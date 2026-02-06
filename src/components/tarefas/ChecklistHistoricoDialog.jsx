@@ -45,7 +45,7 @@ export default function ChecklistHistoricoDialog({ open, onOpenChange, tarefa, c
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-slate-900 border-slate-700 text-white max-w-4xl sm:max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-slate-900 border-slate-700 text-white inset-auto left-1/2 top-1/2 h-auto max-h-[90vh] w-[95vw] max-w-6xl -translate-x-1/2 -translate-y-1/2 rounded-xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Histórico de Checklists</DialogTitle>
         </DialogHeader>

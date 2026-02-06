@@ -205,7 +205,7 @@ export async function dispararAgendamento({
     tarefa_id: tarefaExpedicao?.id || null,
   });
 
-  await api.entities.LogAuditoria.create({
+  await api.audit.log({
     acao: 'agendamento_disparado',
     entidade: 'AgendamentoVeiculo',
     entidade_id: agendamento.id,
