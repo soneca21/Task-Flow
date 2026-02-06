@@ -67,6 +67,7 @@ export default function Tarefas() {
   const [filterStatus, setFilterStatus] = useState('todos');
   const [filterTipo, setFilterTipo] = useState('todos');
   const [filterFrente, setFilterFrente] = useState('todas');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingTarefa, setEditingTarefa] = useState(null);
   const [executandoChecklist, setExecutandoChecklist] = useState(null);
@@ -462,54 +463,98 @@ export default function Tarefas() {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Buscar tarefa..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-card/60 border-border text-foreground h-12"
-          />
+      <div className="space-y-3">
+        <div className="flex flex-col lg:flex-row gap-4 flex-wrap">
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar tarefa..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 bg-card/60 border-border text-foreground h-12"
+            />
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full lg:w-44 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos Status</SelectItem>
+              <SelectItem value="criada">Criada</SelectItem>
+              <SelectItem value="aguardando_alocacao">Aguardando</SelectItem>
+              <SelectItem value="em_execucao">Em Execução</SelectItem>
+              <SelectItem value="pausada">Pausada</SelectItem>
+              <SelectItem value="concluida">Concluída</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 lg:hidden"
+            onClick={() => setShowAdvancedFilters((prev) => !prev)}
+          >
+            {showAdvancedFilters ? 'Ocultar filtros' : 'Filtros avancados'}
+            {(filterTipo !== 'todos' || filterFrente !== 'todas') ? ' (ativos)' : ''}
+          </Button>
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-44 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos Status</SelectItem>
-            <SelectItem value="criada">Criada</SelectItem>
-            <SelectItem value="aguardando_alocacao">Aguardando</SelectItem>
-            <SelectItem value="em_execucao">Em Execução</SelectItem>
-            <SelectItem value="pausada">Pausada</SelectItem>
-            <SelectItem value="concluida">Concluída</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterTipo} onValueChange={setFilterTipo}>
-          <SelectTrigger className="w-full lg:w-44 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos Tipos</SelectItem>
-            <SelectItem value="producao">Produção</SelectItem>
-            <SelectItem value="carregamento">Carregamento</SelectItem>
-            <SelectItem value="movimentacao">Movimentação</SelectItem>
-            <SelectItem value="conferencia">Conferência</SelectItem>
-            <SelectItem value="retirada">Retirada</SelectItem>
-            <SelectItem value="entrega">Entrega</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterFrente} onValueChange={setFilterFrente}>
-          <SelectTrigger className="w-full lg:w-52 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Frente" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todas">Todas Frentes</SelectItem>
-            {frentes.map(f => (
-              <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+
+        <div className="hidden lg:flex gap-4 flex-wrap">
+          <Select value={filterTipo} onValueChange={setFilterTipo}>
+            <SelectTrigger className="w-full lg:w-44 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos Tipos</SelectItem>
+              <SelectItem value="producao">Produção</SelectItem>
+              <SelectItem value="carregamento">Carregamento</SelectItem>
+              <SelectItem value="movimentacao">Movimentação</SelectItem>
+              <SelectItem value="conferencia">Conferência</SelectItem>
+              <SelectItem value="retirada">Retirada</SelectItem>
+              <SelectItem value="entrega">Entrega</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filterFrente} onValueChange={setFilterFrente}>
+            <SelectTrigger className="w-full lg:w-52 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Frente" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas Frentes</SelectItem>
+              {frentes.map(f => (
+                <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {showAdvancedFilters && (
+          <div className="flex flex-col gap-4 lg:hidden">
+            <Select value={filterTipo} onValueChange={setFilterTipo}>
+              <SelectTrigger className="w-full bg-card/60 border-border text-foreground h-12">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos Tipos</SelectItem>
+                <SelectItem value="producao">Produção</SelectItem>
+                <SelectItem value="carregamento">Carregamento</SelectItem>
+                <SelectItem value="movimentacao">Movimentação</SelectItem>
+                <SelectItem value="conferencia">Conferência</SelectItem>
+                <SelectItem value="retirada">Retirada</SelectItem>
+                <SelectItem value="entrega">Entrega</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filterFrente} onValueChange={setFilterFrente}>
+              <SelectTrigger className="w-full bg-card/60 border-border text-foreground h-12">
+                <SelectValue placeholder="Frente" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todas">Todas Frentes</SelectItem>
+                {frentes.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.nome}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Lista de Tarefas */}
