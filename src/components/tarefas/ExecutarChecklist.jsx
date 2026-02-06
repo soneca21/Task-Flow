@@ -199,17 +199,30 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     return { ...resposta, foto_url: file_url };
   };
 
-  const handleCameraCapture = (index) => {
-    if (readOnly) return;
+  const pickImageFile = (source = 'gallery') => new Promise((resolve) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = (e) => {
-      const file = e.target.files?.[0];
-      if (file) handleUploadFoto(index, file);
+    if (source === 'camera') {
+      input.capture = 'environment';
+    }
+    input.style.display = 'none';
+    const cleanup = () => {
+      if (input.parentNode) input.parentNode.removeChild(input);
     };
+    input.onchange = (e) => {
+      const file = e.target.files?.[0] || null;
+      cleanup();
+      resolve(file);
+    };
+    document.body.appendChild(input);
     input.click();
+  });
+
+  const handlePickFoto = async (index, source = 'gallery') => {
+    if (readOnly) return;
+    const file = await pickImageFile(source);
+    if (file) handleUploadFoto(index, file);
   };
 
   const validarRespostas = () => {
@@ -391,21 +404,34 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                     </p>
                   </div>
                   {!readOnly && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="text-slate-400 hover:text-white"
-                      onClick={() => handleCameraCapture(index)}
-                      disabled={uploadingPhoto === index}
-                      title="Tirar foto"
-                    >
-                      {uploadingPhoto === index ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Camera className="w-4 h-4" />
-                      )}
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-slate-400 hover:text-white"
+                        onClick={() => handlePickFoto(index, 'camera')}
+                        disabled={uploadingPhoto === index}
+                        title="Tirar foto"
+                      >
+                        {uploadingPhoto === index ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Camera className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="text-slate-400 hover:text-white"
+                        onClick={() => handlePickFoto(index, 'gallery')}
+                        disabled={uploadingPhoto === index}
+                        title="Escolher da galeria"
+                      >
+                        <Upload className="w-4 h-4" />
+                      </Button>
+                    </div>
                   )}
                 </div>
 
@@ -505,7 +531,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                             type="button"
                             variant="outline"
                             className="flex-1 border-slate-700 hover:bg-slate-800 touch-btn"
-                            onClick={() => handleCameraCapture(index)}
+                            onClick={() => handlePickFoto(index, 'camera')}
                             disabled={uploadingPhoto === index || readOnly}
                           >
                             {uploadingPhoto === index ? (
@@ -519,16 +545,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                             type="button"
                             variant="outline"
                             className="border-slate-700 hover:bg-slate-800 touch-btn"
-                            onClick={() => {
-                              const input = document.createElement('input');
-                              input.type = 'file';
-                              input.accept = 'image/*';
-                              input.onchange = (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) handleUploadFoto(index, file);
-                              };
-                              input.click();
-                            }}
+                            onClick={() => handlePickFoto(index, 'gallery')}
                             disabled={uploadingPhoto === index || readOnly}
                           >
                             <Upload className="w-4 h-4" />
