@@ -31,6 +31,11 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
   const [respostas, setRespostas] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null);
+  const [previewScale, setPreviewScale] = useState(1);
+  const [previewOffset, setPreviewOffset] = useState({ x: 0, y: 0 });
+  const [previewDragging, setPreviewDragging] = useState(false);
+  const [previewDragStart, setPreviewDragStart] = useState({ x: 0, y: 0 });
 
   const { data: configuracoes = [] } = useQuery({
     queryKey: ['configuracoes-checklist'],
@@ -174,6 +179,21 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     setRespostas(prev => prev.map((r, i) =>
       i === index ? { ...r, foto_url: '' } : r
     ));
+  };
+
+  const openFotoPreview = (url, titulo) => {
+    if (!url) return;
+    setPreviewScale(1);
+    setPreviewOffset({ x: 0, y: 0 });
+    setPreviewDragging(false);
+    setFotoPreview({ url, titulo });
+  };
+
+  const closeFotoPreview = () => {
+    setFotoPreview(null);
+    setPreviewScale(1);
+    setPreviewOffset({ x: 0, y: 0 });
+    setPreviewDragging(false);
   };
 
   const isDataUrl = (value) => typeof value === 'string' && value.startsWith('data:image/');
@@ -513,7 +533,8 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                           <img 
                             src={resposta.foto_url} 
                             alt="Foto" 
-                            className="w-full h-48 object-cover rounded-lg"
+                            className="w-full h-48 object-cover rounded-lg cursor-zoom-in"
+                            onClick={() => openFotoPreview(resposta.foto_url, item.pergunta)}
                           />
                           <Button
                             type="button"
@@ -561,7 +582,8 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
                         <img
                           src={resposta.foto_url}
                           alt="Foto"
-                          className="w-full h-40 object-cover rounded-lg"
+                          className="w-full h-40 object-cover rounded-lg cursor-zoom-in"
+                          onClick={() => openFotoPreview(resposta.foto_url, item.pergunta)}
                         />
                         <Button
                           type="button"
@@ -620,6 +642,63 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         )}
         </div>
       </div>
+      {fotoPreview?.url && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
+          onClick={closeFotoPreview}
+          role="dialog"
+          aria-label="Visualizar foto do checklist"
+        >
+          <div
+            className="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+            onMouseUp={() => setPreviewDragging(false)}
+            onMouseLeave={() => setPreviewDragging(false)}
+            onMouseMove={(e) => {
+              if (!previewDragging) return;
+              const dx = e.clientX - previewDragStart.x;
+              const dy = e.clientY - previewDragStart.y;
+              setPreviewOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+              setPreviewDragStart({ x: e.clientX, y: e.clientY });
+            }}
+            onWheel={(e) => {
+              e.preventDefault();
+              const delta = e.deltaY > 0 ? -0.1 : 0.1;
+              setPreviewScale((prev) => Math.min(4, Math.max(1, Number((prev + delta).toFixed(2)))));
+            }}
+          >
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute -top-3 -right-3 bg-black/70 hover:bg-black/80 text-white"
+              onClick={closeFotoPreview}
+              aria-label="Fechar visualizaÃ§Ã£o da foto"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+            <img
+              src={fotoPreview.url}
+              alt={fotoPreview.titulo || 'Foto do checklist'}
+              className="max-h-[90vh] w-auto max-w-full rounded-lg object-contain cursor-grab"
+              style={{ transform: `translate(${previewOffset.x}px, ${previewOffset.y}px) scale(${previewScale})` }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setPreviewDragging(true);
+                setPreviewDragStart({ x: e.clientX, y: e.clientY });
+              }}
+            />
+            {fotoPreview.titulo && (
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+                {fotoPreview.titulo}
+              </div>
+            )}
+            <div className="absolute bottom-2 right-2 bg-black/70 text-white text-[11px] px-2 py-1 rounded-full">
+              Zoom: {Math.round(previewScale * 100)}%
+            </div>
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   );
