@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, ClipboardList, Factory } from 'lucide-react';
+import { LayoutDashboard, ClipboardList, Factory, Package } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { cn } from '@/lib/utils';
 
@@ -8,6 +8,7 @@ const items = [
   { page: 'Dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { page: 'Tarefas', label: 'Tarefas', icon: ClipboardList },
   { page: 'Producao', label: 'Produção', icon: Factory },
+  { page: 'Expedicao', label: 'Expedição', icon: Package },
 ];
 
 export default function MobileBottomNav({ currentPageName }) {
@@ -35,16 +36,20 @@ export default function MobileBottomNav({ currentPageName }) {
     };
   }, []);
 
+  if (!isPwa) {
+    return null;
+  }
+
   return (
     <nav
       className={cn(
-        "lg:hidden fixed bottom-0 left-0 right-0 z-50 pwa-hide",
+        "lg:hidden fixed bottom-0 left-0 right-0 z-50 pwa-only",
         "border-t border-border bg-background/80 backdrop-blur-xl",
         "pb-[env(safe-area-inset-bottom)]"
       )}
       aria-label="Navegação principal"
     >
-      <div className="mx-auto max-w-xl px-3 py-2 grid grid-cols-3 gap-2">
+      <div className="mx-auto max-w-xl px-3 py-2 grid grid-cols-4 gap-2">
         {items.map((item) => {
           const active = currentPageName === item.page;
           const Icon = item.icon;

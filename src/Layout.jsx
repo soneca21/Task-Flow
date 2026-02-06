@@ -156,7 +156,7 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile Header */}
       <header className={cn(
         "lg:hidden fixed top-0 left-0 right-0 z-50",
-        "bg-background/80 backdrop-blur-xl border-b border-border px-4 py-2",
+        "bg-background/80 backdrop-blur-xl border-b border-border px-4 pt-[calc(0.5rem+env(safe-area-inset-top))] pb-2",
         "transition-transform duration-300 will-change-transform",
         isMobileHeaderHidden ? "-translate-y-full" : "translate-y-0"
       )}>
@@ -298,6 +298,8 @@ export default function Layout({ children, currentPageName }) {
           {children}
         </div>
       </main>
+
+      <MobileBottomNav currentPageName={currentPageName} />
 
       <PreCadastroFuncionarioDialog
         open={showPreCadastro}

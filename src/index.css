@@ -6,6 +6,13 @@
   .pwa-hide {
     display: none !important;
   }
+  .pwa-only {
+    display: block !important;
+  }
+}
+
+.pwa-only {
+  display: none !important;
 }
 
 @layer base {
