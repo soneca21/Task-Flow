@@ -252,13 +252,14 @@ export default function Dashboard() {
           color="purple"
           linkTo="Expedicao"
         />
+        {/* Tarefas - substitui Pendências */}
         <StatCard
-          title="Pendências"
-          value={pendenciasCriticas.length}
-          subtitle="Alertas críticos"
-          icon={AlertTriangle}
-          color="red"
-          linkTo="Pendencias"
+          title="Tarefas"
+          value={tarefas.length}
+          subtitle="Total de tarefas"
+          icon={ClipboardCheck}
+          color="blue"
+          linkTo="Tarefas"
         />
         <StatCard
           title="Equipe"
