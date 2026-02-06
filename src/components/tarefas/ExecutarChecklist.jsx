@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from '@/api/dataClient';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -36,6 +36,12 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
   const [previewOffset, setPreviewOffset] = useState({ x: 0, y: 0 });
   const [previewDragging, setPreviewDragging] = useState(false);
   const [previewDragStart, setPreviewDragStart] = useState({ x: 0, y: 0 });
+  const previewPinchRef = useRef({
+    active: false,
+    startDistance: 0,
+    startScale: 1,
+    lastCenter: null,
+  });
 
   const { data: configuracoes = [] } = useQuery({
     queryKey: ['configuracoes-checklist'],
@@ -186,6 +192,12 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     setPreviewScale(1);
     setPreviewOffset({ x: 0, y: 0 });
     setPreviewDragging(false);
+    previewPinchRef.current = {
+      active: false,
+      startDistance: 0,
+      startScale: 1,
+      lastCenter: null,
+    };
     setFotoPreview({ url, titulo });
   };
 
@@ -194,6 +206,103 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
     setPreviewScale(1);
     setPreviewOffset({ x: 0, y: 0 });
     setPreviewDragging(false);
+    previewPinchRef.current = {
+      active: false,
+      startDistance: 0,
+      startScale: 1,
+      lastCenter: null,
+    };
+  };
+
+  const clampPreviewScale = (value) => Math.min(4, Math.max(1, Number(value.toFixed(2))));
+
+  const getTouchDistance = (touches) => {
+    if (touches.length < 2) return 0;
+    const dx = touches[1].clientX - touches[0].clientX;
+    const dy = touches[1].clientY - touches[0].clientY;
+    return Math.hypot(dx, dy);
+  };
+
+  const getTouchCenter = (touches) => {
+    if (touches.length < 2) return null;
+    return {
+      x: (touches[0].clientX + touches[1].clientX) / 2,
+      y: (touches[0].clientY + touches[1].clientY) / 2,
+    };
+  };
+
+  const handlePreviewTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      previewPinchRef.current = {
+        active: true,
+        startDistance: getTouchDistance(e.touches),
+        startScale: previewScale,
+        lastCenter: getTouchCenter(e.touches),
+      };
+      setPreviewDragging(false);
+      return;
+    }
+
+    if (e.touches.length === 1 && previewScale > 1) {
+      const touch = e.touches[0];
+      setPreviewDragging(true);
+      setPreviewDragStart({ x: touch.clientX, y: touch.clientY });
+    }
+  };
+
+  const handlePreviewTouchMove = (e) => {
+    if (e.touches.length === 2 && previewPinchRef.current.active) {
+      e.preventDefault();
+      const nextDistance = getTouchDistance(e.touches);
+      const nextCenter = getTouchCenter(e.touches);
+      const pinchRatio = previewPinchRef.current.startDistance > 0
+        ? nextDistance / previewPinchRef.current.startDistance
+        : 1;
+      const nextScale = clampPreviewScale(previewPinchRef.current.startScale * pinchRatio);
+      setPreviewScale(nextScale);
+
+      if (previewPinchRef.current.lastCenter && nextCenter) {
+        const dx = nextCenter.x - previewPinchRef.current.lastCenter.x;
+        const dy = nextCenter.y - previewPinchRef.current.lastCenter.y;
+        setPreviewOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      }
+
+      previewPinchRef.current.lastCenter = nextCenter;
+      if (nextScale <= 1) {
+        setPreviewOffset({ x: 0, y: 0 });
+      }
+      return;
+    }
+
+    if (e.touches.length === 1 && previewDragging && previewScale > 1) {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const dx = touch.clientX - previewDragStart.x;
+      const dy = touch.clientY - previewDragStart.y;
+      setPreviewOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setPreviewDragStart({ x: touch.clientX, y: touch.clientY });
+    }
+  };
+
+  const handlePreviewTouchEnd = (e) => {
+    if (e.touches.length < 2) {
+      previewPinchRef.current.active = false;
+      previewPinchRef.current.startDistance = 0;
+      previewPinchRef.current.startScale = previewScale;
+      previewPinchRef.current.lastCenter = null;
+    }
+
+    if (e.touches.length === 1 && previewScale > 1) {
+      const touch = e.touches[0];
+      setPreviewDragging(true);
+      setPreviewDragStart({ x: touch.clientX, y: touch.clientY });
+      return;
+    }
+
+    if (e.touches.length === 0) {
+      setPreviewDragging(false);
+    }
   };
 
   const isDataUrl = (value) => typeof value === 'string' && value.startsWith('data:image/');
@@ -651,11 +760,12 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         >
           <div
             className="relative max-w-5xl w-full max-h-[90vh] flex items-center justify-center"
+            data-allow-pinch-zoom="true"
             onClick={(e) => e.stopPropagation()}
             onMouseUp={() => setPreviewDragging(false)}
             onMouseLeave={() => setPreviewDragging(false)}
             onMouseMove={(e) => {
-              if (!previewDragging) return;
+              if (!previewDragging || previewScale <= 1) return;
               const dx = e.clientX - previewDragStart.x;
               const dy = e.clientY - previewDragStart.y;
               setPreviewOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
@@ -664,8 +774,18 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
             onWheel={(e) => {
               e.preventDefault();
               const delta = e.deltaY > 0 ? -0.1 : 0.1;
-              setPreviewScale((prev) => Math.min(4, Math.max(1, Number((prev + delta).toFixed(2)))));
+              setPreviewScale((prev) => {
+                const nextScale = clampPreviewScale(prev + delta);
+                if (nextScale <= 1) {
+                  setPreviewOffset({ x: 0, y: 0 });
+                }
+                return nextScale;
+              });
             }}
+            onTouchStart={handlePreviewTouchStart}
+            onTouchMove={handlePreviewTouchMove}
+            onTouchEnd={handlePreviewTouchEnd}
+            onTouchCancel={handlePreviewTouchEnd}
           >
             <Button
               type="button"
@@ -680,9 +800,13 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
             <img
               src={fotoPreview.url}
               alt={fotoPreview.titulo || 'Foto do checklist'}
-              className="max-h-[90vh] w-auto max-w-full rounded-lg object-contain cursor-grab"
+              className={cn(
+                "max-h-[90vh] w-auto max-w-full rounded-lg object-contain touch-none",
+                previewScale > 1 ? (previewDragging ? "cursor-grabbing" : "cursor-grab") : "cursor-zoom-in"
+              )}
               style={{ transform: `translate(${previewOffset.x}px, ${previewOffset.y}px) scale(${previewScale})` }}
               onMouseDown={(e) => {
+                if (previewScale <= 1) return;
                 e.preventDefault();
                 setPreviewDragging(true);
                 setPreviewDragStart({ x: e.clientX, y: e.clientY });
