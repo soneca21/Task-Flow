@@ -201,6 +201,15 @@ const auth = {
     });
     if (error) throw error;
   },
+  async sendPasswordRecovery(email, redirectTo = `${window.location.origin}/login`) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    if (error) throw error;
+  },
+  async changePassword(newPassword) {
+    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    return data;
+  },
   async logout(redirectUrl) {
     await supabase.auth.signOut();
     if (redirectUrl) {

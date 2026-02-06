@@ -3,7 +3,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
 import PageHeader from '@/components/ui/PageHeader';
 import { Button } from "@/components/ui/button";
-import { Copy, Shield, UserCircle, ClipboardList, Trophy, Activity, Phone, Pencil, CalendarDays } from 'lucide-react';
+import { Copy, Shield, UserCircle, ClipboardList, Trophy, Activity, Phone, Pencil, CalendarDays, Lock, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/api/dataClient';
@@ -20,6 +20,11 @@ export default function MeuPerfil() {
   const [isPromoting, setIsPromoting] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editForm, setEditForm] = useState({ nome: '', telefone: '', data_nascimento: '' });
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [recoveryDialogOpen, setRecoveryDialogOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ newPassword: '', confirmPassword: '' });
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [isSendingRecovery, setIsSendingRecovery] = useState(false);
 
   const isDev = import.meta.env.DEV;
   const role = user?.user_metadata?.role || '';
@@ -217,6 +222,53 @@ export default function MeuPerfil() {
       data_nascimento: formatISODateToBR(funcionarioAtual?.data_nascimento || ''),
     });
     setEditOpen(true);
+  };
+
+  const openPasswordDialog = () => {
+    setPasswordForm({ newPassword: '', confirmPassword: '' });
+    setPasswordDialogOpen(true);
+  };
+
+  const handleChangePassword = async () => {
+    if (!passwordForm.newPassword || passwordForm.newPassword.length < 6) {
+      toast.error('A nova senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('As senhas não coincidem.');
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      await api.auth.changePassword(passwordForm.newPassword);
+      toast.success('Senha atualizada com sucesso.');
+      setPasswordDialogOpen(false);
+      setPasswordForm({ newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.message || 'Não foi possível atualizar a senha.');
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const handleSendRecovery = async () => {
+    const email = user?.email;
+    if (!email) {
+      toast.error('E-mail do usuário não disponível.');
+      return;
+    }
+    setIsSendingRecovery(true);
+    try {
+      await api.auth.sendPasswordRecovery(email, `${window.location.origin}/login`);
+      toast.success('Enviamos um e-mail com instruções de recuperação.');
+      setRecoveryDialogOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.message || 'Não foi possível enviar o e-mail de recuperação.');
+    } finally {
+      setIsSendingRecovery(false);
+    }
   };
 
   const displayName = funcionarioAtual?.nome || user?.user_metadata?.full_name || 'Usuário';
@@ -518,6 +570,34 @@ export default function MeuPerfil() {
         </div>
       </div>
 
+      <div className="bg-card/60 border border-border rounded-2xl p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Lock className="w-5 h-5 text-amber-400" />
+          <h3 className="text-sm font-semibold text-foreground">Segurança da conta</h3>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          Atualize sua senha ou solicite um e-mail de recuperação para redefinição.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            className="border-border text-foreground hover:bg-card"
+            onClick={openPasswordDialog}
+          >
+            Trocar senha
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="border-border text-foreground hover:bg-card"
+            onClick={() => setRecoveryDialogOpen(true)}
+          >
+            Enviar recuperação
+          </Button>
+        </div>
+      </div>
+
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
           <DialogHeader>
@@ -586,6 +666,82 @@ export default function MeuPerfil() {
               disabled={updateFuncionarioMutation.isPending}
             >
               {updateFuncionarioMutation.isPending ? 'Salvando...' : 'Salvar'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
+          <DialogHeader>
+            <DialogTitle>Trocar senha</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label>Nova senha</Label>
+              <Input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
+                className="bg-card border-border mt-1"
+                placeholder="Mínimo 6 caracteres"
+                autoComplete="new-password"
+              />
+            </div>
+            <div>
+              <Label>Confirmar nova senha</Label>
+              <Input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                className="bg-card border-border mt-1"
+                placeholder="Repita a nova senha"
+                autoComplete="new-password"
+              />
+            </div>
+          </div>
+          <div className="flex gap-3 pt-4 border-t border-border">
+            <Button variant="outline" className="flex-1" onClick={() => setPasswordDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
+              onClick={handleChangePassword}
+              disabled={isUpdatingPassword}
+            >
+              {isUpdatingPassword ? 'Salvando...' : 'Salvar'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={recoveryDialogOpen} onOpenChange={setRecoveryDialogOpen}>
+        <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
+          <DialogHeader>
+            <DialogTitle>Recuperação de senha</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-amber-400 mt-1" />
+              <div>
+                <p className="text-sm text-foreground">Enviaremos um link de recuperação para:</p>
+                <p className="text-sm text-muted-foreground">{user?.email || 'E-mail não disponível'}</p>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Após abrir o link do e-mail, você poderá definir uma nova senha no sistema.
+            </p>
+          </div>
+          <div className="flex gap-3 pt-4 border-t border-border">
+            <Button variant="outline" className="flex-1" onClick={() => setRecoveryDialogOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-black"
+              onClick={handleSendRecovery}
+              disabled={isSendingRecovery}
+            >
+              {isSendingRecovery ? 'Enviando...' : 'Enviar e-mail'}
             </Button>
           </div>
         </DialogContent>

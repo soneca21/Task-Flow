@@ -648,7 +648,7 @@ export default function Tarefas() {
                     <DropdownMenuContent align="end">
                       {tarefa.checklist_id && isManager && (
                         <DropdownMenuItem onClick={() => { setHistoricoTarefa(tarefa); setHistoricoOpen(true); }}>
-                          <History className="w-4 h-4 mr-2" /> Histórico de Checklists
+                          <History className="w-4 h-4 mr-2" /> Histórico
                         </DropdownMenuItem>
                       )}
                       {canEdit && (
@@ -1034,4 +1034,3 @@ function TarefaDialog({ open, onOpenChange, tarefa, frentes, funcionarios, check
     </>
   );
 }
-

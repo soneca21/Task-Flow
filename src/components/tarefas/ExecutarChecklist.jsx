@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { api } from '@/api/dataClient';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
@@ -326,8 +327,8 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
   const total = checklist.itens?.length || 0;
   const percentual = total > 0 ? Math.round((progresso / total) * 100) : 0;
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center px-4 pb-4 pt-0 sm:items-center sm:p-6 sm:pt-4">
+  return createPortal(
+    <div className="fixed inset-0 z-50 bg-[#0b0b0b] flex items-start justify-center px-4 pb-4 pt-4 sm:items-center sm:p-6 sm:pt-4">
       <div className="bg-slate-900 rounded-2xl border border-slate-800 max-w-2xl w-full max-h-[calc(100svh-2rem)] sm:max-h-[90vh] overflow-hidden flex flex-col min-h-0">
         {/* Header */}
         <div className="p-5 border-b border-slate-800">
@@ -586,7 +587,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="flex-1 border-slate-700"
+              className="flex-1 border-slate-700 touch-btn"
               onClick={onFechar}
               disabled={isSaving}
             >
@@ -619,6 +620,7 @@ export default function ExecutarChecklist({ tarefa, checklist, onConcluir, onFec
         )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -9,6 +9,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { createPageUrl } from './utils';
 import PerfilFuncionario from './pages/PerfilFuncionario';
+import SistemaNotificacoes from '@/components/notificacoes/SistemaNotificacoes';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -26,7 +27,7 @@ const LayoutWrapper = ({ children, currentPageName }) => {
 
 const AuthenticatedApp = () => {
   const location = useLocation();
-  const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
+  const { isAuthenticated, isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
 
   // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
@@ -50,29 +51,32 @@ const AuthenticatedApp = () => {
 
   // Render the main app
   return (
-    <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
-      } />
-      <Route path="/perfil-funcionario/:id" element={
-        <LayoutWrapper currentPageName="GestaoEquipe">
-          <PerfilFuncionario />
-        </LayoutWrapper>
-      } />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route key={path} path={createPageUrl(path)} element={
-          <LayoutWrapper currentPageName={path}>
-            <Page />
+    <>
+      {isAuthenticated && location.pathname.toLowerCase() !== '/login' && <SistemaNotificacoes />}
+      <Routes>
+        <Route path="/" element={
+          <LayoutWrapper currentPageName={mainPageKey}>
+            <MainPage />
           </LayoutWrapper>
         } />
-      ))}
-      {Object.keys(Pages).map((path) => (
-        <Route key={`${path}-legacy`} path={`/${path}`} element={<Navigate to={createPageUrl(path)} replace />} />
-      ))}
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+        <Route path="/perfil-funcionario/:id" element={
+          <LayoutWrapper currentPageName="GestaoEquipe">
+            <PerfilFuncionario />
+          </LayoutWrapper>
+        } />
+        {Object.entries(Pages).map(([path, Page]) => (
+          <Route key={path} path={createPageUrl(path)} element={
+            <LayoutWrapper currentPageName={path}>
+              <Page />
+            </LayoutWrapper>
+          } />
+        ))}
+        {Object.keys(Pages).map((path) => (
+          <Route key={`${path}-legacy`} path={`/${path}`} element={<Navigate to={createPageUrl(path)} replace />} />
+        ))}
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </>
   );
 };
 

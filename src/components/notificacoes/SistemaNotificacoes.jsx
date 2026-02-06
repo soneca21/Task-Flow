@@ -6,6 +6,8 @@ import { AlertTriangle, CheckCircle, Clock, Users, Zap } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { useAuth } from '@/lib/AuthContext';
 
+const ALERT_AUDIO_COOLDOWN_MS = 1800;
+
 /**
  * Sistema de notificacoes em tempo real
  * Monitora eventos e dispara notificacoes personalizadas
@@ -14,6 +16,114 @@ export default function SistemaNotificacoes() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const funcionarioIdRef = useRef(null);
+  const audioContextRef = useRef(null);
+  const lastAlertAtRef = useRef(0);
+
+  const playAlertTone = () => {
+    const now = Date.now();
+    if (now - lastAlertAtRef.current < ALERT_AUDIO_COOLDOWN_MS) return;
+    lastAlertAtRef.current = now;
+
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextCtor) return;
+
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioContextCtor();
+      }
+      const ctx = audioContextRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+
+      const triggerBeep = (delay, frequency, duration) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = frequency;
+        gain.gain.value = 0.0001;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const startAt = ctx.currentTime + delay;
+        gain.gain.exponentialRampToValueAtTime(0.12, startAt + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + duration);
+        osc.start(startAt);
+        osc.stop(startAt + duration + 0.02);
+      };
+
+      triggerBeep(0, 880, 0.18);
+      triggerBeep(0.22, 988, 0.2);
+    } catch {
+      // Audio alert is best effort.
+    }
+  };
+
+  const showNativeNotification = (title, body, href) => {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    try {
+      const notif = new Notification(title, {
+        body,
+        tag: 'nova-tarefa',
+        renotify: true,
+      });
+      notif.onclick = () => {
+        window.focus();
+        if (href) window.location.href = href;
+        notif.close();
+      };
+    } catch {
+      // Native notification is best effort.
+    }
+  };
+
+  useEffect(() => {
+    const AudioContextCtor = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextCtor) return undefined;
+
+    const unlockAudio = () => {
+      try {
+        if (!audioContextRef.current) {
+          audioContextRef.current = new AudioContextCtor();
+        }
+        if (audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume().catch(() => {});
+        }
+      } catch {
+        // Audio unlock is best effort.
+      }
+    };
+
+    window.addEventListener('pointerdown', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+    window.addEventListener('keydown', unlockAudio, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!('Notification' in window)) return undefined;
+    if (Notification.permission !== 'default') return undefined;
+
+    const requestPermission = () => {
+      Notification.requestPermission().catch(() => {});
+    };
+
+    window.addEventListener('pointerdown', requestPermission, { once: true });
+    window.addEventListener('touchstart', requestPermission, { once: true });
+    window.addEventListener('keydown', requestPermission, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', requestPermission);
+      window.removeEventListener('touchstart', requestPermission);
+      window.removeEventListener('keydown', requestPermission);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -69,15 +179,20 @@ export default function SistemaNotificacoes() {
         const tarefa = event.data;
         const funcionarioId = funcionarioIdRef.current;
         if (funcionarioId && tarefa.funcionarios_designados?.includes(funcionarioId)) {
+          const targetUrl = createPageUrl('Tarefas');
           toast.success('Nova tarefa atribuída: ' + tarefa.titulo, {
             duration: 6000,
             action: {
               label: 'Ver',
-              onClick: () => window.location.href = createPageUrl('Tarefas'),
+              onClick: () => window.location.href = targetUrl,
             },
           });
+          playAlertTone();
           if ('vibrate' in navigator) {
             navigator.vibrate([200, 100, 200]);
+          }
+          if (document.visibilityState !== 'visible') {
+            showNativeNotification('Nova tarefa atribuida', tarefa.titulo, targetUrl);
           }
         }
 
@@ -234,3 +349,4 @@ export function notificarAlocacaoSucesso(tarefa, funcionarios) {
     duration: 4000,
   });
 }
+

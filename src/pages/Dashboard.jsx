@@ -3,7 +3,6 @@ import { api } from '@/api/dataClient';
 import { useAuth } from '@/lib/AuthContext';
 import { useFuncionarioAtual } from '@/hooks/useFuncionarioAtual';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import SistemaNotificacoes from '../components/notificacoes/SistemaNotificacoes';
 import { 
   Factory, 
   Truck, 
@@ -209,7 +208,6 @@ export default function Dashboard() {
 
   return (
     <>
-      <SistemaNotificacoes />
       <div className="space-y-6">
         <PageHeader 
           title="Dashboard Operacional"
@@ -520,4 +518,3 @@ export default function Dashboard() {
     </>
   );
 }
-

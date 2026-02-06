@@ -59,6 +59,8 @@ export default function Configuracoes() {
   const [templateDialog, setTemplateDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [seedingTemplates, setSeedingTemplates] = useState(false);
+  const [auditDialogOpen, setAuditDialogOpen] = useState(false);
+  const [selectedLog, setSelectedLog] = useState(null);
 
   const { data: checklists = [] } = useQuery({
     queryKey: ['checklists'],
@@ -84,6 +86,18 @@ export default function Configuracoes() {
     queryKey: ['logs-auditoria'],
     queryFn: () => api.entities.LogAuditoria.list('-created_date', 50),
   });
+
+  const openLogDetails = (log) => {
+    setSelectedLog(log);
+    setAuditDialogOpen(true);
+  };
+
+  const handleAuditDialogChange = (open) => {
+    setAuditDialogOpen(open);
+    if (!open) {
+      setSelectedLog(null);
+    }
+  };
 
   const createChecklistMutation = useMutation({
     mutationFn: (data) => api.entities.Checklist.create(data),
@@ -1327,7 +1341,19 @@ export default function Configuracoes() {
                   </thead>
                   <tbody>
                     {logs.map(log => (
-                      <tr key={log.id} className="border-b border-border/50 hover:bg-card/30">
+                      <tr
+                        key={log.id}
+                        className="border-b border-border/50 hover:bg-card/30 cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => openLogDetails(log)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            openLogDetails(log);
+                          }
+                        }}
+                      >
                         <td className="p-4 text-sm text-muted-foreground">
                           {log.created_date && format(new Date(log.created_date), 'dd/MM HH:mm')}
                         </td>
@@ -1357,7 +1383,19 @@ export default function Configuracoes() {
               <div className="md:hidden">
                 <div className="divide-y divide-border/50">
                   {logs.map((log) => (
-                    <div key={log.id} className="p-4 space-y-2">
+                    <div
+                      key={log.id}
+                      className="p-4 space-y-2 cursor-pointer hover:bg-card/30"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => openLogDetails(log)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault();
+                          openLogDetails(log);
+                        }
+                      }}
+                    >
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="text-sm font-semibold text-foreground">
@@ -1408,6 +1446,56 @@ export default function Configuracoes() {
         onSave={handleSaveChecklist}
         isLoading={createChecklistMutation.isPending || updateChecklistMutation.isPending}
       />
+
+      <Dialog open={auditDialogOpen} onOpenChange={handleAuditDialogChange}>
+        <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-lg !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
+          <DialogHeader>
+            <DialogTitle>Detalhes do Log</DialogTitle>
+          </DialogHeader>
+          {selectedLog && (
+            <div className="space-y-4 text-sm">
+              <div className="grid gap-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Data/Hora</p>
+                  <p className="text-foreground">
+                    {selectedLog.created_date
+                      ? format(new Date(selectedLog.created_date), 'dd/MM/yyyy HH:mm:ss')
+                      : 'N/A'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Usuário</p>
+                  <p className="text-foreground">
+                    {selectedLog.created_by_nome || selectedLog.created_by || 'Sistema'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Ação</p>
+                  <p className="text-foreground">{selectedLog.acao || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Entidade</p>
+                  <p className="text-foreground">{selectedLog.entidade || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Entidade ID</p>
+                  <p className="text-foreground break-words">{selectedLog.entidade_id || 'N/A'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Descrição</p>
+                  <p className="text-foreground whitespace-pre-wrap break-words">
+                    {selectedLog.descricao || 'Sem descrição'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">ID do Log</p>
+                  <p className="text-foreground break-words">{selectedLog.id || 'N/A'}</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1461,7 +1549,7 @@ function ChecklistDialog({ open, onOpenChange, checklist, onSave, isLoading }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
+      <DialogContent className="bg-card border-border text-foreground overflow-y-auto rounded-lg border shadow-lg !p-6 !inset-auto !left-1/2 !top-1/2 !w-[calc(100%-2rem)] !max-w-md !h-auto !max-h-[calc(100svh-2rem)] !-translate-x-1/2 !-translate-y-1/2">
         <DialogHeader>
           <DialogTitle>{checklist?.id ? 'Editar Checklist' : 'Novo Checklist'}</DialogTitle>
         </DialogHeader>
