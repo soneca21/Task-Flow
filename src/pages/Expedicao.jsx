@@ -47,6 +47,7 @@ export default function Expedicao() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('todos');
   const [filterTipo, setFilterTipo] = useState('todos');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingNota, setEditingNota] = useState(null);
 
@@ -166,43 +167,74 @@ export default function Expedicao() {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por número ou cliente..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-card/60 border-border text-foreground h-12"
-          />
+      <div className="space-y-3">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por número ou cliente..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 bg-card/60 border-border text-foreground h-12"
+            />
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Status</SelectItem>
+              <SelectItem value="em_expedicao">Em Expedição</SelectItem>
+              <SelectItem value="pendente">Pendente (antigo)</SelectItem>
+              <SelectItem value="em_producao">Em Produção</SelectItem>
+              <SelectItem value="aguardando_carregamento">Aguardando Carregamento</SelectItem>
+              <SelectItem value="carregando">Carregando</SelectItem>
+              <SelectItem value="em_rota">Em Rota</SelectItem>
+              <SelectItem value="entregue">Entregue</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 lg:hidden"
+            onClick={() => setShowAdvancedFilters((prev) => !prev)}
+          >
+            {showAdvancedFilters ? 'Ocultar filtros' : 'Filtros avancados'}
+            {filterTipo !== 'todos' ? ' (ativos)' : ''}
+          </Button>
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os Status</SelectItem>
-            <SelectItem value="em_expedicao">Em Expedição</SelectItem>
-            <SelectItem value="pendente">Pendente (antigo)</SelectItem>
-            <SelectItem value="em_producao">Em Produção</SelectItem>
-            <SelectItem value="aguardando_carregamento">Aguardando Carregamento</SelectItem>
-            <SelectItem value="carregando">Carregando</SelectItem>
-            <SelectItem value="em_rota">Em Rota</SelectItem>
-            <SelectItem value="entregue">Entregue</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterTipo} onValueChange={setFilterTipo}>
-          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os Tipos</SelectItem>
-            <SelectItem value="entrega">Entrega</SelectItem>
-            <SelectItem value="retirada_balcao">Retirada Balcão</SelectItem>
-            <SelectItem value="retirada_terceiro">Retirada Terceiro</SelectItem>
-            <SelectItem value="transferencia">Transferência</SelectItem>
-          </SelectContent>
-        </Select>
+
+        <div className="hidden lg:block">
+          <Select value={filterTipo} onValueChange={setFilterTipo}>
+            <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Tipos</SelectItem>
+              <SelectItem value="entrega">Entrega</SelectItem>
+              <SelectItem value="retirada_balcao">Retirada Balcão</SelectItem>
+              <SelectItem value="retirada_terceiro">Retirada Terceiro</SelectItem>
+              <SelectItem value="transferencia">Transferência</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {showAdvancedFilters && (
+          <div className="lg:hidden">
+            <Select value={filterTipo} onValueChange={setFilterTipo}>
+              <SelectTrigger className="w-full bg-card/60 border-border text-foreground h-12">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os Tipos</SelectItem>
+                <SelectItem value="entrega">Entrega</SelectItem>
+                <SelectItem value="retirada_balcao">Retirada Balcão</SelectItem>
+                <SelectItem value="retirada_terceiro">Retirada Terceiro</SelectItem>
+                <SelectItem value="transferencia">Transferência</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Lista de Notas */}

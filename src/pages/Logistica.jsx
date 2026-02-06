@@ -58,6 +58,7 @@ export default function Logistica() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('patio');
   const [filterTipo, setFilterTipo] = useState('todos');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState('default');
   const [editingVeiculo, setEditingVeiculo] = useState(null);
@@ -238,43 +239,75 @@ export default function Logistica() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por placa ou modelo..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-card/60 border-border text-foreground h-12"
-          />
+      <div className="space-y-3">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por placa ou modelo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 bg-card/60 border-border text-foreground h-12"
+            />
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="patio">No Pátio (Aguardando)</SelectItem>
+              <SelectItem value="todos">Todos os Status</SelectItem>
+              <SelectItem value="disponivel">Disponível</SelectItem>
+              <SelectItem value="em_rota">Em Rota</SelectItem>
+              <SelectItem value="no_patio">No Pátio</SelectItem>
+              <SelectItem value="carregando">Em Atendimento</SelectItem>
+              <SelectItem value="em_manutencao">Em Manutenção</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 lg:hidden"
+            onClick={() => setShowAdvancedFilters((prev) => !prev)}
+          >
+            {showAdvancedFilters ? 'Ocultar filtros' : 'Filtros avancados'}
+            {filterTipo !== 'todos' ? ' (ativos)' : ''}
+          </Button>
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="patio">No Pátio (Aguardando)</SelectItem>
-            <SelectItem value="todos">Todos os Status</SelectItem>
-            <SelectItem value="disponivel">Disponível</SelectItem>
-            <SelectItem value="em_rota">Em Rota</SelectItem>
-            <SelectItem value="no_patio">No Pátio</SelectItem>
-            <SelectItem value="carregando">Em Atendimento</SelectItem>
-            <SelectItem value="em_manutencao">Em Manutenção</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterTipo} onValueChange={setFilterTipo}>
-          <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os Tipos</SelectItem>
-            <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
-            <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
-            <SelectItem value="carro">Carro</SelectItem>
-            <SelectItem value="moto">Moto</SelectItem>
-            <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
-          </SelectContent>
-        </Select>
+
+        <div className="hidden lg:block">
+          <Select value={filterTipo} onValueChange={setFilterTipo}>
+            <SelectTrigger className="w-full lg:w-56 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Tipo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Tipos</SelectItem>
+              <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
+              <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
+              <SelectItem value="carro">Carro</SelectItem>
+              <SelectItem value="moto">Moto</SelectItem>
+              <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {showAdvancedFilters && (
+          <div className="lg:hidden">
+            <Select value={filterTipo} onValueChange={setFilterTipo}>
+              <SelectTrigger className="w-full bg-card/60 border-border text-foreground h-12">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os Tipos</SelectItem>
+                <SelectItem value="caminhao_proprio">Caminhão Próprio</SelectItem>
+                <SelectItem value="caminhao_terceiro">Caminhão Terceiro</SelectItem>
+                <SelectItem value="carro">Carro</SelectItem>
+                <SelectItem value="moto">Moto</SelectItem>
+                <SelectItem value="empilhadeira">Empilhadeira</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

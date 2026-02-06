@@ -50,6 +50,7 @@ export default function GestaoEquipe() {
   const [search, setSearch] = useState('');
   const [filterVinculo, setFilterVinculo] = useState('todos');
   const [filterStatus, setFilterStatus] = useState('todos');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingFuncionario, setEditingFuncionario] = useState(null);
   const [dialogMode, setDialogMode] = useState('create');
@@ -208,39 +209,68 @@ export default function GestaoEquipe() {
       </div>
 
       {/* Filtros */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <Input
-            placeholder="Buscar por nome ou cargo..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 bg-card/60 border-border text-foreground h-12"
-          />
+      <div className="space-y-3">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por nome ou cargo..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 bg-card/60 border-border text-foreground h-12"
+            />
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Status</SelectItem>
+              <SelectItem value="disponivel">Disponível</SelectItem>
+              <SelectItem value="ocupado">Ocupado</SelectItem>
+              <SelectItem value="indisponivel">Indisponível</SelectItem>
+              <SelectItem value="ferias">Férias</SelectItem>
+              <SelectItem value="afastado">Afastado</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            className="h-12 lg:hidden"
+            onClick={() => setShowAdvancedFilters((prev) => !prev)}
+          >
+            {showAdvancedFilters ? 'Ocultar filtros' : 'Filtros avancados'}
+            {filterVinculo !== 'todos' ? ' (ativos)' : ''}
+          </Button>
         </div>
-        <Select value={filterVinculo} onValueChange={setFilterVinculo}>
-          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Vínculo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os Vínculos</SelectItem>
-            <SelectItem value="da_casa">Da Casa</SelectItem>
-            <SelectItem value="terceirizado">Terceirizado</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos os Status</SelectItem>
-            <SelectItem value="disponivel">Disponível</SelectItem>
-            <SelectItem value="ocupado">Ocupado</SelectItem>
-            <SelectItem value="indisponivel">Indisponível</SelectItem>
-            <SelectItem value="ferias">Férias</SelectItem>
-            <SelectItem value="afastado">Afastado</SelectItem>
-          </SelectContent>
-        </Select>
+
+        <div className="hidden lg:block">
+          <Select value={filterVinculo} onValueChange={setFilterVinculo}>
+            <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
+              <SelectValue placeholder="Vínculo" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">Todos os Vínculos</SelectItem>
+              <SelectItem value="da_casa">Da Casa</SelectItem>
+              <SelectItem value="terceirizado">Terceirizado</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {showAdvancedFilters && (
+          <div className="lg:hidden">
+            <Select value={filterVinculo} onValueChange={setFilterVinculo}>
+              <SelectTrigger className="w-full bg-card/60 border-border text-foreground h-12">
+                <SelectValue placeholder="Vínculo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos os Vínculos</SelectItem>
+                <SelectItem value="da_casa">Da Casa</SelectItem>
+                <SelectItem value="terceirizado">Terceirizado</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       {/* Lista */}
