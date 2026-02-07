@@ -75,6 +75,7 @@ export default function Tarefas() {
   const [checklistReadOnly, setChecklistReadOnly] = useState(false);
   const [historicoOpen, setHistoricoOpen] = useState(false);
   const [historicoTarefa, setHistoricoTarefa] = useState(null);
+  const [isPwa, setIsPwa] = useState(false);
 
   // Sincronização ao montar
   useEffect(() => {
@@ -91,6 +92,32 @@ export default function Tarefas() {
       setSearchParams(nextParams, { replace: true });
     }
   }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    const mediaStandalone = window.matchMedia?.('(display-mode: standalone)');
+    const mediaFullscreen = window.matchMedia?.('(display-mode: fullscreen)');
+    const mediaMinimal = window.matchMedia?.('(display-mode: minimal-ui)');
+
+    const checkPwa = () => {
+      setIsPwa(Boolean(
+        window.navigator?.standalone ||
+        mediaStandalone?.matches ||
+        mediaFullscreen?.matches ||
+        mediaMinimal?.matches
+      ));
+    };
+
+    checkPwa();
+    mediaStandalone?.addEventListener?.('change', checkPwa);
+    mediaFullscreen?.addEventListener?.('change', checkPwa);
+    mediaMinimal?.addEventListener?.('change', checkPwa);
+
+    return () => {
+      mediaStandalone?.removeEventListener?.('change', checkPwa);
+      mediaFullscreen?.removeEventListener?.('change', checkPwa);
+      mediaMinimal?.removeEventListener?.('change', checkPwa);
+    };
+  }, []);
 
   const { data: tarefas = [] } = useQuery({
     queryKey: ['tarefas'],
@@ -443,22 +470,37 @@ export default function Tarefas() {
         />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-border rounded-2xl p-4">
-          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Tarefas Ativas</p>
+      <div
+        className={cn("grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid", isPwa && "!grid-cols-4 !gap-2")}
+        style={isPwa ? { gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '0.5rem' } : undefined}
+      >
+        <div
+          className="bg-card/60 border border-border rounded-2xl p-4 perfil-stats-card"
+          style={isPwa ? { padding: '8px', borderRadius: '12px' } : undefined}
+        >
+          <p className={cn("text-2xl font-bold text-foreground perfil-stats-value", isPwa && "!text-xl !leading-tight")}>{stats.total}</p>
+          <p className={cn("text-xs text-muted-foreground perfil-stats-label", isPwa && "!text-[11px] !leading-tight")}>Tarefas Ativas</p>
         </div>
-        <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4">
-          <p className="text-2xl font-bold text-amber-300">{stats.emExecucao}</p>
-          <p className="text-xs text-muted-foreground">Em Execução</p>
+        <div
+          className="bg-card/60 border border-amber-500/30 rounded-2xl p-4 perfil-stats-card"
+          style={isPwa ? { padding: '8px', borderRadius: '12px' } : undefined}
+        >
+          <p className={cn("text-2xl font-bold text-amber-300 perfil-stats-value", isPwa && "!text-xl !leading-tight")}>{stats.emExecucao}</p>
+          <p className={cn("text-xs text-muted-foreground perfil-stats-label", isPwa && "!text-[11px] !leading-tight")}>Em Execução</p>
         </div>
-        <div className="bg-card/60 border border-primary/25 rounded-2xl p-4">
-          <p className="text-2xl font-bold text-primary">{stats.aguardando}</p>
-          <p className="text-xs text-muted-foreground">Aguardando</p>
+        <div
+          className="bg-card/60 border border-primary/25 rounded-2xl p-4 perfil-stats-card"
+          style={isPwa ? { padding: '8px', borderRadius: '12px' } : undefined}
+        >
+          <p className={cn("text-2xl font-bold text-primary perfil-stats-value", isPwa && "!text-xl !leading-tight")}>{stats.aguardando}</p>
+          <p className={cn("text-xs text-muted-foreground perfil-stats-label", isPwa && "!text-[11px] !leading-tight")}>Aguardando</p>
         </div>
-        <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4">
-          <p className="text-2xl font-bold text-emerald-300">{stats.concluidas}</p>
-          <p className="text-xs text-muted-foreground">Concluídas</p>
+        <div
+          className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4 perfil-stats-card"
+          style={isPwa ? { padding: '8px', borderRadius: '12px' } : undefined}
+        >
+          <p className={cn("text-2xl font-bold text-emerald-300 perfil-stats-value", isPwa && "!text-xl !leading-tight")}>{stats.concluidas}</p>
+          <p className={cn("text-xs text-muted-foreground perfil-stats-label", isPwa && "!text-[11px] !leading-tight")}>Concluídas</p>
         </div>
       </div>
 

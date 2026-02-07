@@ -273,22 +273,22 @@ export default function PerfilFuncionario() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-border rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Tarefas Ativas</p>
-          <p className="text-2xl font-bold text-foreground">{statsTarefas.total}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
+          <p className="text-xs text-muted-foreground perfil-stats-label">Tarefas Ativas</p>
+          <p className="text-2xl font-bold text-foreground perfil-stats-value">{statsTarefas.total}</p>
         </div>
-        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Em Execução</p>
-          <p className="text-2xl font-bold text-amber-400">{statsTarefas.emExecucao}</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em Execução</p>
+          <p className="text-2xl font-bold text-amber-400 perfil-stats-value">{statsTarefas.emExecucao}</p>
         </div>
-        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Aguardando</p>
-          <p className="text-2xl font-bold text-blue-400">{statsTarefas.aguardando}</p>
+        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-xs text-muted-foreground perfil-stats-label">Aguardando</p>
+          <p className="text-2xl font-bold text-blue-400 perfil-stats-value">{statsTarefas.aguardando}</p>
         </div>
-        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Concluídas</p>
-          <p className="text-2xl font-bold text-green-400">{statsTarefas.concluidas}</p>
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-xs text-muted-foreground perfil-stats-label">Concluídas</p>
+          <p className="text-2xl font-bold text-green-400 perfil-stats-value">{statsTarefas.concluidas}</p>
         </div>
       </div>
 

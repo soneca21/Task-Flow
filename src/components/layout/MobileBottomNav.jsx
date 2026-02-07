@@ -18,12 +18,17 @@ export default function MobileBottomNav({ currentPageName }) {
     const mediaStandalone = window.matchMedia?.('(display-mode: standalone)');
     const mediaFullscreen = window.matchMedia?.('(display-mode: fullscreen)');
     const mediaMinimal = window.matchMedia?.('(display-mode: minimal-ui)');
-    const check = () => setIsPwa(Boolean(
-      window.navigator?.standalone ||
-      mediaStandalone?.matches ||
-      mediaFullscreen?.matches ||
-      mediaMinimal?.matches
-    ));
+    const check = () => {
+      const pwa = Boolean(
+        window.navigator?.standalone ||
+        mediaStandalone?.matches ||
+        mediaFullscreen?.matches ||
+        mediaMinimal?.matches
+      );
+      setIsPwa(pwa);
+      document.documentElement.classList.toggle('pwa-mode', pwa);
+      document.body.classList.toggle('pwa-mode', pwa);
+    };
     check();
     const onChange = () => check();
     mediaStandalone?.addEventListener?.('change', onChange);
@@ -33,6 +38,8 @@ export default function MobileBottomNav({ currentPageName }) {
       mediaStandalone?.removeEventListener?.('change', onChange);
       mediaFullscreen?.removeEventListener?.('change', onChange);
       mediaMinimal?.removeEventListener?.('change', onChange);
+      document.documentElement.classList.remove('pwa-mode');
+      document.body.classList.remove('pwa-mode');
     };
   }, []);
 
