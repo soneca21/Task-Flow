@@ -455,9 +455,10 @@ export default function Tarefas() {
       <div className="space-y-6">
         <PageHeader 
           title="Tarefas"
-          subtitle={`${stats.emExecucao} tarefas em execução`}
+          subtitle={`em execução: ${stats.emExecucao}`}
           icon={ClipboardList}
           iconColor="text-indigo-500"
+          mobileInlineActions
           actions={
             <Button 
               onClick={() => { setEditingTarefa(null); setDialogOpen(true); }}

@@ -130,9 +130,9 @@ export default function Expedicao() {
   return (
     <>
       <div className="space-y-6">
-        <PageHeader 
+      <PageHeader 
           title="Expedição"
-          subtitle={`${notas.length} notas cadastradas`}
+          subtitle={`notas cadastradas: ${notas.length}`}
           icon={Package}
           iconColor="text-purple-500"
           actions={

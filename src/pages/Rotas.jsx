@@ -244,8 +244,8 @@ export default function Rotas() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Agendamentos"
-        subtitle={`${agendamentos.length} agendamentos para ${format(new Date(filterData), "dd 'de' MMMM", { locale: ptBR })}`}
+        title="Agenda"
+        subtitle={`agendamentos: ${agendamentos.length}`}
         icon={CalendarClock}
         iconColor="text-cyan-500"
         actions={
@@ -255,7 +255,7 @@ export default function Rotas() {
             disabled={!isManager}
           >
             <Plus className="w-5 h-5 mr-2" />
-            Novo Agendamento
+            Agendamento
           </Button>
         }
       />

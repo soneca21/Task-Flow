@@ -267,7 +267,7 @@ export default function Producao() {
     <div className="space-y-6">
       <PageHeader 
         title="Produção"
-        subtitle={`${stats.emExecucao} ordens em execução`}
+        subtitle={`em execução: ${stats.emExecucao}`}
         icon={Factory}
         iconColor="text-amber-500"
       />
