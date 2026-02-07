@@ -22,7 +22,7 @@ export default function MeuPerfil() {
   const [editForm, setEditForm] = useState({ nome: '', telefone: '', data_nascimento: '' });
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [recoveryDialogOpen, setRecoveryDialogOpen] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({ newPassword: '', confirmPassword: '' });
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [isSendingRecovery, setIsSendingRecovery] = useState(false);
 
@@ -225,11 +225,15 @@ export default function MeuPerfil() {
   };
 
   const openPasswordDialog = () => {
-    setPasswordForm({ newPassword: '', confirmPassword: '' });
+    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     setPasswordDialogOpen(true);
   };
 
   const handleChangePassword = async () => {
+    if (!passwordForm.currentPassword) {
+      toast.error('Informe sua senha atual para confirmar a troca.');
+      return;
+    }
     if (!passwordForm.newPassword || passwordForm.newPassword.length < 6) {
       toast.error('A nova senha deve ter pelo menos 6 caracteres.');
       return;
@@ -240,12 +244,19 @@ export default function MeuPerfil() {
     }
     setIsUpdatingPassword(true);
     try {
-      await api.auth.changePassword(passwordForm.newPassword);
+      await api.auth.changePassword(passwordForm.newPassword, {
+        currentPassword: passwordForm.currentPassword,
+        email: user?.email,
+      });
       toast.success('Senha atualizada com sucesso.');
       setPasswordDialogOpen(false);
-      setPasswordForm({ newPassword: '', confirmPassword: '' });
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (error) {
       console.error(error);
+      if (String(error?.message || '').toLowerCase().includes('reauthentication')) {
+        toast.error('Sessao antiga. Entre novamente ou use a recuperacao por e-mail.');
+        return;
+      }
       toast.error(error?.message || 'Não foi possível atualizar a senha.');
     } finally {
       setIsUpdatingPassword(false);
@@ -678,6 +689,17 @@ export default function MeuPerfil() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div>
+              <Label>Senha atual</Label>
+              <Input
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) => setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))}
+                className="bg-card border-border mt-1"
+                placeholder="Digite sua senha atual"
+                autoComplete="current-password"
+              />
+            </div>
+            <div>
               <Label>Nova senha</Label>
               <Input
                 type="password"
@@ -749,6 +771,8 @@ export default function MeuPerfil() {
     </div>
   );
 }
+
+
 
 
 

@@ -202,10 +202,28 @@ const auth = {
     if (error) throw error;
   },
   async sendPasswordRecovery(email, redirectTo = `${window.location.origin}/login`) {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    const recoveryRedirect = new URL(redirectTo, window.location.origin);
+    if (!recoveryRedirect.searchParams.get('type')) {
+      recoveryRedirect.searchParams.set('type', 'recovery');
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: recoveryRedirect.toString(),
+    });
     if (error) throw error;
   },
-  async changePassword(newPassword) {
+  async changePassword(newPassword, options = {}) {
+    const { currentPassword, email } = options || {};
+    if (currentPassword) {
+      const currentEmail = email || (await supabase.auth.getUser()).data?.user?.email;
+      if (!currentEmail) {
+        throw new Error('Nao foi possivel validar o e-mail para reautenticacao.');
+      }
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: currentEmail,
+        password: currentPassword,
+      });
+      if (reauthError) throw reauthError;
+    }
     const { data, error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) throw error;
     return data;
