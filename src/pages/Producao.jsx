@@ -273,22 +273,22 @@ export default function Producao() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-border rounded-2xl p-4">
-          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total de Ordens</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid">
+        <div className="bg-card/60 border border-border rounded-2xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-foreground perfil-stats-value">{stats.total}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Total de Ordens</p>
         </div>
-        <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4">
-          <p className="text-2xl font-bold text-amber-300">{stats.emExecucao}</p>
-          <p className="text-xs text-muted-foreground">Em Execução</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-2xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-amber-300 perfil-stats-value">{stats.emExecucao}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em Execução</p>
         </div>
-        <div className="bg-card/60 border border-primary/25 rounded-2xl p-4">
-          <p className="text-2xl font-bold text-primary">{stats.aguardando}</p>
-          <p className="text-xs text-muted-foreground">Aguardando</p>
+        <div className="bg-card/60 border border-primary/25 rounded-2xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-primary perfil-stats-value">{stats.aguardando}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Aguardando</p>
         </div>
-        <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4">
-          <p className="text-2xl font-bold text-emerald-300">{stats.concluidas}</p>
-          <p className="text-xs text-muted-foreground">Concluídas Hoje</p>
+        <div className="bg-card/60 border border-emerald-500/25 rounded-2xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-emerald-300 perfil-stats-value">{stats.concluidas}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Concluídas Hoje</p>
         </div>
       </div>
 

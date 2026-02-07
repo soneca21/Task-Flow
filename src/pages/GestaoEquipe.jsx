@@ -157,52 +157,52 @@ export default function GestaoEquipe() {
       />
 
       {/* Stats Rápidos */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-border rounded-xl p-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-blue-500/20">
               <Home className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{daCasa.length}</p>
-              <p className="text-xs text-muted-foreground">Da Casa</p>
+               <p className="text-2xl font-bold text-foreground perfil-stats-value">{daCasa.length}</p>
+               <p className="text-xs text-muted-foreground perfil-stats-label">Da Casa</p>
             </div>
           </div>
         </div>
-        <div className="bg-card/60 border border-border rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-orange-500/20">
               <Truck className="w-5 h-5 text-orange-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">{terceirizados.length}</p>
-              <p className="text-xs text-muted-foreground">Terceirizados</p>
+               <p className="text-2xl font-bold text-foreground perfil-stats-value">{terceirizados.length}</p>
+               <p className="text-xs text-muted-foreground perfil-stats-label">Terceirizados</p>
             </div>
           </div>
         </div>
-        <div className="bg-card/60 border border-border rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-green-500/20">
               <UserCheck className="w-5 h-5 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">
-                {funcionarios.filter(f => f.status === 'disponivel').length}
-              </p>
-              <p className="text-xs text-muted-foreground">Disponíveis</p>
+               <p className="text-2xl font-bold text-foreground perfil-stats-value">
+                 {funcionarios.filter(f => f.status === 'disponivel').length}
+               </p>
+               <p className="text-xs text-muted-foreground perfil-stats-label">Disponíveis</p>
             </div>
           </div>
         </div>
-        <div className="bg-card/60 border border-border rounded-xl p-4">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg bg-amber-500/20">
               <UserX className="w-5 h-5 text-amber-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-foreground">
-                {funcionarios.filter(f => f.status === 'ocupado').length}
-              </p>
-              <p className="text-xs text-muted-foreground">Ocupados</p>
+               <p className="text-2xl font-bold text-foreground perfil-stats-value">
+                 {funcionarios.filter(f => f.status === 'ocupado').length}
+               </p>
+               <p className="text-xs text-muted-foreground perfil-stats-label">Ocupados</p>
             </div>
           </div>
         </div>

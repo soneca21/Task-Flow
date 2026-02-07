@@ -260,22 +260,22 @@ export default function Rotas() {
         }
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-border rounded-xl p-4">
-          <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-foreground perfil-stats-value">{stats.total}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Total</p>
         </div>
-        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-amber-400">{stats.agendados}</p>
-          <p className="text-xs text-muted-foreground">Agendados</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-amber-400 perfil-stats-value">{stats.agendados}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Agendados</p>
         </div>
-        <div className="bg-card/60 border border-cyan-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-cyan-400">{stats.emAtendimento}</p>
-          <p className="text-xs text-muted-foreground">Em atendimento</p>
+        <div className="bg-card/60 border border-cyan-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-cyan-400 perfil-stats-value">{stats.emAtendimento}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em atendimento</p>
         </div>
-        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-green-400">{stats.concluidos}</p>
-          <p className="text-xs text-muted-foreground">Concluídos</p>
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-green-400 perfil-stats-value">{stats.concluidos}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Concluídos</p>
         </div>
       </div>
 

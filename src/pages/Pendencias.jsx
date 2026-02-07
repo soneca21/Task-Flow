@@ -148,22 +148,22 @@ export default function Pendencias() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-red-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-red-400">{stats.abertas}</p>
-          <p className="text-xs text-muted-foreground">Abertas</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid">
+        <div className="bg-card/60 border border-red-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-red-400 perfil-stats-value">{stats.abertas}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Abertas</p>
         </div>
-        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-amber-400">{stats.emAnalise}</p>
-          <p className="text-xs text-muted-foreground">Em Análise</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-amber-400 perfil-stats-value">{stats.emAnalise}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em Análise</p>
         </div>
-        <div className="bg-card/60 border border-red-500/50 rounded-xl p-4">
-          <p className="text-2xl font-bold text-red-500">{stats.criticas}</p>
-          <p className="text-xs text-muted-foreground">Críticas</p>
+        <div className="bg-card/60 border border-red-500/50 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-red-500 perfil-stats-value">{stats.criticas}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Críticas</p>
         </div>
-        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-green-400">{stats.resolvidas}</p>
-          <p className="text-xs text-muted-foreground">Resolvidas</p>
+        <div className="bg-card/60 border border-green-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-green-400 perfil-stats-value">{stats.resolvidas}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Resolvidas</p>
         </div>
       </div>
 

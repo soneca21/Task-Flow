@@ -147,22 +147,22 @@ export default function Expedicao() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card/60 border border-border rounded-xl p-4">
-          <p className="text-2xl font-bold text-muted-foreground">{stats.pendentes}</p>
-          <p className="text-xs text-muted-foreground">Em Expedição</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 perfil-stats-grid">
+        <div className="bg-card/60 border border-border rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-muted-foreground perfil-stats-value">{stats.pendentes}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em Expedição</p>
         </div>
-        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-amber-400">{stats.emProducao}</p>
-          <p className="text-xs text-muted-foreground">Em Produção</p>
+        <div className="bg-card/60 border border-amber-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-amber-400 perfil-stats-value">{stats.emProducao}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em Produção</p>
         </div>
-        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-blue-400">{stats.aguardando}</p>
-          <p className="text-xs text-muted-foreground">Aguardando Carregamento</p>
+        <div className="bg-card/60 border border-blue-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-blue-400 perfil-stats-value">{stats.aguardando}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Aguardando Carregamento</p>
         </div>
-        <div className="bg-card/60 border border-purple-500/30 rounded-xl p-4">
-          <p className="text-2xl font-bold text-purple-400">{stats.emRota}</p>
-          <p className="text-xs text-muted-foreground">Em Rota</p>
+        <div className="bg-card/60 border border-purple-500/30 rounded-xl p-4 perfil-stats-card">
+          <p className="text-2xl font-bold text-purple-400 perfil-stats-value">{stats.emRota}</p>
+          <p className="text-xs text-muted-foreground perfil-stats-label">Em Rota</p>
         </div>
       </div>
 
