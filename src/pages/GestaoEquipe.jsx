@@ -141,8 +141,8 @@ export default function GestaoEquipe() {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Gestão de Equipe"
-        subtitle={`${funcionarios.filter(f => f.ativo).length} funcionários ativos`}
+        title="Gestão"
+        subtitle={`ativos: ${funcionarios.filter(f => f.ativo).length}`}
         icon={Users}
         iconColor="text-orange-500"
         actions={

@@ -154,7 +154,6 @@ export default function AvaliacaoEquipe() {
     <div className="space-y-6">
       <PageHeader
         title="Avaliação da Equipe"
-        subtitle="Feedback e desempenho por colaborador"
         icon={ClipboardCheck}
         iconColor="text-amber-500"
         actions={
@@ -168,34 +167,38 @@ export default function AvaliacaoEquipe() {
         }
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="bg-card/60 border border-border rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Total de Avaliações</p>
-          <p className="text-2xl font-bold text-foreground">{avaliacoes.length}</p>
+      <p className="text-muted-foreground -mt-2 text-center">
+        Feedback e desempenho por colaborador
+      </p>
+
+      <div className="grid grid-cols-3 gap-2 lg:gap-4">
+        <div className="bg-card/60 border border-border rounded-xl p-2 lg:p-4">
+          <p className="text-[11px] lg:text-xs text-muted-foreground">Total de Avaliações</p>
+          <p className="text-xl lg:text-2xl font-bold text-foreground">{avaliacoes.length}</p>
         </div>
-        <div className="bg-card/60 border border-border rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Funcionários Avaliados</p>
-          <p className="text-2xl font-bold text-foreground">{avaliacoesPorFuncionario.size}</p>
+        <div className="bg-card/60 border border-border rounded-xl p-2 lg:p-4">
+          <p className="text-[11px] lg:text-xs text-muted-foreground">Funcionários Avaliados</p>
+          <p className="text-xl lg:text-2xl font-bold text-foreground">{avaliacoesPorFuncionario.size}</p>
         </div>
-        <div className="bg-card/60 border border-border rounded-xl p-4">
-          <p className="text-xs text-muted-foreground">Equipe Ativa</p>
-          <p className="text-2xl font-bold text-foreground">
+        <div className="bg-card/60 border border-border rounded-xl p-2 lg:p-4">
+          <p className="text-[11px] lg:text-xs text-muted-foreground">Equipe Ativa</p>
+          <p className="text-xl lg:text-2xl font-bold text-foreground">
             {funcionarios.filter(f => f.ativo !== false).length}
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4">
-        <div className="flex-1">
+      <div className="grid grid-cols-[1fr_auto] items-center gap-2">
+        <div className="min-w-0">
           <Input
             placeholder="Buscar funcionário..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="bg-card/60 border-border text-foreground h-11"
+            className="bg-card/60 border-border text-foreground h-10"
           />
         </div>
         <Select value={selectedFuncionarioId} onValueChange={setSelectedFuncionarioId}>
-          <SelectTrigger className="w-full lg:w-64 bg-card/60 border-border text-foreground h-11">
+          <SelectTrigger className="w-[96px] lg:w-64 bg-card/60 border-border text-foreground h-10">
             <SelectValue placeholder="Filtrar por funcionário" />
           </SelectTrigger>
           <SelectContent>

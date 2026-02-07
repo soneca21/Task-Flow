@@ -195,26 +195,18 @@ export default function Logistica() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Veículos no Pátio"
-        subtitle={`${patioTotal} veículos aguardando atendimento`}
+        title="Aguardando atendimento"
+        subtitle={`veículos: ${patioTotal}`}
         icon={Truck}
         iconColor="text-green-500"
         actions={
           <div className="flex items-center gap-2">
             <Button
-              variant="outline"
-              onClick={() => { setDialogMode('arrival'); setEditingVeiculo(null); setDialogOpen(true); }}
-              className="border-border text-foreground hover:bg-card"
-            >
-              <MapPin className="w-4 h-4 mr-2" />
-              Registrar Chegada
-            </Button>
-            <Button
               onClick={() => { setDialogMode('default'); setEditingVeiculo(null); setDialogOpen(true); }}
               className="bg-amber-500 hover:bg-amber-600 text-black font-semibold touch-btn"
             >
               <Plus className="w-5 h-5 mr-2" />
-              Cadastrar Veículo
+              Cadastrar
             </Button>
           </div>
         }
