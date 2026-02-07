@@ -181,7 +181,6 @@ export default function FrentesTrabalho() {
     <div className="space-y-6">
       <PageHeader 
         title="Frentes de Trabalho"
-        subtitle="Gerencie os setores e estações de trabalho"
         icon={Warehouse}
         iconColor="text-lime-500"
         actions={
@@ -194,6 +193,7 @@ export default function FrentesTrabalho() {
           </Button>
         }
       />
+      <p className="text-muted-foreground -mt-2 text-center">Aguardando atendimento</p>
 
       {/* Frentes por Categoria */}
       <div className="space-y-6">
