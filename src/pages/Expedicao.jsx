@@ -168,8 +168,8 @@ export default function Expedicao() {
 
       {/* Filtros */}
       <div className="space-y-3">
-        <div className="flex flex-col lg:flex-row gap-4">
-          <div className="relative flex-1">
+        <div className="grid grid-cols-2 gap-2 lg:flex lg:flex-row lg:gap-4">
+          <div className="relative col-span-2 lg:col-span-1 lg:flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               placeholder="Buscar por número ou cliente..."
@@ -179,7 +179,7 @@ export default function Expedicao() {
             />
           </div>
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-12">
+            <SelectTrigger className="w-full lg:w-48 bg-card/60 border-border text-foreground h-9 text-xs lg:h-12 lg:text-sm">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -196,7 +196,7 @@ export default function Expedicao() {
           <Button
             type="button"
             variant="outline"
-            className="h-12 lg:hidden"
+            className="h-9 text-xs lg:hidden"
             onClick={() => setShowAdvancedFilters((prev) => !prev)}
           >
             {showAdvancedFilters ? 'Ocultar filtros' : 'Filtros avancados'}
